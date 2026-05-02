@@ -135,8 +135,9 @@
       overflow: hidden;
       position: relative;
       background:
-        linear-gradient(180deg, rgba(6, 20, 47, .04), rgba(6, 20, 47, .78)),
-        linear-gradient(135deg, #e8f8ee, #eaf1ff 52%, #fff6df);
+        linear-gradient(180deg, rgba(6, 20, 47, .02), rgba(6, 20, 47, .8)),
+        radial-gradient(circle at 18% 18%, rgba(255,255,255,.95), rgba(255,255,255,0) 29%),
+        linear-gradient(135deg, #dff7e7, #edf4ff 48%, #fff4d7);
       box-shadow: var(--shadow);
     }
     .hero-card {
@@ -176,8 +177,11 @@
       height: 134px;
       border-radius: 24px;
       background:
-        radial-gradient(circle at 16% 18%, rgba(8,166,63,.16), transparent 32%),
-        linear-gradient(145deg, #ffffff, #f4f8ff);
+        linear-gradient(90deg, rgba(255,255,255,.82) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(255,255,255,.72) 1px, transparent 1px),
+        linear-gradient(145deg, rgba(8,166,63,.2), rgba(11,95,255,.16)),
+        #f8fbff;
+      background-size: 28px 28px, 28px 28px, auto, auto;
       box-shadow: 0 16px 34px rgba(6, 20, 47, .14);
       overflow: hidden;
       padding: 14px;
@@ -336,6 +340,18 @@
     .plan-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
     .plan-price { font-size: 20px; font-weight: 950; color: var(--green-dark); white-space: nowrap; }
     .plan small { color: var(--muted); font-weight: 800; line-height: 1.35; }
+    .review-card { display: grid; gap: 10px; }
+    .review-row { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 9px; border-bottom: 1px solid var(--line); }
+    .review-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .review-row span { color: var(--muted); font-size: 12px; font-weight: 900; }
+    .review-row b { text-align: right; overflow-wrap: anywhere; }
+    .review-desc { color: var(--text); line-height: 1.45; }
+    .boost-list { display: grid; gap: 5px; margin-top: 2px; }
+    .boost-list span { color: var(--muted); font-size: 12px; font-weight: 850; }
+    .safety-confirm { display: flex; gap: 10px; align-items: flex-start; }
+    .safety-confirm input { margin-top: 2px; width: 18px; height: 18px; flex: none; }
+    .safety-confirm button { border: 0; background: transparent; color: var(--blue-dark); padding: 0; font-weight: 950; }
+    .error-note { display: none; margin-top: 8px; color: var(--red); font-size: 13px; font-weight: 900; }
     .ci {
       width: 38px;
       height: 38px;
@@ -840,14 +856,21 @@
 
     <section id="jobVisibility" class="screen">
       <div class="header"><button class="icon" data-go="postJob">←</button><span class="tag">Visibility</span></div>
-      <h3>Choose visibility</h3>
-      <p class="sub">Pick how much attention this job should get before publishing.</p>
-      <div class="grid">
-        <button class="plan selected" data-visibility="free"><span class="plan-top"><b>Free publish</b><span class="plan-price">Rs 0</span></span><small>Standard visibility. Good for simple hiring, but fewer workers may see it.</small></button>
-        <button class="plan" data-visibility="boost"><span class="plan-top"><b>Higher visibility</b><span class="plan-price">Rs 199</span></span><small>More attraction in the feed. Better placement for faster applicants.</small></button>
+      <h1 class="title">Review Job Post</h1>
+      <div class="panel review-card">
+        <div class="review-row"><span>Job title</span><b id="reviewTitle">Clerk</b></div>
+        <div class="review-row"><span>Pay</span><b id="reviewPay">Rs 18000/month</b></div>
+        <div class="review-row"><span>Location</span><b id="reviewLocation">Jaipur</b></div>
+        <div class="review-row"><span>Job type</span><b id="reviewType">Full-time</b></div>
+        <div><span class="small">Description preview</span><p class="review-desc" id="reviewDesc">Work details will appear here.</p></div>
       </div>
-      <label class="panel small"><input id="jobRules" type="checkbox"> I confirm this job is genuine and follows Kaam Karo's posting rules.</label>
-      <button class="btn primary mt" data-post-job>Publish job</button>
+      <h3>Visibility choice</h3>
+      <div class="grid">
+        <button class="plan selected" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small></button>
+        <button class="plan" data-visibility="boost"><span class="plan-top"><b>₹199 Boosted Post</b><span class="plan-price">₹199</span></span><span class="boost-list"><span>More visibility</span><span>Higher in worker feed</span><span>Urgent badge</span><span>More applicants</span></span></button>
+      </div>
+      <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine and follows Kaam Karo's posting rules.<br><button data-legal="guidelines">Job Posting Rules</button><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
+      <button class="btn primary mt" data-post-job>Publish Job</button>
     </section>
 
     <section id="published" class="screen success">
@@ -1167,6 +1190,19 @@
         byId("legalTitle").textContent = item[0];
         byId("legalBody").textContent = item[1];
       }
+      function renderJobReview() {
+        if (!byId("reviewTitle")) return;
+        var title = byId("postTitle").value.trim() || "Job title";
+        var pay = byId("postPay").value.trim() || "Pay not added";
+        var city = byId("postLocation").value.trim() || "Location not added";
+        var type = byId("postType").value || "Full-time";
+        var desc = byId("postDesc").value.trim() || "Description preview will appear here.";
+        byId("reviewTitle").textContent = title;
+        byId("reviewPay").textContent = pay;
+        byId("reviewLocation").textContent = city;
+        byId("reviewType").textContent = type;
+        byId("reviewDesc").textContent = desc.length > 110 ? desc.slice(0, 110) + "..." : desc;
+      }
       function render() {
         applyCopy();
         fillBasicDefaults();
@@ -1179,6 +1215,7 @@
         renderEmployer();
         renderFullWorkerProfile();
         renderLegal();
+        renderJobReview();
         byId("profileName").textContent = state.worker.name || "Worker Profile";
         byId("profileMeta").textContent = "Phone Verified - Profile Complete";
       }
@@ -1207,8 +1244,12 @@
       function addPostedJob() {
         var draft = validateJobDraft();
         if (!draft) return;
-        if (!byId("jobRules").checked) return toast("Please confirm posting rules.");
-        state.jobs.unshift({ id: "job-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: byId("postType").value, employer: state.employer.business || "Your Business", badge: postVisibility === "boost" ? "Boosted Employer" : "New Employer", visibility: postVisibility, remote: byId("postType").value === "Remote", desc: draft.desc });
+        if (!byId("jobRules").checked) {
+          byId("jobRulesError").style.display = "block";
+          return toast("Please confirm the job is genuine before publishing.");
+        }
+        byId("jobRulesError").style.display = "none";
+        state.jobs.unshift({ id: "job-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: byId("postType").value, employer: state.employer.business || "Your Business", badge: postVisibility === "boost" ? "Urgent" : "New Employer", visibility: postVisibility, remote: byId("postType").value === "Remote", desc: draft.desc });
         save();
         track(postVisibility === "boost" ? "employer_job_boosted_posted" : "employer_job_free_posted");
         show("published");
@@ -1335,6 +1376,7 @@
         if (event.target.id === "jobSearch") { jobIndex = 0; renderFeed(); }
         if (event.target.id === "manualSearch") renderSearch();
         if (event.target.id === "locationSearch") { state.worker.city = event.target.value.trim() || state.worker.city; save(); renderFeed(); }
+        if (event.target.id === "jobRules" && event.target.checked) byId("jobRulesError").style.display = "none";
         if (event.target.id === "workSearch") {
           var q = event.target.value.trim();
           if (q) state.worker.preferredJob = q;
