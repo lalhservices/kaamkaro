@@ -485,6 +485,15 @@
     .status-interested { background: #fff7e8; color: #9a5d00; }
     .status-accepted { background: #eaf8ef; color: var(--green-dark); }
     .status-rejected { background: #fff1f2; color: var(--red); }
+    .status-approved { background: #eaf8ef; color: var(--green-dark); }
+    .status-pending_review { background: #fff7e8; color: #9a5d00; }
+    .status-removed { background: #fff1f2; color: var(--red); }
+    .risk-score { color: var(--red); font-weight: 950; }
+    .flag-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .policy-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .policy-links a { color: var(--blue-dark); font-size: 12px; font-weight: 950; text-decoration: none; }
+    .admin-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+    .admin-actions .btn { min-height: 44px; border-radius: 14px; font-size: 13px; }
 
     .success { text-align: center; padding-top: 58px; }
     .success-icon {
@@ -813,8 +822,8 @@
 
     <section id="chat" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><div><b id="chatTitle">Rick Sharma</b><p class="small" id="chatSub">Accepted match</p></div><button class="icon" data-report="chat"><svg><use href="#i-flag"></use></svg></button></div>
-      <div class="chat-safety">Never pay money to get a job. Report suspicious messages.</div>
-      <div id="chatArea" class="chat-area"><div class="msg left">Hi John, your profile looks good. Can you join tomorrow?</div><div class="msg right">Yes, I am available. Please share timing.</div><div class="msg left">10 AM. I will send location here.</div></div>
+      <div class="chat-safety" id="chatSafety">Never pay money to get a job. Report suspicious messages.</div>
+      <div id="chatArea" class="chat-area"></div>
       <div class="quick"><button data-quick="I am available">I am available</button><button data-quick="Please share location">Please share location</button><button data-report="chat">Report</button><button data-block>Block</button></div>
       <div class="chat-input"><input id="chatText" placeholder="Type a message"><button id="sendChat">➜</button></div>
       <nav class="nav" id="chatNav"></nav>
@@ -896,12 +905,12 @@
         <button class="plan selected" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small></button>
         <button class="plan" data-visibility="boost"><span class="plan-top"><b>₹199 Boosted Post</b><span class="plan-price">₹199</span></span><span class="boost-list"><span>More visibility</span><span>Higher in worker feed</span><span>Urgent badge</span><span>More applicants</span></span></button>
       </div>
-      <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine and follows Kaam Karo's posting rules.<br><button data-legal="guidelines">Job Posting Rules</button><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
+      <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine, lawful, non-misleading, and follows Kaam Karo's posting rules.<br><button data-legal="guidelines">Job Posting Rules</button> <a href="legal/acceptable-use-policy.html" target="_blank" rel="noopener">Acceptable Use Policy</a><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
       <button class="btn primary mt" data-post-job>Publish Job</button>
     </section>
 
     <section id="published" class="screen success">
-      <div class="success-icon">✓</div><h1 class="title">Job is live</h1><p class="sub center">Workers can now apply. Applicants will appear in your dashboard.</p><button class="btn primary mt" data-go="employerDash">Dashboard</button>
+      <div class="success-icon">✓</div><h1 class="title" id="publishedTitle">Job is live</h1><p class="sub center" id="publishedSub">Workers can now apply. Applicants will appear in your dashboard.</p><button class="btn primary mt" data-go="employerDash">Dashboard</button>
     </section>
 
     <section id="applicants" class="screen">
@@ -930,6 +939,7 @@
         <button class="list-row" data-legal="privacy"><span class="tiny">P</span><span class="grow">Privacy Policy</span></button>
         <button class="list-row" data-legal="refund"><span class="tiny">R</span><span class="grow">Refund Policy</span></button>
         <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
+        <a class="list-row" href="legal/acceptable-use-policy.html" target="_blank" rel="noopener"><span class="tiny">A</span><span class="grow">Acceptable Use Policy</span></a>
         <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
         <button class="list-row" data-logout><span class="tiny"><svg><use href="#i-x"></use></svg></span><span class="grow"><b>Logout</b><br><span class="small">Return to phone login</span></span></button>
       </div>
@@ -976,9 +986,17 @@
         <button class="menu-row" data-profile-tab><span class="ci"><svg><use href="#i-user"></use></svg></span><span class="grow"><b>Profile & Legal</b><small>Trust badges, safety and legal links</small></span></button>
         <button class="menu-row" data-switch-mode="worker"><span class="ci"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Switch to Find Work</b><small>Worker job feed</small></span></button>
         <button class="menu-row" data-switch-mode="employer"><span class="ci"><svg><use href="#i-chart"></use></svg></span><span class="grow"><b>Switch to Hire Workers</b><small>Employer dashboard</small></span></button>
+        <button class="menu-row" data-go="adminModeration"><span class="ci"><svg><use href="#i-shield"></use></svg></span><span class="grow"><b>Admin review</b><small>Pending jobs and audit logs</small></span></button>
         <button class="menu-row" data-logout><span class="ci"><svg><use href="#i-x"></use></svg></span><span class="grow"><b>Logout</b><small>Go back to phone login</small></span></button>
       </div>
       <div class="menu-foot">Built for simple mobile use: big buttons, clear language, safe phone login and no confusing setup.</div>
+    </section>
+
+    <section id="adminModeration" class="screen">
+      <div class="header"><button class="icon" data-menu-back="true">←</button><div><b>Admin Review</b><p class="small">Pending jobs sorted by risk score</p></div><span class="tag" id="adminPendingCount">0</span></div>
+      <div id="adminQueue" class="list"></div>
+      <h3>Audit logs</h3>
+      <div id="auditLogs" class="list"></div>
     </section>
 
     <section id="legal" class="screen">
@@ -992,10 +1010,16 @@
       <h1 class="title">Report a problem</h1>
       <p class="sub">Tell us what happened. Reports help keep Kaam Karo safe.</p>
       <div class="list">
-        <button class="list-row" data-report-reason="Fake job or employer"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Fake job or employer</span></button>
-        <button class="list-row" data-report-reason="Asked for money"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Asked for money</span></button>
-        <button class="list-row" data-report-reason="Abusive or unsafe chat"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Abusive or unsafe chat</span></button>
-        <button class="list-row" data-report-reason="Wrong salary or location"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Wrong salary or location</span></button>
+        <button class="list-row" data-report-reason="Fake job"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Fake job</span></button>
+        <button class="list-row" data-report-reason="Asking for money"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Asking for money</span></button>
+        <button class="list-row" data-report-reason="Wrong salary"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Wrong salary</span></button>
+        <button class="list-row" data-report-reason="Unsafe work"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Unsafe work</span></button>
+        <button class="list-row" data-report-reason="Adult service"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Adult service</span></button>
+        <button class="list-row" data-report-reason="Drugs"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Drugs</span></button>
+        <button class="list-row" data-report-reason="Weapons"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Weapons</span></button>
+        <button class="list-row" data-report-reason="Harassment"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Harassment</span></button>
+        <button class="list-row" data-report-reason="Illegal work"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Illegal work</span></button>
+        <button class="list-row" data-report-reason="Other"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Other</span></button>
       </div>
     </section>
   </main>
@@ -1016,8 +1040,10 @@
       var locationMode = "near";
       var payOpen = true;
       var postVisibility = "free";
+      var reportContext = "general";
+      var selectedReportJobId = null;
 
-      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","legal","report"];
+      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","adminModeration","legal","report"];
       var workCategories = ["Delivery","Clerk / Office","Retail / Cashier","Helper","Driver","Cleaner","Security","Data Entry","Kitchen / Cook","Sales","Warehouse","Other"];
       var skillOptions = ["Driving","Cash handling","Excel","Customer support","Cooking","Packing","Cleaning","Security","Data entry","Local language"];
       var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
@@ -1033,6 +1059,31 @@
         ],
         applications: [],
         saved: []
+      };
+      state.auditLogs = state.auditLogs || [];
+      state.employer.moderationStatus = state.employer.moderationStatus || "active";
+      state.jobs.forEach(function (job) {
+        job.status = job.status || "approved";
+        job.reportCount = job.reportCount || 0;
+        job.flagReasons = job.flagReasons || [];
+        job.riskScore = job.riskScore || 0;
+      });
+
+      var moderationRules = {
+        prohibited: [
+          { reason: "Adult or sexual services", words: ["adult service","escort","prostitution","massage girl","call girl","sex work"] },
+          { reason: "Drugs or narcotics", words: ["drug","narcotic","ganja","cocaine","heroin","mdma","charas"] },
+          { reason: "Weapons or explosives", words: ["weapon","gun","pistol","explosive","bomb","ammunition"] },
+          { reason: "Trafficking, forced labour or child labour", words: ["forced labour","bonded labour","child labour","minor worker","under 18"] },
+          { reason: "Scam or upfront payment request", words: ["registration fee","security deposit","pay first","upfront payment","joining fee","processing fee"] },
+          { reason: "Gambling, betting or money laundering", words: ["betting","gambling","casino","money laundering","hawala"] },
+          { reason: "Harassment or unsafe work", words: ["harass","abuse allowed","unsafe work","no safety"] }
+        ],
+        suspicious: [
+          { reason: "WhatsApp-only contact", words: ["whatsapp only","only whatsapp","whatsapp me","wa only"] },
+          { reason: "No interview or direct joining", words: ["no interview","direct joining","join immediately no questions"] },
+          { reason: "Discrimination language", words: ["only male","only female","no muslim","no hindu","caste","religion only"] }
+        ]
       };
 
       var copy = {
@@ -1051,6 +1102,14 @@
         var events = JSON.parse(localStorage.getItem("kkAnalytics") || "[]");
         events.push({ name: name, at: new Date().toISOString(), screen: currentScreen });
         localStorage.setItem("kkAnalytics", JSON.stringify(events.slice(-100)));
+      }
+      function snapshotJob(job) {
+        return { id: job.id, title: job.title, pay: job.pay, city: job.city, type: job.type, employer: job.employer, desc: job.desc, status: job.status };
+      }
+      function audit(action, reason, job, userId) {
+        state.auditLogs.unshift({ userId: userId || "admin-001", action: action, reason: reason, jobSnapshot: job ? snapshotJob(job) : null, timestamp: new Date().toISOString() });
+        state.auditLogs = state.auditLogs.slice(0, 50);
+        save();
       }
       function t(key) { return copy[currentLang] && copy[currentLang][key] ? copy[currentLang][key] : key; }
       function byId(id) { return document.getElementById(id); }
@@ -1143,6 +1202,7 @@
         var q = (query || "").trim().toLowerCase();
         var city = (state.worker.city || "").toLowerCase();
         var list = state.jobs.filter(function (job) {
+          if ((job.status || "approved") !== "approved") return false;
           if (activeFilter === "remote" || locationMode === "remote") return job.remote;
           if (activeFilter === "saved") return state.saved.indexOf(job.id) >= 0;
           if (state.worker.preferredJob && state.worker.preferredJob !== "Any Job") {
@@ -1154,7 +1214,7 @@
         });
         if (!list.length && activeFilter !== "saved") {
           byId("feedNotice").textContent = city ? "No jobs very close - showing nearby options in " + state.worker.city + "." : "Showing nearby options.";
-          list = state.jobs.filter(function (job) { return !job.remote || locationMode === "remote"; });
+          list = state.jobs.filter(function (job) { return (job.status || "approved") === "approved" && (!job.remote || locationMode === "remote"); });
         } else {
           byId("feedNotice").textContent = locationMode === "remote" ? "Showing remote work - updated just now." : "3 new jobs near you - updated just now.";
         }
@@ -1260,6 +1320,25 @@
         byId("employerTypeView").textContent = state.employer.type || "Business";
         byId("employerOpenJobsView").textContent = state.jobs.length + " open";
       }
+      function renderAdminQueue() {
+        if (!byId("adminQueue")) return;
+        var pending = state.jobs.filter(function (job) { return job.status === "pending_review"; }).sort(function (a, b) { return (b.riskScore || 0) - (a.riskScore || 0); });
+        byId("adminPendingCount").textContent = pending.length + " pending";
+        byId("adminQueue").innerHTML = pending.length ? pending.map(function (job) {
+          return '<div class="panel"><div class="review-row"><span>Risk</span><b class="risk-score">' + (job.riskScore || 0) + '</b></div><h3>' + job.title + '</h3><p class="small">' + job.pay + ' - ' + job.city + ' - ' + job.type + '</p><p class="review-desc">' + job.desc + '</p><div class="kv"><span>Employer</span><b>' + job.employer + '</b></div><div class="kv"><span>Verification</span><b>' + (state.employer.phone ? "Phone verified" : "New") + '</b></div><div class="kv"><span>Previous posts</span><b>' + (job.previousPosts || 0) + '</b></div><div class="kv"><span>Reports</span><b>' + (job.reportCount || 0) + '</b></div><div class="flag-list">' + (job.flagReasons || []).map(function (r) { return '<span class="badge amber">' + r + '</span>'; }).join("") + '</div><div class="admin-actions"><button class="btn primary" data-admin-action="approve" data-job-id="' + job.id + '">Approve</button><button class="btn danger" data-admin-action="reject" data-job-id="' + job.id + '">Reject</button><button class="btn outline" data-admin-action="request_edit" data-job-id="' + job.id + '">Request Edit</button><button class="btn outline" data-admin-action="suspend" data-job-id="' + job.id + '">Suspend</button><button class="btn danger" data-admin-action="ban" data-job-id="' + job.id + '">Ban</button></div></div>';
+        }).join("") : '<div class="panel small">No jobs waiting for review.</div>';
+        byId("auditLogs").innerHTML = state.auditLogs.length ? state.auditLogs.slice(0, 8).map(function (log) {
+          return '<div class="list-row"><span class="tiny"><svg><use href="#i-shield"></use></svg></span><span class="grow"><b>' + log.action + '</b><br><span class="small">' + log.reason + '<br>' + new Date(log.timestamp).toLocaleString() + '</span></span></div>';
+        }).join("") : '<div class="panel small">No audit logs yet.</div>';
+      }
+      function renderChat() {
+        if (!byId("chatSafety")) return;
+        byId("chatSafety").textContent = currentRole === "employer" ? "Never pay upfront money to hire a worker. Report suspicious messages." : "Never pay money to get a job. Report suspicious messages.";
+        if (!byId("chatArea").dataset.ready) {
+          byId("chatArea").innerHTML = "";
+          byId("chatArea").dataset.ready = "true";
+        }
+      }
       function profileComplete() {
         return !!(state.worker.name && state.worker.city && state.worker.preferredJob && state.worker.skills.length);
       }
@@ -1300,7 +1379,7 @@
       function renderLegal() {
         var item = legal[currentLegal] || legal.terms;
         byId("legalTitle").textContent = item[0];
-        byId("legalBody").textContent = item[1];
+        byId("legalBody").innerHTML = '<p>' + item[1] + '</p><div class="policy-links"><a href="legal/terms-and-conditions.html" target="_blank" rel="noopener">Terms</a><a href="legal/privacy-policy.html" target="_blank" rel="noopener">Privacy</a><a href="legal/refund-policy.html" target="_blank" rel="noopener">Refund</a><a href="legal/acceptable-use-policy.html" target="_blank" rel="noopener">Acceptable Use</a></div>';
       }
       function renderJobReview() {
         if (!byId("reviewTitle")) return;
@@ -1315,10 +1394,49 @@
         byId("reviewType").textContent = type;
         byId("reviewDesc").textContent = desc.length > 110 ? desc.slice(0, 110) + "..." : desc;
       }
+      function renderPublished() {
+        if (!byId("publishedTitle")) return;
+        var job = state.jobs[0];
+        if (job && job.status === "pending_review") {
+          byId("publishedTitle").textContent = "Sent for review";
+          byId("publishedSub").textContent = "This job will go live after Kaam Karo approves it.";
+        } else {
+          byId("publishedTitle").textContent = "Job is live";
+          byId("publishedSub").textContent = "Workers can now apply. Applicants will appear in your dashboard.";
+        }
+      }
       function getPostPayDisplay() {
         var amount = byId("postPayAmount").value.trim();
         var period = byId("postPayPeriod").value;
         return amount && period ? "Rs " + amount + " " + period : "";
+      }
+      function employerPostCount() {
+        return state.jobs.filter(function (job) { return job.employer === (state.employer.business || "Your Business"); }).length;
+      }
+      function analyzeJobDraft(draft) {
+        var text = [
+          draft.title,
+          draft.desc,
+          state.employer.business || "",
+          draft.city,
+          draft.pay,
+          byId("postType").value || ""
+        ].join(" ").toLowerCase();
+        var reasons = [];
+        var rejected = false;
+        moderationRules.prohibited.forEach(function (rule) {
+          if (rule.words.some(function (word) { return text.indexOf(word) >= 0; })) {
+            rejected = true;
+            if (reasons.indexOf(rule.reason) < 0) reasons.push(rule.reason);
+          }
+        });
+        moderationRules.suspicious.forEach(function (rule) {
+          if (rule.words.some(function (word) { return text.indexOf(word) >= 0; }) && reasons.indexOf(rule.reason) < 0) reasons.push(rule.reason);
+        });
+        var amount = Number((byId("postPayAmount").value || "").replace(/[^\d]/g, ""));
+        if (amount && amount > 80000 && draft.desc.length < 80) reasons.push("Very high pay with vague work");
+        if (employerPostCount() < 3) reasons.push("First 3 employer jobs require manual review");
+        return { rejected: rejected, reasons: reasons, riskScore: reasons.length * 20 + (rejected ? 60 : 0) };
       }
       function render() {
         applyCopy();
@@ -1333,8 +1451,11 @@
         renderEmployer();
         renderFullWorkerProfile();
         renderEmployerProfile();
+        renderAdminQueue();
+        renderChat();
         renderLegal();
         renderJobReview();
+        renderPublished();
         var profileBadges = workerBadges();
         byId("profileName").textContent = state.worker.name || "Worker Profile";
         byId("profileMeta").textContent = profileBadges.map(function (b) { return b.label; }).join(" - ") || "Profile started";
@@ -1363,7 +1484,7 @@
         if (!period) return toast("Salary type required.");
         if (!city) return toast("Location required.");
         if (desc.length < 25) return toast("Job description must be at least 25 characters.");
-        return { title: title, pay: pay, city: city, desc: desc };
+        return { title: title, pay: pay, city: city, desc: desc, type: byId("postType").value };
       }
       function addPostedJob() {
         var draft = validateJobDraft();
@@ -1373,8 +1494,17 @@
           return toast("Please confirm the job is genuine before publishing.");
         }
         byId("jobRulesError").style.display = "none";
-        state.jobs.unshift({ id: "job-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: byId("postType").value, employer: state.employer.business || "Your Business", badge: postVisibility === "boost" ? "Urgent" : "New Employer", visibility: postVisibility, remote: byId("postType").value === "Remote", desc: draft.desc });
+        var moderation = analyzeJobDraft(draft);
+        if (moderation.rejected) {
+          audit("rejected", moderation.reasons.join(", "), { id: "draft-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, type: draft.type, employer: state.employer.business || "Your Business", desc: draft.desc, status: "rejected" }, "system");
+          toast("This job cannot be published. Please review posting rules.");
+          return;
+        }
+        var status = moderation.reasons.length ? "pending_review" : "approved";
+        var job = { id: "job-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: draft.type, employer: state.employer.business || "Your Business", badge: postVisibility === "boost" ? "Urgent" : "New Employer", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount() };
+        state.jobs.unshift(job);
         save();
+        audit(status === "approved" ? "approved" : "pending_review", status === "approved" ? "Auto-approved" : moderation.reasons.join(", "), job, "system");
         track(postVisibility === "boost" ? "employer_job_boosted_posted" : "employer_job_free_posted");
         show("published");
       }
@@ -1386,9 +1516,50 @@
         var menuBack = event.target.closest("[data-menu-back]");
         if (menuBack) { show(menuReturn || "jobs"); return; }
         var report = event.target.closest("[data-report]");
-        if (report) { show("report"); return; }
+        if (report) {
+          reportContext = report.dataset.report || "general";
+          if (reportContext === "job") {
+            var list = filteredJobs(byId("jobSearch") ? byId("jobSearch").value : "");
+            selectedReportJobId = list[jobIndex] ? list[jobIndex].id : selectedJobId;
+          }
+          show("report");
+          return;
+        }
         var reportReason = event.target.closest("[data-report-reason]");
-        if (reportReason) { toast("Report submitted: " + reportReason.dataset.reportReason); show(menuReturn || "jobs"); return; }
+        if (reportReason) {
+          var reason = reportReason.dataset.reportReason;
+          if (reportContext === "job" && selectedReportJobId) {
+            var reportedJob = state.jobs.find(function (job) { return job.id === selectedReportJobId; });
+            if (reportedJob) {
+              reportedJob.reportCount = (reportedJob.reportCount || 0) + 1;
+              reportedJob.flagReasons = reportedJob.flagReasons || [];
+              if (reportedJob.flagReasons.indexOf(reason) < 0) reportedJob.flagReasons.push(reason);
+              reportedJob.riskScore = (reportedJob.riskScore || 0) + 15;
+              if (reportedJob.status === "approved") reportedJob.status = "pending_review";
+              audit("job_reported", reason, reportedJob, state.worker.id);
+              save();
+            }
+          }
+          toast("Report submitted: " + reason);
+          show(menuReturn || "jobs");
+          return;
+        }
+        var adminAction = event.target.closest("[data-admin-action]");
+        if (adminAction) {
+          var adminJob = state.jobs.find(function (job) { return job.id === adminAction.dataset.jobId; });
+          if (!adminJob) return;
+          var action = adminAction.dataset.adminAction;
+          if (action === "approve") adminJob.status = "approved";
+          if (action === "reject") adminJob.status = "rejected";
+          if (action === "request_edit") adminJob.status = "pending_review";
+          if (action === "suspend") { state.employer.moderationStatus = "suspended"; adminJob.status = "removed"; }
+          if (action === "ban") { state.employer.moderationStatus = "banned"; adminJob.status = "removed"; }
+          audit(action, "Admin moderation action", adminJob, "admin-001");
+          save();
+          toast("Admin action saved.");
+          render();
+          return;
+        }
         var block = event.target.closest("[data-block]");
         if (block) { toast("Blocked. You will not receive more messages from this user."); return; }
         if (event.target.closest("[data-logout]")) {
