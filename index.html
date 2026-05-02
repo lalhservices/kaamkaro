@@ -28,6 +28,7 @@
     body {
       margin: 0;
       color: var(--text);
+      overflow: hidden;
       background:
         radial-gradient(circle at 12% 0%, rgba(21, 91, 212, .22), transparent 28%),
         radial-gradient(circle at 92% 10%, rgba(10, 168, 70, .20), transparent 30%),
@@ -38,24 +39,37 @@
 
     .phone {
       width: min(430px, 100vw);
-      min-height: 100vh;
+      height: 100vh;
       margin: 0 auto;
       background: linear-gradient(180deg, #ffffff, #f7fbff);
       position: relative;
-      overflow-x: hidden;
+      overflow: hidden;
       box-shadow: 0 30px 90px rgba(7, 22, 47, .24);
     }
     .screen {
-      min-height: 100vh;
-      display: none;
+      position: absolute;
+      inset: 0;
+      height: 100vh;
+      display: block;
       padding: 22px 22px 100px;
-      animation: screen-in .22s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: linear-gradient(180deg, #ffffff, #f7fbff);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(100%);
+      transition: transform .28s cubic-bezier(.2,.85,.2,1), opacity .2s ease;
+      will-change: transform, opacity;
+      scrollbar-width: none;
     }
-    .screen.active { display: block; }
-    @keyframes screen-in {
-      from { opacity: .25; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .screen::-webkit-scrollbar { display: none; }
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
     }
+    .screen.was-left { transform: translateX(-100%); }
+    .screen.was-right { transform: translateX(100%); }
 
     .topbar, .header {
       display: flex;
@@ -75,6 +89,15 @@
       font-weight: 950;
       color: var(--ink);
       letter-spacing: -.2px;
+    }
+    .brand-logo {
+      width: 142px;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .brand-logo.compact {
+      width: 122px;
     }
     .mark {
       width: 42px;
@@ -136,12 +159,39 @@
       font-size: 12px;
       font-weight: 950;
     }
+    .lang-switch {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+      min-width: 118px;
+      min-height: 40px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(7, 22, 47, .06);
+    }
+    .lang-switch button {
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .lang-switch button.active {
+      color: #fff;
+      background: var(--ink);
+    }
 
     .hero {
       min-height: 100vh;
       padding-top: 20px;
       display: flex;
       flex-direction: column;
+    }
+    .hero .brand-logo {
+      width: 172px;
     }
     .hero-visual {
       margin: 24px 0 18px;
@@ -361,7 +411,11 @@
       margin-top: 14px;
       overflow: hidden;
       border-radius: 26px;
+      transition: transform .18s ease, opacity .18s ease;
+      touch-action: pan-y;
     }
+    .job-card.sliding-left { transform: translateX(-24px) rotate(-1.5deg); opacity: .78; }
+    .job-card.sliding-right { transform: translateX(24px) rotate(1.5deg); opacity: .78; }
     .job-hero {
       min-height: 198px;
       padding: 18px;
@@ -406,6 +460,13 @@
       justify-content: center;
       gap: 20px;
       margin-top: 18px;
+    }
+    .swipe-hint {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      margin-top: 10px;
     }
     .circle {
       width: 66px;
@@ -637,30 +698,33 @@
   <main class="phone">
     <section id="landing" class="screen active hero">
       <div class="topbar">
-        <div class="brand"><span class="mark">KK</span><span>Kaam Karo</span></div>
-        <span class="tag">Live demo</span>
+        <div class="brand"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div>
+        <div class="lang-switch" aria-label="Language">
+          <button type="button" class="active" data-lang="en">ENG</button>
+          <button type="button" data-lang="hi">हिंदी</button>
+        </div>
       </div>
       <div>
-        <h1 class="title">Fast local jobs. <span class="green">Trusted hiring.</span></h1>
-        <p class="sub">A mobile-first prototype for workers finding verified jobs and employers hiring nearby people quickly.</p>
+        <h1 class="title" data-i18n="heroTitle">Fast local jobs. <span class="green">Trusted hiring.</span></h1>
+        <p class="sub" data-i18n="heroSub">Find kaam near you, apply in one tap, and chat with verified employers. Simple for first-time users.</p>
       </div>
       <div class="hero-visual" aria-hidden="true">
-        <div class="job-float job-a"><b>Delivery Partner</b><br><span class="small">Rs 700/day nearby</span></div>
+        <div class="job-float job-a"><b data-i18n="jobDelivery">Delivery Partner</b><br><span class="small" data-i18n="nearPay">Rs 700/day nearby</span></div>
         <div class="route-line"></div>
-        <div class="job-float job-b"><b>24 applicants</b><br><span class="small">7 shortlisted</span></div>
-        <h2>Swipe, apply, chat, start work.</h2>
+        <div class="job-float job-b"><b data-i18n="applicants24">24 applicants</b><br><span class="small" data-i18n="shortlisted7">7 shortlisted</span></div>
+        <h2 data-i18n="heroVisual">Slide, apply, chat, start work.</h2>
       </div>
-      <button class="btn primary" data-go="otp">Get started</button>
-      <button class="btn outline mt" data-go="role">Skip to demo</button>
+      <button class="btn primary" data-go="otp" data-i18n="getStarted">Get started</button>
+      <button class="btn outline mt" data-go="role" data-i18n="skipDemo">Skip to demo</button>
       <div class="stats">
-        <div class="stat"><b>1.2k</b><span>jobs live</span></div>
-        <div class="stat"><b>8 min</b><span>avg reply</span></div>
-        <div class="stat"><b>4.8</b><span>trust score</span></div>
+        <div class="stat"><b>1.2k</b><span data-i18n="jobsLive">jobs live</span></div>
+        <div class="stat"><b>8 min</b><span data-i18n="avgReply">avg reply</span></div>
+        <div class="stat"><b>4.8</b><span data-i18n="trustScore">trust score</span></div>
       </div>
     </section>
 
     <section id="otp" class="screen">
-      <div class="header"><button class="icon" data-go="landing">←</button><div class="brand"><span class="mark">KK</span><span>Kaam Karo</span></div></div>
+      <div class="header"><button class="icon" data-go="landing">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title">Verify your phone</h1>
       <p class="sub">Use any 10-digit number for this demo. The OTP step is mocked so you can move fast.</p>
       <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="98765 43210"></label>
@@ -670,17 +734,17 @@
 
     <section id="role" class="screen">
       <div class="header"><button class="icon" data-go="otp">←</button><span class="tag">Choose path</span></div>
-      <h1 class="title">What do you want to do today?</h1>
-      <p class="sub">Both flows are included: worker discovery and employer posting.</p>
-      <button class="choice mt selected" data-go="worker1"><span class="ci">W</span><span><b>Find work</b><br><span class="small">Build profile, browse jobs, apply and chat.</span></span></button>
-      <button class="choice mt" data-go="employer1"><span class="ci">E</span><span><b>Hire workers</b><br><span class="small">Post a job, boost visibility and shortlist applicants.</span></span></button>
+      <h1 class="title" data-i18n="roleTitle">What do you want to do today?</h1>
+      <p class="sub" data-i18n="roleSub">Choose one clear path. Aap worker ho ya employer?</p>
+      <button class="choice mt selected" data-go="worker1"><span class="ci">W</span><span><b data-i18n="findWork">Find work</b><br><span class="small" data-i18n="findWorkSub">Make profile, slide jobs, apply and chat.</span></span></button>
+      <button class="choice mt" data-go="employer1"><span class="ci">E</span><span><b data-i18n="hireWorkers">Hire workers</b><br><span class="small" data-i18n="hireWorkersSub">Post job, boost reach, shortlist people.</span></span></button>
     </section>
 
     <section id="worker1" class="screen">
       <div class="header"><button class="icon" data-go="role">←</button><span class="small">1/4</span></div>
       <div class="progress"><span class="on"></span><span></span><span></span><span></span></div>
-      <h1 class="title">What work can you do?</h1>
-      <p class="sub">Pick one or more. You can still search all jobs later.</p>
+      <h1 class="title" data-i18n="workTitle">What work can you do?</h1>
+      <p class="sub" data-i18n="workSub">Pick your best kaam. You can change it later.</p>
       <div class="grid mt">
         <button class="choice selected"><span class="ci">D</span>Delivery</button>
         <button class="choice"><span class="ci">S</span>Sales</button>
@@ -958,7 +1022,7 @@
     </section>
 
     <section id="menu" class="screen">
-      <div class="brand mb"><span class="mark">KK</span><span>Kaam Karo</span></div>
+      <div class="brand mb"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div>
       <h1 class="title">Menu</h1>
       <div class="list">
         <button class="choice" data-go="jobs"><span class="ci">W</span>Worker home</button>
@@ -976,56 +1040,205 @@
   <script>
     (function () {
       var jobs = [
-        { title: "Delivery Partner", pay: "Rs 700/day", place: "Lajpat Nagar", tags: ["today", "verified", "daily"], hot: true, distance: "2.1 km" },
-        { title: "Kitchen Helper", pay: "Rs 16,000/month", place: "Saket", tags: ["verified"], hot: false, distance: "4.8 km" },
-        { title: "Retail Sales Associate", pay: "Rs 18,500/month", place: "Karol Bagh", tags: ["today"], hot: false, distance: "6.3 km" },
-        { title: "Office Assistant", pay: "Rs 20,000/month", place: "Nehru Place", tags: ["verified"], hot: false, distance: "5.4 km" }
+        { title: "Delivery Partner", hiTitle: "Delivery ka kaam", pay: "Rs 700/day", hiPay: "Rs 700/day", place: "Lajpat Nagar", tags: ["today", "verified", "daily"], hot: true, distance: "2.1 km" },
+        { title: "Kitchen Helper", hiTitle: "Kitchen helper", pay: "Rs 16,000/month", hiPay: "Rs 16,000/month", place: "Saket", tags: ["verified"], hot: false, distance: "4.8 km" },
+        { title: "Retail Sales Associate", hiTitle: "Shop sales ka kaam", pay: "Rs 18,500/month", hiPay: "Rs 18,500/month", place: "Karol Bagh", tags: ["today"], hot: false, distance: "6.3 km" },
+        { title: "Office Assistant", hiTitle: "Office assistant", pay: "Rs 20,000/month", hiPay: "Rs 20,000/month", place: "Nehru Place", tags: ["verified"], hot: false, distance: "5.4 km" }
       ];
 
       var activeFilter = "all";
+      var jobIndex = 0;
+      var currentScreen = "landing";
+      var touchStartX = 0;
+      var currentLang = localStorage.getItem("kkLang") || "en";
+      var routeOrder = ["landing", "otp", "role", "worker1", "worker2", "worker3", "worker4", "jobs", "jobdetail", "applied", "match", "chat", "search", "applications", "employer1", "employer2", "employer3", "employerDash", "post1", "post2", "post3", "post4", "published", "employerJobs", "applicants", "profile", "notifications", "menu"];
+      var copy = {
+        en: {
+          heroTitle: 'Fast local jobs. <span class="green">Trusted hiring.</span>',
+          heroSub: "Find kaam near you, apply in one tap, and chat with verified employers. Simple for first-time users.",
+          jobDelivery: "Delivery Partner",
+          nearPay: "Rs 700/day nearby",
+          applicants24: "24 applicants",
+          shortlisted7: "7 shortlisted",
+          heroVisual: "Slide, apply, chat, start work.",
+          getStarted: "Get started",
+          skipDemo: "Skip to demo",
+          jobsLive: "jobs live",
+          avgReply: "avg reply",
+          trustScore: "trust score",
+          roleTitle: "What do you want to do today?",
+          roleSub: "Choose one clear path. Aap worker ho ya employer?",
+          findWork: "Find work",
+          findWorkSub: "Make profile, slide jobs, apply and chat.",
+          hireWorkers: "Hire workers",
+          hireWorkersSub: "Post job, boost reach, shortlist people.",
+          workTitle: "What work can you do?",
+          workSub: "Pick your best kaam. You can change it later."
+        },
+        hi: {
+          heroTitle: 'Local jobs fast. <span class="green">Trusted hiring.</span>',
+          heroSub: "Apne paas ka kaam dekho, one tap apply karo, aur verified employer se chat karo. First-time users ke liye simple.",
+          jobDelivery: "Delivery ka kaam",
+          nearPay: "Rs 700/day nearby",
+          applicants24: "24 applicants",
+          shortlisted7: "7 shortlisted",
+          heroVisual: "Slide karo, apply karo, chat karo.",
+          getStarted: "Start karo",
+          skipDemo: "Demo dekho",
+          jobsLive: "live jobs",
+          avgReply: "avg reply",
+          trustScore: "trust score",
+          roleTitle: "Aaj aap kya karna chahte ho?",
+          roleSub: "Ek clear path choose karo. Aap worker ho ya employer?",
+          findWork: "Kaam dhoondo",
+          findWorkSub: "Profile banao, jobs slide karo, apply aur chat.",
+          hireWorkers: "Worker hire karo",
+          hireWorkersSub: "Job post karo, reach badhao, shortlist karo.",
+          workTitle: "Aap kaunsa kaam kar sakte ho?",
+          workSub: "Apna best kaam choose karo. Baad me change kar sakte ho."
+        }
+      };
+      var phrase = {
+        "Verify your phone": "Phone verify karo",
+        "Use any 10-digit number for this demo. The OTP step is mocked so you can move fast.": "Demo ke liye koi bhi 10-digit number daalo. OTP mocked hai, isliye jaldi move kar sakte ho.",
+        "Continue": "Continue karo",
+        "Choose path": "Path choose karo",
+        "Worker feed": "Worker feed",
+        "12 verified jobs near you": "Aapke paas 12 verified jobs",
+        "All": "Sab",
+        "Today": "Aaj",
+        "Verified": "Verified",
+        "Daily wage": "Daily wage",
+        "View details": "Details dekho",
+        "Save job": "Job save karo",
+        "Urgent hiring": "Urgent hiring",
+        "Fast reply": "Fast reply",
+        "Verified employer": "Verified employer",
+        "Apply": "Apply karo",
+        "No jobs match this filter yet.": "Is filter me abhi job nahi mili.",
+        "Application sent": "Application sent",
+        "Your profile was shared with the employer. Fast replies improve your chance.": "Aapki profile employer ko share ho gayi. Jaldi reply karoge to chance badhega.",
+        "Show match demo": "Match demo dekho",
+        "Keep browsing": "Aur jobs dekho",
+        "You are shortlisted": "Aap shortlist ho gaye",
+        "Employer wants to talk. The chat opens instantly in this demo.": "Employer baat karna chahta hai. Demo me chat turant open hoti hai.",
+        "Open chat": "Chat kholo",
+        "Search jobs": "Jobs search karo",
+        "No results. Try another role or area.": "Result nahi mila. Dusra role ya area try karo.",
+        "Applications": "Applications",
+        "Business setup": "Business setup",
+        "Who are you hiring?": "Aap kise hire kar rahe ho?",
+        "Job location": "Job location",
+        "Hiring dashboard": "Hiring dashboard",
+        "Post a job": "Job post karo",
+        "Job details": "Job details",
+        "Pay and workers": "Pay aur workers",
+        "Choose visibility": "Visibility choose karo",
+        "Review post": "Post review karo",
+        "Publish job": "Job publish karo",
+        "Your job is live": "Aapki job live hai",
+        "Saved to your jobs.": "Job save ho gayi.",
+        "Saved. You can find it under Applications.": "Save ho gaya. Applications me milega.",
+        "Skipped. Showing the next best match.": "Skip ho gaya. Next match dikha rahe hain.",
+        "Profile": "Profile",
+        "Menu": "Menu"
+      };
+      var placeholder = {
+        "Search roles or locations": "Role ya location search karo",
+        "Try delivery, kitchen, sales": "Delivery, kitchen, sales try karo",
+        "Type a message": "Message type karo",
+        "Job title, e.g. Delivery Partner": "Job title, jaise Delivery Partner",
+        "Describe work, shift and documents needed": "Kaam, shift aur documents likho"
+      };
+
+      function t(text) {
+        return currentLang === "hi" && phrase[text] ? phrase[text] : text;
+      }
+
+      function applyI18n() {
+        document.documentElement.lang = currentLang === "hi" ? "hi" : "en";
+        document.querySelectorAll("[data-lang]").forEach(function (button) {
+          button.classList.toggle("active", button.getAttribute("data-lang") === currentLang);
+        });
+        document.querySelectorAll("[data-i18n]").forEach(function (node) {
+          var key = node.getAttribute("data-i18n");
+          if (copy[currentLang] && copy[currentLang][key]) node.innerHTML = copy[currentLang][key];
+        });
+        document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach(function (field) {
+          if (!field.dataset.enPlaceholder) field.dataset.enPlaceholder = field.getAttribute("placeholder");
+          var base = field.dataset.enPlaceholder;
+          field.setAttribute("placeholder", currentLang === "hi" && placeholder[base] ? placeholder[base] : base);
+        });
+        document.querySelectorAll("button, h1, h2, h3, p, span, b, div").forEach(function (node) {
+          if (node.children.length || node.hasAttribute("data-i18n") || node.closest(".toast")) return;
+          var text = node.textContent.trim();
+          if (!node.dataset.enText && text) node.dataset.enText = text;
+          var base = node.dataset.enText;
+          node.textContent = currentLang === "hi" && phrase[base] ? phrase[base] : base;
+        });
+      }
 
       function show(id) {
-        document.querySelectorAll(".screen").forEach(function (screen) {
-          screen.classList.remove("active");
-        });
         var target = document.getElementById(id);
         if (!target) return toast("Screen not found: " + id);
+        var fromIndex = routeOrder.indexOf(currentScreen);
+        var toIndex = routeOrder.indexOf(id);
+        var forward = toIndex >= fromIndex;
+        document.querySelectorAll(".screen").forEach(function (screen) {
+          screen.classList.remove("active", "was-left", "was-right");
+          if (screen.id !== id) screen.classList.add(forward ? "was-left" : "was-right");
+        });
         target.classList.add("active");
-        window.scrollTo(0, 0);
+        target.classList.remove("was-left", "was-right");
+        target.scrollTop = 0;
+        currentScreen = id;
         if (id === "jobs") renderJobs();
         if (id === "search") renderSearch();
         if (id === "post4") updateReview();
+        applyI18n();
       }
 
       function toast(message) {
         var node = document.getElementById("toast");
-        node.textContent = message;
+        node.textContent = t(message);
         node.classList.add("show");
         window.clearTimeout(toast.timer);
         toast.timer = window.setTimeout(function () { node.classList.remove("show"); }, 1800);
       }
 
       function card(job) {
+        var title = currentLang === "hi" ? job.hiTitle : job.title;
+        var pay = currentLang === "hi" ? job.hiPay : job.pay;
         return '<article class="job-card">' +
-          '<div class="job-hero"><span class="pill ' + (job.hot ? "hot" : "") + '">' + (job.hot ? "Urgent hiring" : "Verified") + '</span><h2>' + job.title + '</h2><p>' + job.place + ' · ' + job.distance + '</p></div>' +
-          '<div class="job-meta"><div class="pay">' + job.pay + '</div><div class="meta"><span>Verified employer</span><span>Fast reply</span><span>' + job.place + '</span></div><button class="btn primary" data-go="jobdetail">View details</button><button class="btn outline" data-toast="Saved to your jobs.">Save job</button></div>' +
-          '</article><div class="swipe"><button class="circle red" data-toast="Skipped. Showing the next best match.">×</button><button class="circle gold" data-toast="Saved. You can find it under Applications.">☆</button><button class="circle gn" data-go="applied">✓</button></div>';
+          '<div class="job-hero"><span class="pill ' + (job.hot ? "hot" : "") + '">' + t(job.hot ? "Urgent hiring" : "Verified") + '</span><h2>' + title + '</h2><p>' + job.place + ' - ' + job.distance + '</p></div>' +
+          '<div class="job-meta"><div class="pay">' + pay + '</div><div class="meta"><span>' + t("Verified employer") + '</span><span>' + t("Fast reply") + '</span><span>' + job.place + '</span></div><button class="btn primary" data-go="jobdetail">' + t("View details") + '</button><button class="btn outline" data-toast="Saved to your jobs.">' + t("Save job") + '</button></div>' +
+          '</article><div class="swipe"><button class="circle red" data-next-job="skip">x</button><button class="circle gold" data-toast="Saved. You can find it under Applications.">☆</button><button class="circle gn" data-go="applied">✓</button></div><div class="swipe-hint">' + (currentLang === "hi" ? "Left/right slide karo jobs change karne ke liye" : "Slide left or right to change jobs") + '</div>';
       }
 
       function filteredJobs(query) {
         var q = (query || "").trim().toLowerCase();
         return jobs.filter(function (job) {
           var passesFilter = activeFilter === "all" || job.tags.indexOf(activeFilter) >= 0;
-          var haystack = (job.title + " " + job.place + " " + job.pay).toLowerCase();
+          var haystack = (job.title + " " + job.hiTitle + " " + job.place + " " + job.pay).toLowerCase();
           return passesFilter && (!q || haystack.indexOf(q) >= 0);
         });
+      }
+
+      function nextJob() {
+        var list = filteredJobs(document.getElementById("jobSearch") ? document.getElementById("jobSearch").value : "");
+        if (!list.length) return;
+        jobIndex = (jobIndex + 1) % list.length;
+        renderJobs();
+        toast("Skipped. Showing the next best match.");
       }
 
       function renderJobs() {
         var feed = document.getElementById("jobFeed");
         var input = document.getElementById("jobSearch");
         var list = filteredJobs(input ? input.value : "");
-        feed.innerHTML = list.length ? card(list[0]) : '<div class="empty mt">No jobs match this filter yet.</div>';
+        if (jobIndex >= list.length) jobIndex = 0;
+        feed.innerHTML = list.length ? card(list[jobIndex]) : '<div class="empty mt">' + t("No jobs match this filter yet.") + '</div>';
+        applyI18n();
       }
 
       function renderSearch() {
@@ -1033,12 +1246,15 @@
         var q = input ? input.value : "";
         var results = document.getElementById("searchResults");
         var list = jobs.filter(function (job) {
-          var haystack = (job.title + " " + job.place + " " + job.pay).toLowerCase();
+          var haystack = (job.title + " " + job.hiTitle + " " + job.place + " " + job.pay).toLowerCase();
           return !q.trim() || haystack.indexOf(q.trim().toLowerCase()) >= 0;
         });
         results.innerHTML = list.map(function (job) {
-          return '<button class="list-row" data-go="jobdetail"><span class="tiny">J</span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.pay + ' · ' + job.place + '</span></span><span class="status-text">Apply</span></button>';
-        }).join("") || '<div class="empty">No results. Try another role or area.</div>';
+          var title = currentLang === "hi" ? job.hiTitle : job.title;
+          var pay = currentLang === "hi" ? job.hiPay : job.pay;
+          return '<button class="list-row" data-go="jobdetail"><span class="tiny">J</span><span class="grow"><b>' + title + '</b><br><span class="small">' + pay + ' - ' + job.place + '</span></span><span class="status-text">' + t("Apply") + '</span></button>';
+        }).join("") || '<div class="empty">' + t("No results. Try another role or area.") + '</div>';
+        applyI18n();
       }
 
       function addChat(text) {
@@ -1046,7 +1262,7 @@
         if (!text.trim()) return;
         area.insertAdjacentHTML("beforeend", '<div class="msg right">' + text.replace(/[<>]/g, "") + '</div>');
         document.getElementById("chatText").value = "";
-        area.insertAdjacentHTML("beforeend", '<div class="msg left">Thanks. Location shared after shortlist confirmation.</div>');
+        area.insertAdjacentHTML("beforeend", '<div class="msg left">' + (currentLang === "hi" ? "Thanks. Shortlist confirm hone ke baad location share hogi." : "Thanks. Location shared after shortlist confirmation.") + '</div>');
       }
 
       function updateReview() {
@@ -1057,6 +1273,23 @@
       }
 
       document.addEventListener("click", function (event) {
+        var lang = event.target.closest("[data-lang]");
+        if (lang) {
+          currentLang = lang.getAttribute("data-lang");
+          localStorage.setItem("kkLang", currentLang);
+          renderJobs();
+          renderSearch();
+          applyI18n();
+          return;
+        }
+
+        var next = event.target.closest("[data-next-job]");
+        if (next) {
+          event.preventDefault();
+          nextJob();
+          return;
+        }
+
         var go = event.target.closest("[data-go]");
         if (go) {
           event.preventDefault();
@@ -1085,6 +1318,7 @@
           chip.classList.add("selected");
           if (chip.hasAttribute("data-filter")) {
             activeFilter = chip.getAttribute("data-filter");
+            jobIndex = 0;
             renderJobs();
           }
         }
@@ -1094,9 +1328,24 @@
       });
 
       document.addEventListener("input", function (event) {
-        if (event.target.id === "jobSearch") renderJobs();
+        if (event.target.id === "jobSearch") {
+          jobIndex = 0;
+          renderJobs();
+        }
         if (event.target.id === "manualSearch") renderSearch();
       });
+
+      document.addEventListener("touchstart", function (event) {
+        if (!event.target.closest("#jobFeed")) return;
+        touchStartX = event.touches[0].clientX;
+      }, { passive: true });
+
+      document.addEventListener("touchend", function (event) {
+        if (!event.target.closest("#jobFeed") || !touchStartX) return;
+        var delta = event.changedTouches[0].clientX - touchStartX;
+        touchStartX = 0;
+        if (Math.abs(delta) > 48) nextJob();
+      }, { passive: true });
 
       document.getElementById("sendChat").addEventListener("click", function () {
         addChat(document.getElementById("chatText").value);
@@ -1106,6 +1355,8 @@
       });
 
       window.kkGo = show;
+      document.querySelectorAll(".screen:not(.active)").forEach(function (screen) { screen.classList.add("was-right"); });
+      applyI18n();
       renderJobs();
     })();
   </script>
