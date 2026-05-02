@@ -331,6 +331,11 @@
       overflow-wrap: anywhere;
     }
     .choice.selected { background: #eaf8ef; border-color: rgba(8, 166, 63, .45); box-shadow: 0 0 0 4px rgba(8, 166, 63, .08); }
+    .plan { width: 100%; padding: 14px; display: grid; gap: 8px; text-align: left; color: var(--ink); }
+    .plan.selected { border-color: rgba(8, 166, 63, .5); background: #f2fbf5; box-shadow: 0 0 0 4px rgba(8, 166, 63, .08); }
+    .plan-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+    .plan-price { font-size: 20px; font-weight: 950; color: var(--green-dark); white-space: nowrap; }
+    .plan small { color: var(--muted); font-weight: 800; line-height: 1.35; }
     .ci {
       width: 38px;
       height: 38px;
@@ -830,6 +835,17 @@
       <label class="input mt"><input id="postLocation" placeholder="Location, e.g. Jaipur"></label>
       <label class="input mt"><select id="postType"><option>Full-time</option><option>Part-time</option><option>Daily wage</option><option>Remote</option></select></label>
       <label class="input mt"><textarea id="postDesc" placeholder="Describe work, timing, documents and duties. Minimum 30 characters."></textarea></label>
+      <button class="btn primary mt" data-review-job>Continue</button>
+    </section>
+
+    <section id="jobVisibility" class="screen">
+      <div class="header"><button class="icon" data-go="postJob">←</button><span class="tag">Visibility</span></div>
+      <h3>Choose visibility</h3>
+      <p class="sub">Pick how much attention this job should get before publishing.</p>
+      <div class="grid">
+        <button class="plan selected" data-visibility="free"><span class="plan-top"><b>Free publish</b><span class="plan-price">Rs 0</span></span><small>Standard visibility. Good for simple hiring, but fewer workers may see it.</small></button>
+        <button class="plan" data-visibility="boost"><span class="plan-top"><b>Higher visibility</b><span class="plan-price">Rs 199</span></span><small>More attraction in the feed. Better placement for faster applicants.</small></button>
+      </div>
       <label class="panel small"><input id="jobRules" type="checkbox"> I confirm this job is genuine and follows Kaam Karo's posting rules.</label>
       <button class="btn primary mt" data-post-job>Publish job</button>
     </section>
@@ -917,8 +933,9 @@
       var currentLegal = "terms";
       var locationMode = "near";
       var payOpen = true;
+      var postVisibility = "free";
 
-      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","published","applicants","employerJobs","profile","notifications","menu","legal","report"];
+      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","notifications","menu","legal","report"];
       var workCategories = ["Delivery","Clerk / Office","Retail / Cashier","Helper","Driver","Cleaner","Security","Data Entry","Kitchen / Cook","Sales","Warehouse","Other"];
       var skillOptions = ["Driving","Cash handling","Excel","Customer support","Cooking","Packing","Cleaning","Security","Data entry","Local language"];
       var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
@@ -1141,7 +1158,7 @@
           return '<button class="' + (activeScreens.indexOf(currentScreen) >= 0 ? "active" : "") + '" data-go="' + target + '"><b><svg><use href="#' + icon + '"></use></svg></b>' + label + '</button>';
         }
         var worker = nav("jobs", "i-home", "Home", ["jobs", "applied"]) + nav("search", "i-search", "Search", ["search"]) + nav("applications", "i-briefcase", "Apps", ["applications"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
-        var employer = nav("employerDash", "i-chart", "Dash", ["employerDash"]) + nav("employerJobs", "i-briefcase", "Jobs", ["employerJobs", "employerJobDetail", "postJob", "published"]) + nav("applicants", "i-users", "Talent", ["applicants", "workerProfileView"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
+        var employer = nav("employerDash", "i-chart", "Dash", ["employerDash"]) + nav("employerJobs", "i-briefcase", "Jobs", ["employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-users", "Talent", ["applicants", "workerProfileView"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
         document.querySelectorAll("[data-worker-nav]").forEach(function (n) { n.innerHTML = worker; });
         document.querySelectorAll("[data-employer-nav]").forEach(function (n) { n.innerHTML = employer; });
       }
@@ -1176,7 +1193,7 @@
         track("worker_onboarding_complete");
         show("jobs");
       }
-      function addPostedJob() {
+      function validateJobDraft() {
         var title = byId("postTitle").value.trim();
         var pay = byId("postPay").value.trim();
         var city = byId("postLocation").value.trim();
@@ -1185,10 +1202,15 @@
         if (!pay) return toast("Salary or pay required.");
         if (!city) return toast("Location required.");
         if (desc.length < 30) return toast("Add more job details.");
+        return { title: title, pay: pay, city: city, desc: desc };
+      }
+      function addPostedJob() {
+        var draft = validateJobDraft();
+        if (!draft) return;
         if (!byId("jobRules").checked) return toast("Please confirm posting rules.");
-        state.jobs.unshift({ id: "job-" + Date.now(), title: title, pay: pay, city: city, distance: "Nearby", type: byId("postType").value, employer: state.employer.business || "Your Business", badge: "New Employer", remote: byId("postType").value === "Remote", desc: desc });
+        state.jobs.unshift({ id: "job-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: byId("postType").value, employer: state.employer.business || "Your Business", badge: postVisibility === "boost" ? "Boosted Employer" : "New Employer", visibility: postVisibility, remote: byId("postType").value === "Remote", desc: draft.desc });
         save();
-        track("employer_job_posted");
+        track(postVisibility === "boost" ? "employer_job_boosted_posted" : "employer_job_free_posted");
         show("published");
       }
       document.addEventListener("click", function (event) {
@@ -1265,6 +1287,13 @@
         if (locMode) { locationMode = locMode.dataset.locationMode; locMode.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); }); locMode.classList.add("selected"); byId("locationHint").textContent = locationMode === "remote" ? "Showing remote work." : "Showing nearby options."; return; }
         var openPay = event.target.closest("[data-open-pay]");
         if (openPay) { payOpen = !payOpen; openPay.classList.toggle("selected", payOpen); byId("payRange").style.display = payOpen ? "none" : "block"; return; }
+        var visibility = event.target.closest("[data-visibility]");
+        if (visibility) {
+          postVisibility = visibility.dataset.visibility;
+          visibility.parentElement.querySelectorAll(".plan").forEach(function (p) { p.classList.remove("selected"); });
+          visibility.classList.add("selected");
+          return;
+        }
         var finish = event.target.closest("[data-finish-worker]");
         if (finish) { finishWorker(); return; }
         var finishEmp = event.target.closest("[data-finish-employer]");
@@ -1294,6 +1323,10 @@
         if (acceptApp) { setApplicationStatus(acceptApp.dataset.acceptApp, "Accepted"); return; }
         if (event.target.closest("[data-reject-current]")) { setApplicationStatus(null, "Rejected"); return; }
         if (event.target.closest("[data-accept-current]")) { setApplicationStatus(null, "Accepted"); return; }
+        if (event.target.closest("[data-review-job]")) {
+          if (validateJobDraft()) show("jobVisibility");
+          return;
+        }
         if (event.target.closest("[data-post-job]")) { addPostedJob(); return; }
         var toastTarget = event.target.closest("[data-toast]");
         if (toastTarget) toast(toastTarget.dataset.toast);
