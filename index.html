@@ -267,6 +267,8 @@
     .danger { color: var(--red); background: #fff1f2; border: 1px solid rgba(229,72,77,.16); }
     .soft { color: var(--blue-dark); background: #eef4ff; }
     .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .amount-row { display: grid; grid-template-columns: 1fr 132px; gap: 10px; }
+    .range-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
 
     .legal-line { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.4; text-align: center; }
     .legal-line button { border: 0; background: transparent; color: var(--blue-dark); font-weight: 900; padding: 0; }
@@ -730,11 +732,19 @@
       <div class="header"><button class="icon" data-go="workerLocation">←</button><span class="small">5/6</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
       <h1 class="title">Preferred pay</h1>
-      <p class="sub">This helps ranking only. You will still see other jobs.</p>
+      <p class="sub">This is just a preference for ranking jobs. We will not hide jobs outside your range.</p>
       <button class="choice mt selected" data-open-pay><span class="ci">All</span><span><b>I'm open to any pay</b><br><span class="small">Show maximum jobs.</span></span></button>
       <div id="payRange">
-        <div class="toolbar"><button class="chip selected" data-pay-type="daily">Daily</button><button class="chip" data-pay-type="monthly">Monthly</button></div>
-        <label class="input mt"><input id="payPref" placeholder="e.g. Rs 400-600/day or Rs 8k-12k/month"></label>
+        <h3>1. Choose pay type</h3>
+        <div class="toolbar"><button class="chip selected" data-pay-type="Daily">Daily</button><button class="chip" data-pay-type="Monthly">Monthly</button></div>
+        <h3>2. Select range</h3>
+        <div class="range-grid" id="payRanges">
+          <button class="chip" data-pay-range="Rs 400-600/day">Rs 400-600/day</button>
+          <button class="chip" data-pay-range="Rs 600-900/day">Rs 600-900/day</button>
+          <button class="chip" data-pay-range="Rs 8k-12k/month">Rs 8k-12k/month</button>
+          <button class="chip" data-pay-range="Rs 12k-18k/month">Rs 12k-18k/month</button>
+        </div>
+        <label class="input mt"><input id="payPref" placeholder="Or type your range, e.g. Rs 500/day"></label>
       </div>
       <button class="btn primary mt" data-go="workerTrust">Continue</button>
     </section>
@@ -793,7 +803,7 @@
       <div id="chatArea" class="chat-area"><div class="msg left">Hi John, your profile looks good. Can you join tomorrow?</div><div class="msg right">Yes, I am available. Please share timing.</div><div class="msg left">10 AM. I will send location here.</div></div>
       <div class="quick"><button data-quick="I am available">I am available</button><button data-quick="Please share location">Please share location</button><button data-report="chat">Report</button><button data-block>Block</button></div>
       <div class="chat-input"><input id="chatText" placeholder="Type a message"><button id="sendChat">➜</button></div>
-      <nav class="nav" data-worker-nav></nav>
+      <nav class="nav" id="chatNav"></nav>
     </section>
 
     <section id="search" class="screen">
@@ -846,11 +856,14 @@
     <section id="postJob" class="screen">
       <div class="header"><button class="icon" data-go="employerDash">←</button><span class="tag">Post Job</span></div>
       <h1 class="title">Post a job</h1>
-      <label class="input"><input id="postTitle" placeholder="Job title, e.g. Clerk"></label>
-      <label class="input mt"><span class="prefix">Rs</span><input id="postPay" placeholder="Salary or pay, e.g. 18000/month"></label>
+      <label class="input"><input id="postTitle" placeholder="e.g. Shop Assistant, Delivery Driver, Office Clerk"></label>
+      <div class="amount-row mt">
+        <label class="input"><span class="prefix">Rs</span><input id="postPayAmount" inputmode="numeric" placeholder="12000"></label>
+        <label class="input"><select id="postPayPeriod"><option>Per Month</option><option>Per Day</option><option>Per Week</option><option>Per Year</option></select></label>
+      </div>
       <label class="input mt"><input id="postLocation" placeholder="Location, e.g. Jaipur"></label>
-      <label class="input mt"><select id="postType"><option>Full-time</option><option>Part-time</option><option>Daily wage</option><option>Remote</option></select></label>
-      <label class="input mt"><textarea id="postDesc" placeholder="Describe work, timing, documents and duties. Minimum 30 characters."></textarea></label>
+      <label class="input mt"><select id="postType"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Temporary</option><option>Internship</option></select></label>
+      <label class="input mt"><textarea id="postDesc" placeholder="Describe the work, timing, responsibilities..."></textarea></label>
       <button class="btn primary mt" data-review-job>Continue</button>
     </section>
 
@@ -891,7 +904,7 @@
 
     <section id="profile" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Profile & Settings</h3><span class="tag">Safe</span></div>
-      <div class="panel"><div style="display:flex;gap:14px;align-items:center"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow"><b id="profileName">John Kumar</b><br><span class="small" id="profileMeta">Phone Verified - Profile Complete</span></span></div><div class="toolbar"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span><span class="badge amber">Active Worker</span></div></div>
+      <div class="panel"><div style="display:flex;gap:14px;align-items:center"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow"><b id="profileName">John Kumar</b><br><span class="small" id="profileMeta">Phone Verified - Profile Complete</span></span></div><div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div></div>
       <h3>Legal</h3>
       <div class="list">
         <button class="list-row" data-legal="terms"><span class="tiny">T</span><span class="grow">Terms & Conditions</span></button>
@@ -915,7 +928,7 @@
         <button class="menu-row" data-go="jobs"><span class="ci"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Worker home</b><small>Swipe jobs, apply and chat after match</small></span></button>
         <button class="menu-row" data-go="employerDash"><span class="ci"><svg><use href="#i-chart"></use></svg></span><span class="grow"><b>Employer dashboard</b><small>Jobs, applicants and matches</small></span></button>
         <button class="menu-row" data-go="notifications"><span class="ci"><svg><use href="#i-bell"></use></svg></span><span class="grow"><b>Notifications</b><small>Applications and reminders</small></span></button>
-        <button class="menu-row" data-go="applications"><span class="ci"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Applications</b><small>Track applied and saved jobs</small></span></button>
+        <button class="menu-row" data-go="applications"><span class="ci"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Applications</b><small>Track applied and matched jobs</small></span></button>
         <button class="menu-row" data-go="chat"><span class="ci"><svg><use href="#i-message"></use></svg></span><span class="grow"><b>Messages</b><small>Chat after employer accepts</small></span></button>
         <button class="menu-row" data-go="profile"><span class="ci"><svg><use href="#i-user"></use></svg></span><span class="grow"><b>Profile & Legal</b><small>Trust badges, safety and legal links</small></span></button>
         <button class="menu-row" data-logout><span class="ci"><svg><use href="#i-x"></use></svg></span><span class="grow"><b>Logout</b><small>Go back to phone login</small></span></button>
@@ -947,6 +960,7 @@
     (function () {
       var currentLang = localStorage.getItem("kkLang") || "en";
       var currentScreen = "landing";
+      var currentRole = localStorage.getItem("kkRole") || "worker";
       var menuReturn = "jobs";
       var pointerStartX = 0;
       var activeFilter = "all";
@@ -1005,6 +1019,11 @@
       function show(id) {
         var target = byId(id);
         if (!target) return toast("Please try again.");
+        var employerScreens = ["employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs"];
+        var workerScreens = ["workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","search","applications"];
+        if (employerScreens.indexOf(id) >= 0) currentRole = "employer";
+        if (workerScreens.indexOf(id) >= 0) currentRole = "worker";
+        localStorage.setItem("kkRole", currentRole);
         if (id === "menu" && currentScreen !== "menu") menuReturn = currentScreen;
         if ((id === "legal" || id === "report") && currentScreen !== id) menuReturn = currentScreen;
         var forward = routeOrder.indexOf(id) >= routeOrder.indexOf(currentScreen);
@@ -1051,6 +1070,20 @@
           return '<button class="chip ' + (state.worker.skills.indexOf(skill) >= 0 ? "selected" : "") + '" data-skill="' + skill + '">' + skill + '</button>';
         }).join("");
       }
+      function renderPayPrefs() {
+        if (!byId("payRange")) return;
+        payOpen = state.worker.openAnyPay !== false;
+        var open = document.querySelector("[data-open-pay]");
+        if (open) open.classList.toggle("selected", payOpen);
+        byId("payRange").style.display = payOpen ? "none" : "block";
+        if (byId("payPref")) byId("payPref").value = state.worker.payRange || "";
+        document.querySelectorAll("[data-pay-type]").forEach(function (button) {
+          button.classList.toggle("selected", button.dataset.payType === (state.worker.payType || "Daily"));
+        });
+        document.querySelectorAll("[data-pay-range]").forEach(function (button) {
+          button.classList.toggle("selected", button.dataset.payRange === state.worker.payRange);
+        });
+      }
       function filteredJobs(query) {
         var q = (query || "").trim().toLowerCase();
         var city = (state.worker.city || "").toLowerCase();
@@ -1093,6 +1126,7 @@
         } else if (exists.status === "Rejected") {
           exists.status = "Interested";
         }
+        state.worker.active = true;
         save();
         track("application_created");
         show("applied");
@@ -1152,12 +1186,23 @@
       function renderFullWorkerProfile() {
         var w = state.worker;
         var app = appForSelected() || { status: "Interested" };
+        var badges = workerBadges().map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
         byId("profileStatus").textContent = app.status;
         byId("profileStatus").className = "tag";
         byId("fullWorkerProfile").innerHTML =
-          '<div class="panel"><span class="badge">Phone Verified</span><span class="badge blue mt">Profile Complete</span><h1 class="title mt">' + w.name + '</h1><p class="sub">' + w.bio + '</p></div>' +
+          '<div class="panel"><div class="toolbar">' + badges + '</div><h1 class="title mt">' + w.name + '</h1><p class="sub">' + w.bio + '</p></div>' +
           '<div class="panel"><div class="kv"><span>Age</span><b>' + w.age + '</b></div><div class="kv"><span>City</span><b>' + w.city + '</b></div><div class="kv"><span>Experience</span><b>' + w.experience + '</b></div><div class="kv"><span>Availability</span><b>' + w.availability + '</b></div><div class="kv"><span>Preferred type</span><b>' + w.preferredType + '</b></div></div>' +
           '<div class="panel"><b>Skills</b><div class="toolbar">' + w.skills.map(function (s) { return '<span class="badge blue">' + s + '</span>'; }).join("") + '</div></div>';
+      }
+      function profileComplete() {
+        return !!(state.worker.name && state.worker.city && state.worker.preferredJob && state.worker.skills.length);
+      }
+      function workerBadges() {
+        var badges = [];
+        if (state.worker.phoneVerified) badges.push({ label: "Phone Verified", className: "" });
+        if (profileComplete()) badges.push({ label: "Profile Complete", className: "blue" });
+        if (state.applications.some(function (a) { return a.workerId === state.worker.id; }) || state.worker.active) badges.push({ label: "Active", className: "amber" });
+        return badges.slice(0, 3);
       }
       function setApplicationStatus(appId, status) {
         var app = state.applications.find(function (a) { return a.id === appId; }) || appForSelected();
@@ -1184,6 +1229,7 @@
         var employer = nav("employerDash", "i-chart", "Dash", ["employerDash"]) + nav("employerJobs", "i-briefcase", "Jobs", ["employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-users", "Talent", ["applicants", "workerProfileView"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
         document.querySelectorAll("[data-worker-nav]").forEach(function (n) { n.innerHTML = worker; });
         document.querySelectorAll("[data-employer-nav]").forEach(function (n) { n.innerHTML = employer; });
+        if (byId("chatNav")) byId("chatNav").innerHTML = currentRole === "employer" ? employer : worker;
       }
       function renderLegal() {
         var item = legal[currentLegal] || legal.terms;
@@ -1193,7 +1239,7 @@
       function renderJobReview() {
         if (!byId("reviewTitle")) return;
         var title = byId("postTitle").value.trim() || "Job title";
-        var pay = byId("postPay").value.trim() || "Pay not added";
+        var pay = getPostPayDisplay() || "Pay not added";
         var city = byId("postLocation").value.trim() || "Location not added";
         var type = byId("postType").value || "Full-time";
         var desc = byId("postDesc").value.trim() || "Description preview will appear here.";
@@ -1203,11 +1249,17 @@
         byId("reviewType").textContent = type;
         byId("reviewDesc").textContent = desc.length > 110 ? desc.slice(0, 110) + "..." : desc;
       }
+      function getPostPayDisplay() {
+        var amount = byId("postPayAmount").value.trim();
+        var period = byId("postPayPeriod").value;
+        return amount && period ? "Rs " + amount + " " + period : "";
+      }
       function render() {
         applyCopy();
         fillBasicDefaults();
         renderCategories();
         renderSkills();
+        renderPayPrefs();
         renderNavs();
         if (byId("jobFeed")) renderFeed();
         if (byId("searchResults")) renderSearch();
@@ -1216,8 +1268,10 @@
         renderFullWorkerProfile();
         renderLegal();
         renderJobReview();
+        var profileBadges = workerBadges();
         byId("profileName").textContent = state.worker.name || "Worker Profile";
-        byId("profileMeta").textContent = "Phone Verified - Profile Complete";
+        byId("profileMeta").textContent = profileBadges.map(function (b) { return b.label; }).join(" - ") || "Profile started";
+        if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
       }
       function finishWorker() {
         state.workerComplete = true;
@@ -1232,13 +1286,16 @@
       }
       function validateJobDraft() {
         var title = byId("postTitle").value.trim();
-        var pay = byId("postPay").value.trim();
+        var pay = getPostPayDisplay();
+        var amount = byId("postPayAmount").value.trim();
+        var period = byId("postPayPeriod").value;
         var city = byId("postLocation").value.trim();
         var desc = byId("postDesc").value.trim();
         if (!title) return toast("Job title required.");
-        if (!pay) return toast("Salary or pay required.");
+        if (!amount) return toast("Salary required.");
+        if (!period) return toast("Salary type required.");
         if (!city) return toast("Location required.");
-        if (desc.length < 30) return toast("Add more job details.");
+        if (desc.length < 25) return toast("Job description must be at least 25 characters.");
         return { title: title, pay: pay, city: city, desc: desc };
       }
       function addPostedJob() {
@@ -1289,6 +1346,9 @@
         if (event.target.closest("[data-verify-otp]")) {
           var otp = byId("otpInput").value.replace(/\D/g, "");
           if (otp.length < 4) return toast("Enter the OTP code.");
+          state.worker.phoneVerified = true;
+          state.worker.active = true;
+          save();
           track("otp_verified");
           show("role");
           return;
@@ -1327,7 +1387,31 @@
         var locMode = event.target.closest("[data-location-mode]");
         if (locMode) { locationMode = locMode.dataset.locationMode; locMode.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); }); locMode.classList.add("selected"); byId("locationHint").textContent = locationMode === "remote" ? "Showing remote work." : "Showing nearby options."; return; }
         var openPay = event.target.closest("[data-open-pay]");
-        if (openPay) { payOpen = !payOpen; openPay.classList.toggle("selected", payOpen); byId("payRange").style.display = payOpen ? "none" : "block"; return; }
+        if (openPay) {
+          payOpen = !payOpen;
+          state.worker.openAnyPay = payOpen;
+          openPay.classList.toggle("selected", payOpen);
+          byId("payRange").style.display = payOpen ? "none" : "block";
+          save();
+          return;
+        }
+        var payType = event.target.closest("[data-pay-type]");
+        if (payType) {
+          state.worker.payType = payType.dataset.payType;
+          payType.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); });
+          payType.classList.add("selected");
+          save();
+          return;
+        }
+        var payRange = event.target.closest("[data-pay-range]");
+        if (payRange) {
+          state.worker.payRange = payRange.dataset.payRange;
+          byId("payPref").value = state.worker.payRange;
+          byId("payRanges").querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); });
+          payRange.classList.add("selected");
+          save();
+          return;
+        }
         var visibility = event.target.closest("[data-visibility]");
         if (visibility) {
           postVisibility = visibility.dataset.visibility;
@@ -1377,6 +1461,7 @@
         if (event.target.id === "manualSearch") renderSearch();
         if (event.target.id === "locationSearch") { state.worker.city = event.target.value.trim() || state.worker.city; save(); renderFeed(); }
         if (event.target.id === "jobRules" && event.target.checked) byId("jobRulesError").style.display = "none";
+        if (event.target.id === "payPref") { state.worker.payRange = event.target.value.trim(); state.worker.openAnyPay = false; save(); }
         if (event.target.id === "workSearch") {
           var q = event.target.value.trim();
           if (q) state.worker.preferredJob = q;
