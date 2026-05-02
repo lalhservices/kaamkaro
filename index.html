@@ -919,6 +919,35 @@
     <section id="profile" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Profile & Settings</h3><span class="tag">Safe</span></div>
       <div class="panel"><div style="display:flex;gap:14px;align-items:center"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow"><b id="profileName">John Kumar</b><br><span class="small" id="profileMeta">Phone Verified - Profile Complete</span></span></div><div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div></div>
+      <h3>Switch Mode</h3>
+      <div class="list">
+        <button class="list-row" data-switch-mode="worker"><span class="tiny"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Switch to Find Work</b><br><span class="small">Open worker job feed</span></span></button>
+        <button class="list-row" data-switch-mode="employer"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Switch to Hire Workers</b><br><span class="small">Open employer dashboard</span></span></button>
+      </div>
+      <h3>Legal</h3>
+      <div class="list">
+        <button class="list-row" data-legal="terms"><span class="tiny">T</span><span class="grow">Terms & Conditions</span></button>
+        <button class="list-row" data-legal="privacy"><span class="tiny">P</span><span class="grow">Privacy Policy</span></button>
+        <button class="list-row" data-legal="refund"><span class="tiny">R</span><span class="grow">Refund Policy</span></button>
+        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
+        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
+        <button class="list-row" data-logout><span class="tiny"><svg><use href="#i-x"></use></svg></span><span class="grow"><b>Logout</b><br><span class="small">Return to phone login</span></span></button>
+      </div>
+    </section>
+
+    <section id="employerProfile" class="screen">
+      <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Employer Profile & Settings</h3><span class="tag">Hiring</span></div>
+      <div class="panel"><div style="display:flex;gap:14px;align-items:center"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b id="employerProfileName">Rick Retail Store</b><br><span class="small" id="employerProfileMeta">New Employer - Phone Verified</span></span></div><div class="toolbar" id="employerProfileBadges"><span class="badge blue">New Employer</span><span class="badge">Phone Verified</span></div></div>
+      <div class="panel">
+        <div class="kv"><span>Contact person</span><b id="employerContactView">Rick Sharma</b></div>
+        <div class="kv"><span>Business type</span><b id="employerTypeView">Retail Shop</b></div>
+        <div class="kv"><span>Open jobs</span><b id="employerOpenJobsView">1</b></div>
+      </div>
+      <h3>Switch Mode</h3>
+      <div class="list">
+        <button class="list-row" data-switch-mode="worker"><span class="tiny"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Switch to Find Work</b><br><span class="small">Open worker job feed</span></span></button>
+        <button class="list-row" data-switch-mode="employer"><span class="tiny"><svg><use href="#i-chart"></use></svg></span><span class="grow"><b>Switch to Hire Workers</b><br><span class="small">Stay in employer dashboard</span></span></button>
+      </div>
       <h3>Legal</h3>
       <div class="list">
         <button class="list-row" data-legal="terms"><span class="tiny">T</span><span class="grow">Terms & Conditions</span></button>
@@ -944,7 +973,9 @@
         <button class="menu-row" data-go="notifications"><span class="ci"><svg><use href="#i-bell"></use></svg></span><span class="grow"><b>Notifications</b><small>Applications and reminders</small></span></button>
         <button class="menu-row" data-go="applications"><span class="ci"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Applications</b><small>Track applied and matched jobs</small></span></button>
         <button class="menu-row" data-go="chat"><span class="ci"><svg><use href="#i-message"></use></svg></span><span class="grow"><b>Messages</b><small>Chat after employer accepts</small></span></button>
-        <button class="menu-row" data-go="profile"><span class="ci"><svg><use href="#i-user"></use></svg></span><span class="grow"><b>Profile & Legal</b><small>Trust badges, safety and legal links</small></span></button>
+        <button class="menu-row" data-profile-tab><span class="ci"><svg><use href="#i-user"></use></svg></span><span class="grow"><b>Profile & Legal</b><small>Trust badges, safety and legal links</small></span></button>
+        <button class="menu-row" data-switch-mode="worker"><span class="ci"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Switch to Find Work</b><small>Worker job feed</small></span></button>
+        <button class="menu-row" data-switch-mode="employer"><span class="ci"><svg><use href="#i-chart"></use></svg></span><span class="grow"><b>Switch to Hire Workers</b><small>Employer dashboard</small></span></button>
         <button class="menu-row" data-logout><span class="ci"><svg><use href="#i-x"></use></svg></span><span class="grow"><b>Logout</b><small>Go back to phone login</small></span></button>
       </div>
       <div class="menu-foot">Built for simple mobile use: big buttons, clear language, safe phone login and no confusing setup.</div>
@@ -986,7 +1017,7 @@
       var payOpen = true;
       var postVisibility = "free";
 
-      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","notifications","menu","legal","report"];
+      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","legal","report"];
       var workCategories = ["Delivery","Clerk / Office","Retail / Cashier","Helper","Driver","Cleaner","Security","Data Entry","Kitchen / Cook","Sales","Warehouse","Other"];
       var skillOptions = ["Driving","Cash handling","Excel","Customer support","Cooking","Packing","Cleaning","Security","Data entry","Local language"];
       var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
@@ -1043,7 +1074,7 @@
       function show(id) {
         var target = byId(id);
         if (!target) return toast("Please try again.");
-        var employerScreens = ["employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs"];
+        var employerScreens = ["employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","employerProfile"];
         var workerScreens = ["workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","search","applications"];
         if (employerScreens.indexOf(id) >= 0) currentRole = "employer";
         if (workerScreens.indexOf(id) >= 0) currentRole = "worker";
@@ -1221,6 +1252,14 @@
           '<div class="panel"><div class="kv"><span>Age</span><b>' + w.age + '</b></div><div class="kv"><span>City</span><b>' + w.city + '</b></div><div class="kv"><span>Experience</span><b>' + w.experience + '</b></div><div class="kv"><span>Availability</span><b>' + w.availability + '</b></div><div class="kv"><span>Preferred type</span><b>' + w.preferredType + '</b></div></div>' +
           '<div class="panel"><b>Skills</b><div class="toolbar">' + w.skills.map(function (s) { return '<span class="badge blue">' + s + '</span>'; }).join("") + '</div></div>';
       }
+      function renderEmployerProfile() {
+        if (!byId("employerProfileName")) return;
+        byId("employerProfileName").textContent = state.employer.business || "Employer Profile";
+        byId("employerProfileMeta").textContent = "New Employer - Phone Verified";
+        byId("employerContactView").textContent = state.employer.name || "Contact person";
+        byId("employerTypeView").textContent = state.employer.type || "Business";
+        byId("employerOpenJobsView").textContent = state.jobs.length + " open";
+      }
       function profileComplete() {
         return !!(state.worker.name && state.worker.city && state.worker.preferredJob && state.worker.skills.length);
       }
@@ -1253,7 +1292,7 @@
           return '<button class="' + (activeScreens.indexOf(currentScreen) >= 0 ? "active" : "") + '" data-go="' + target + '"><b><svg><use href="#' + icon + '"></use></svg></b>' + label + '</button>';
         }
         var worker = nav("jobs", "i-home", "Home", ["jobs", "applied"]) + nav("search", "i-search", "Search", ["search"]) + nav("applications", "i-briefcase", "Apps", ["applications"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
-        var employer = nav("employerDash", "i-chart", "Dash", ["employerDash"]) + nav("employerJobs", "i-briefcase", "Jobs", ["employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-users", "Talent", ["applicants", "workerProfileView"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
+        var employer = nav("employerDash", "i-chart", "Dash", ["employerDash"]) + nav("employerJobs", "i-briefcase", "Jobs", ["employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-users", "Talent", ["applicants", "workerProfileView"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("employerProfile", "i-user", "Profile", ["employerProfile", "legal", "report"]);
         document.querySelectorAll("[data-worker-nav]").forEach(function (n) { n.innerHTML = worker; });
         document.querySelectorAll("[data-employer-nav]").forEach(function (n) { n.innerHTML = employer; });
         if (byId("chatNav")) byId("chatNav").innerHTML = currentRole === "employer" ? employer : worker;
@@ -1293,6 +1332,7 @@
         if (byId("workerApplications")) renderWorkerApplications();
         renderEmployer();
         renderFullWorkerProfile();
+        renderEmployerProfile();
         renderLegal();
         renderJobReview();
         var profileBadges = workerBadges();
@@ -1357,6 +1397,18 @@
           track("logout");
           show("landing");
           toast("Logged out.");
+          return;
+        }
+        if (event.target.closest("[data-profile-tab]")) {
+          show(currentRole === "employer" ? "employerProfile" : "profile");
+          return;
+        }
+        var switchMode = event.target.closest("[data-switch-mode]");
+        if (switchMode) {
+          currentRole = switchMode.dataset.switchMode;
+          localStorage.setItem("kkRole", currentRole);
+          toast(currentRole === "employer" ? "Switched to Hire Workers." : "Switched to Find Work.");
+          show(currentRole === "employer" ? "employerDash" : "jobs");
           return;
         }
         var go = event.target.closest("[data-go]");
