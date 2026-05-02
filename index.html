@@ -175,55 +175,74 @@
       top: 18px;
       height: 134px;
       border-radius: 24px;
-      background: linear-gradient(145deg, #ffffff, #f2fbf5);
+      background:
+        radial-gradient(circle at 16% 18%, rgba(8,166,63,.16), transparent 32%),
+        linear-gradient(145deg, #ffffff, #f4f8ff);
       box-shadow: 0 16px 34px rgba(6, 20, 47, .14);
       overflow: hidden;
-    }
-    .shop-awning {
-      height: 30px;
+      padding: 14px;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      background: #fff;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 12px;
     }
-    .shop-awning span:nth-child(odd) { background: #1fc86a; }
-    .shop-awning span:nth-child(even) { background: #fff1d8; }
-    .worker-figure {
-      position: absolute;
-      left: 22px;
-      bottom: 16px;
-      width: 54px;
-      height: 74px;
-      border-radius: 28px 28px 18px 18px;
-      background: linear-gradient(180deg, #0b5fff 0 45%, #10324a 45% 100%);
-      box-shadow: inset 0 0 0 8px rgba(255,255,255,.12);
-    }
-    .worker-figure:before {
-      content: "";
-      position: absolute;
-      top: -18px;
-      left: 13px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #f2b37a;
-      box-shadow: 0 -10px 0 -3px #19324d;
-    }
-    .scene-job {
-      position: absolute;
-      right: 16px;
-      top: 48px;
-      width: 190px;
-      min-height: 64px;
-      border: 1px solid rgba(8, 166, 63, .18);
+    .scene-panel {
+      border: 1px solid rgba(6, 20, 47, .08);
       border-radius: 18px;
       padding: 12px;
       background: #fff;
       color: var(--ink);
-      font-weight: 950;
-      font-size: 14px;
-      box-shadow: 0 12px 28px rgba(6, 20, 47, .1);
+      box-shadow: 0 12px 28px rgba(6, 20, 47, .08);
+      min-width: 0;
     }
-    .scene-job small { display: block; color: var(--muted); margin-top: 5px; font-size: 12px; }
+    .scene-panel b { display: block; font-size: 14px; line-height: 1.15; overflow-wrap: anywhere; }
+    .scene-panel small { display: block; color: var(--muted); margin-top: 5px; font-size: 12px; font-weight: 800; }
+    .scene-list { display: grid; gap: 8px; }
+    .scene-line { height: 12px; border-radius: 999px; background: #edf2f7; }
+    .scene-line.short { width: 62%; background: #dff4e7; }
+    .scene-map {
+      min-height: 78px;
+      background:
+        linear-gradient(90deg, rgba(11,95,255,.08) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(11,95,255,.08) 1px, transparent 1px),
+        #f8fbff;
+      background-size: 20px 20px;
+      position: relative;
+    }
+    .scene-map:before, .scene-map:after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+    }
+    .scene-map:before {
+      width: 18px;
+      height: 18px;
+      left: 22px;
+      top: 20px;
+      background: var(--green);
+      box-shadow: 0 10px 18px rgba(8, 166, 63, .22);
+    }
+    .scene-map:after {
+      width: 28px;
+      height: 28px;
+      right: 24px;
+      bottom: 18px;
+      background: var(--blue);
+      box-shadow: 0 10px 18px rgba(11,95,255,.2);
+    }
+    .scene-match {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 34px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: #eaf8ef;
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .scene-match span:last-child { color: var(--blue-dark); }
 
     .btn {
       width: 100%;
@@ -542,7 +561,8 @@
       .title { font-size: 31px; }
       .sub { font-size: 15px; }
     .hero-visual { height: 224px; margin-top: 14px; }
-      .scene-job { width: 160px; right: 12px; }
+      .work-scene { gap: 8px; padding: 12px; }
+      .scene-panel { padding: 10px; }
       .hero-card h2 { font-size: 23px; }
       .grid { gap: 9px; }
       .choice { padding: 11px 10px; }
@@ -583,9 +603,13 @@
       </div>
       <div class="hero-visual" aria-hidden="true">
         <div class="work-scene">
-          <div class="shop-awning"><span></span><span></span><span></span><span></span><span></span></div>
-          <div class="worker-figure"></div>
-          <div class="scene-job">Clerk job matched<small>Nearby store - verified employer</small></div>
+          <div class="scene-panel">
+            <b>Clerk job matched</b>
+            <small>Jaipur - 2 km away</small>
+            <div class="scene-list mt"><span class="scene-line"></span><span class="scene-line short"></span></div>
+          </div>
+          <div class="scene-panel scene-map"></div>
+          <div class="scene-match"><span>Verified employer</span><span>Interested</span></div>
         </div>
         <div class="hero-card"><h2 data-i18n="heroVisual">Swipe. Match. Start work.</h2><p>Simple hiring for workers and employers.</p></div>
       </div>
@@ -807,7 +831,6 @@
       <label class="input mt"><select id="postType"><option>Full-time</option><option>Part-time</option><option>Daily wage</option><option>Remote</option></select></label>
       <label class="input mt"><textarea id="postDesc" placeholder="Describe work, timing, documents and duties. Minimum 30 characters."></textarea></label>
       <label class="panel small"><input id="jobRules" type="checkbox"> I confirm this job is genuine and follows Kaam Karo's posting rules.</label>
-      <div class="legal-line"><button data-legal="guidelines">Posting rules</button> · <button data-legal="refund">Refund Policy</button></div>
       <button class="btn primary mt" data-post-job>Publish job</button>
     </section>
 
