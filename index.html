@@ -950,7 +950,7 @@
         <div class="work-scene">
           <div class="scene-panel">
             <b>Clerk job matched</b>
-            <small>Jaipur - 2 km away</small>
+            <small>Delhi - 2 km away</small>
             <div class="scene-list mt"><span class="scene-line"></span><span class="scene-line short"></span></div>
           </div>
           <div class="scene-panel scene-map"></div>
@@ -970,7 +970,7 @@
       <div class="header"><button class="icon" data-go="landing">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title">Enter your phone number</h1>
       <p class="sub">We will send a one-time password by SMS. This keeps your account safe and helps employers trust real people.</p>
-      <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="98765 43210"></label>
+      <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="0000000000" value="0000000000"></label>
       <div class="safe-note"><b>✓</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
       <button class="btn primary mt" data-send-otp>Send OTP</button>
       <div class="legal-line">By continuing, you agree to <button data-legal="terms">Terms</button> and <button data-legal="privacy">Privacy Policy</button>.</div>
@@ -998,8 +998,8 @@
     </section>
 
     <section id="workerBasic" class="screen">
-      <div class="header"><button class="icon" data-go="role">←</button><span class="small">1/6</span></div>
-      <div class="progress"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="header"><button class="icon" data-go="role">←</button><span class="small">1/5</span></div>
+      <div class="progress"><span class="on"></span><span></span><span></span><span></span><span></span></div>
       <h1 class="title">Basic details</h1>
       <label class="input"><input id="workerName" placeholder="Full name"></label>
       <label class="input mt"><select id="workerGender"><option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option></select></label>
@@ -1009,21 +1009,21 @@
     </section>
 
     <section id="workerWork" class="screen">
-      <div class="header"><button class="icon" data-go="workerBasic">←</button><span class="small">2/6</span></div>
-      <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span><span></span></div>
-      <h1 class="title">What work are you looking for?</h1>
+      <div class="header"><button class="icon" data-go="workerBasic">←</button><span class="small">2/5</span></div>
+      <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+      <h1 class="title">Job type</h1>
       <div class="search mt"><svg><use href="#i-search"></use></svg><input id="workSearch" placeholder="Search job title, e.g. clerk, driver, cashier, helper..."></div>
-      <button class="choice mt selected" data-any-job><span class="ci">All</span><span><b>Any Job / Show me all jobs</b><br><span class="small">Open to all work. More jobs will be shown.</span></span></button>
+      <button class="choice mt selected" data-any-job><span class="ci">All</span><span><b>Show All Jobs</b><br><span class="small">On by default. You can still choose preferred roles below.</span></span></button>
       <div class="grid mt" id="workCategories"></div>
       <button class="btn primary mt" data-go="workerSkills">Continue</button>
     </section>
 
     <section id="workerSkills" class="screen">
-      <div class="header"><button class="icon" data-go="workerWork">←</button><span class="small">3/6</span></div>
-      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+      <div class="header"><button class="icon" data-go="workerWork">←</button><span class="small">3/5</span></div>
+      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
       <h1 class="title">Skills & experience</h1>
-      <p class="sub">Tap skills you have. Add your own if needed.</p>
-      <h3 class="mt">Preset Skills</h3>
+      <p class="sub">Add skills to improve job matches.</p>
+      <h3 class="mt">Suggested Skills</h3>
       <div class="toolbar" id="skillChips"></div>
       <div class="panel">
         <div class="review-row"><span>Your Skills</span><b id="skillCounter">0 skills selected</b></div>
@@ -1043,67 +1043,45 @@
     </section>
 
     <section id="workerLocation" class="screen">
-      <div class="header"><button class="icon" data-go="workerSkills">←</button><span class="small">4/6</span></div>
-      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
-      <h1 class="title">Location preference</h1>
-      <p class="sub">We use your city first. You can change it anytime.</p>
-      <div class="search mt"><svg><use href="#i-search"></use></svg><input id="locationSearch" placeholder="City or area"></div>
-      <div class="toolbar">
-        <button class="chip selected" data-location-mode="near">Near Me</button>
-        <button class="chip" data-location-mode="remote">Remote Work</button>
+      <div class="header"><button class="icon" data-go="workerSkills">←</button><span class="small">4/5</span></div>
+      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+      <h1 class="title">Availability</h1>
+      <p class="sub">Tell employers when you can start and what shifts work for you.</p>
+      <div class="section-label">Start Availability</div>
+      <div class="grid" id="onboardStartOptions">
+        <button class="choice selected" data-onboard-start="Immediate"><span class="ci">✓</span>Immediate</button>
+        <button class="choice" data-onboard-start="On Demand"><span class="ci">↔</span>On Demand</button>
       </div>
-      <div class="panel small" id="locationHint">Showing nearby options.</div>
-      <button class="btn primary mt" data-go="workerPay">Continue</button>
-    </section>
-
-    <section id="workerPay" class="screen">
-      <div class="header"><button class="icon" data-go="workerLocation">←</button><span class="small">5/6</span></div>
-      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
-      <h1 class="title">Preferred pay</h1>
-      <p class="sub">This is just a preference for ranking jobs. We will not hide jobs outside your range.</p>
-      <button class="choice mt selected" data-open-pay><span class="ci">All</span><span><b>I'm open to any pay</b><br><span class="small">Show maximum jobs.</span></span></button>
-      <div id="payRange">
-        <h3>1. Choose pay type</h3>
-        <div class="toolbar"><button class="chip selected" data-pay-type="Daily">Daily</button><button class="chip" data-pay-type="Monthly">Monthly</button></div>
-        <h3>2. Select range</h3>
-        <div class="range-grid" id="payRanges">
-          <button class="chip" data-pay-range="Rs 400-600/day">Rs 400-600/day</button>
-          <button class="chip" data-pay-range="Rs 600-900/day">Rs 600-900/day</button>
-          <button class="chip" data-pay-range="Rs 8k-12k/month">Rs 8k-12k/month</button>
-          <button class="chip" data-pay-range="Rs 12k-18k/month">Rs 12k-18k/month</button>
-        </div>
-        <label class="input mt"><input id="payPref" placeholder="Or type your range, e.g. Rs 500/day"></label>
-      </div>
+      <div class="section-label">Days</div>
+      <button class="choice selected" data-onboard-all-days><span class="ci">✓</span>Select All Days</button>
+      <div class="grid mt" id="onboardDays"></div>
+      <div class="section-label">Shift Preference</div>
+      <div class="toolbar" id="onboardShifts"><button class="chip selected" data-onboard-shift="Morning">Morning</button><button class="chip" data-onboard-shift="Afternoon">Afternoon</button><button class="chip" data-onboard-shift="Evening">Evening</button></div>
       <button class="btn primary mt" data-go="workerTrust">Continue</button>
     </section>
 
     <section id="workerTrust" class="screen">
-      <div class="header"><button class="icon" data-go="workerPay">←</button><span class="small">6/6</span></div>
-      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
-      <h1 class="title">Build Trust & Get Hired Faster</h1>
+      <div class="header"><button class="icon" data-go="workerLocation">←</button><span class="small">5/5</span></div>
+      <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+      <h1 class="title">Build Trust and Get Hired</h1>
       <p class="sub">Increase your chances of getting hired.</p>
       <div class="panel"><span class="badge">Phone Verified</span><h3 class="mt">Verified</h3><p class="small">Your number is confirmed.</p></div>
-      <div class="panel"><span class="badge amber">ID Verification</span><h3 class="mt">Not Verified</h3><p class="small">Upload ID to get more trust.</p><button class="btn outline mt" data-go="verifyId">Verify Now</button><p class="small mt">Workers with ID verification get 2-3x more responses.</p></div>
+      <div class="panel"><span class="badge blue">Photo Verification Optional</span><h3 class="mt">Add a profile photo</h3><p class="small">Adding a photo helps employers trust your profile.</p><button class="btn outline mt" data-upload-photo>Upload Profile Photo</button><p class="small mt">Profiles with a photo may appear higher to employers.</p></div>
       <div class="btn-row mt"><button class="btn outline" data-finish-worker>Skip for now</button><button class="btn primary" data-finish-worker>Continue</button></div>
     </section>
 
     <section id="verifyId" class="screen">
       <div class="header"><button class="icon" data-go="workerTrust">←</button><span class="tag">Optional</span></div>
-      <h1 class="title">Verify ID</h1>
-      <p class="sub">Upload one document. Selfie is optional for now.</p>
-      <div class="grid mt">
-        <button class="choice selected"><span class="ci">A</span>Aadhaar</button>
-        <button class="choice"><span class="ci">D</span>Driving Licence</button>
-        <button class="choice"><span class="ci">P</span>PAN Card</button>
-        <button class="choice"><span class="ci">S</span>Selfie later</button>
-      </div>
-      <button class="btn primary mt" data-go="verifyProgress">Submit verification</button>
+      <h1 class="title">Profile Photo</h1>
+      <p class="sub">Upload a clear profile photo. This is optional and does not block onboarding.</p>
+      <div class="panel"><span class="avatar">AL</span><h3 class="mt">Photo ready</h3><p class="small">Your demo profile photo is ready for employer trust.</p></div>
+      <button class="btn primary mt" data-upload-photo>Use photo</button>
     </section>
 
     <section id="verifyProgress" class="screen success">
       <div class="success-icon"><svg><use href="#i-shield"></use></svg></div>
-      <h1 class="title">Verification in progress</h1>
-      <p class="sub center">You can keep applying while we review it.</p>
+      <h1 class="title">Photo added</h1>
+      <p class="sub center">Your profile can now show a Photo Verified badge.</p>
       <button class="btn primary mt" data-finish-worker>Continue to jobs</button>
     </section>
 
@@ -1164,7 +1142,7 @@
 
     <section id="employerJobDetail" class="screen">
       <div class="header"><button class="icon" data-go="employerDash">←</button><div><b id="jobDetailTitle">Clerk Job</b><p class="small">Applicants for this role</p></div><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
-      <div class="panel"><span class="badge blue">Verified Employer</span><h2 id="jobDetailPay" class="mt">Rs 18,000/month</h2><p class="small" id="jobDetailMeta">Jaipur · Full-time · Office</p></div>
+      <div class="panel"><span class="badge blue">Verified Employer</span><h2 id="jobDetailPay" class="mt">Rs 18,000/month</h2><p class="small" id="jobDetailMeta">Delhi · Full-time · Office</p></div>
       <h3>Applicants</h3>
       <div id="applicantList" class="list"></div>
     </section>
@@ -1183,7 +1161,7 @@
         <label class="input"><span class="prefix">Rs</span><input id="postPayAmount" inputmode="numeric" placeholder="12000"></label>
         <label class="input"><select id="postPayPeriod"><option>Per Month</option><option>Per Day</option><option>Per Week</option><option>Per Year</option></select></label>
       </div>
-      <label class="input mt"><input id="postLocation" placeholder="Location, e.g. Jaipur"></label>
+      <label class="input mt"><input id="postLocation" placeholder="Location, e.g. Delhi"></label>
       <label class="input mt"><select id="postType"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Temporary</option><option>Internship</option></select></label>
       <label class="input mt"><textarea id="postDesc" placeholder="Describe the work, timing, responsibilities..."></textarea></label>
       <button class="btn primary mt" data-review-job>Continue</button>
@@ -1195,7 +1173,7 @@
       <div class="panel review-card">
         <div class="review-row"><span>Job title</span><b id="reviewTitle">Clerk</b></div>
         <div class="review-row"><span>Pay</span><b id="reviewPay">Rs 18000/month</b></div>
-        <div class="review-row"><span>Location</span><b id="reviewLocation">Jaipur</b></div>
+        <div class="review-row"><span>Location</span><b id="reviewLocation">Delhi</b></div>
         <div class="review-row"><span>Job type</span><b id="reviewType">Full-time</b></div>
         <div><span class="small">Description preview</span><p class="review-desc" id="reviewDesc">Work details will appear here.</p></div>
       </div>
@@ -1225,7 +1203,7 @@
 
     <section id="profile" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
-      <div class="panel profile-hero"><span class="avatar" id="workerAvatar">JK</span><span class="grow"><h2 id="profileName">John Kumar</h2><p id="profileMeta">Brisbane</p></span></div>
+      <div class="panel profile-hero"><span class="avatar" id="workerAvatar">AL</span><span class="grow"><h2 id="profileName">Aman Lalh</h2><p id="profileMeta">Delhi</p></span></div>
       <div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div>
       <div class="section-label">Work Profile</div>
       <button class="profile-card" data-edit-profile="workerLocation"><span><span>Location</span><b id="workerProfileLocationText">Based in Brisbane, available for nearby opportunities</b></span><i class="arrow">›</i></button>
@@ -1291,7 +1269,7 @@
       <div class="section-label">Account</div>
       <button class="settings-card" data-edit-profile="accountName"><span><span>Name</span><b id="accountNameView">Aman Lalh</b></span><i class="arrow">›</i></button>
       <button class="settings-card" data-edit-profile="accountLocation"><span><span>Location</span><b id="accountLocationView">Brisbane</b></span><i class="arrow">›</i></button>
-      <div class="panel"><div class="kv"><span>Phone</span><b id="accountPhone">9876543210</b></div></div>
+      <div class="panel"><div class="kv"><span>Phone</span><b id="accountPhone">0000000000</b></div></div>
       <div class="section-label">Profiles</div>
       <div class="settings-list">
         <button class="settings-card" data-account-profile="worker"><span><span>Worker Profile</span><b id="workerAccountStatus">Not set up</b></span><i class="arrow">›</i></button>
@@ -1375,18 +1353,18 @@
       var pendingEmployerRoute = localStorage.getItem("kkPendingEmployerRoute") || "";
       var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
 
-      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","profileEdit","adminModeration","legal","report"];
-      var workCategories = ["Delivery","Clerk / Office","Retail / Cashier","Helper","Driver","Cleaner","Security","Data Entry","Kitchen / Cook","Sales","Warehouse","Other"];
-      var skillOptions = ["Driving","Cash handling","Excel","Customer support","Cooking","Packing","Cleaning","Security","Data entry","Local language"];
+      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","profileEdit","adminModeration","legal","report"];
+      var workCategories = ["Delivery","Office Work","Retail","Helper","Driver","Cleaner","Plumber","Electrician","Tiler","Welder","Waiter / Hospitality","Data Entry"];
+      var skillOptions = ["Cleaning","Driving","Customer Service","Data Entry","Excel","Inventory Handling","Food Service","Basic Accounting","Communication","Sales","Packing","Warehouse Work"];
       var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
         workerComplete: false,
         employerComplete: false,
-        worker: { id: "john", name: "John Kumar", gender: "Male", age: "24", city: "Jaipur", experience: "1-2 years", skills: ["Cash handling","Data entry"], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "Reliable worker, comfortable with office, cashier and helper roles.", phoneVerified: true },
-        employer: { id: "", ownerId: "john", name: "", business: "", phone: "9876543210", type: "", city: "" },
+        worker: { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "1-2 years", skills: ["Customer Service","Data Entry"], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "Reliable worker, comfortable with office, retail and helper roles.", phoneVerified: true, startAvailability: "Immediate", availableDays: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], shiftPreference: "Morning" },
+        employer: { id: "", ownerId: "john", name: "", business: "", phone: "0000000000", type: "", city: "" },
         jobs: [
-          { id: "clerk", title: "Office Clerk", pay: "Rs 18,000/month", city: "Jaipur", distance: "2 km away", type: "Full-time", employer: "Rick Retail Store", badge: "Verified", visibility: "boost", remote: false, desc: "Counter billing, records and basic customer help." },
-          { id: "driver", title: "Delivery Driver", pay: "Rs 700/day", city: "Jaipur", distance: "Nearby", type: "Daily wage", employer: "City Logistics", badge: "New", remote: false, desc: "Local deliveries, licence required." },
-          { id: "cashier", title: "Cashier", pay: "Rs 16,000/month", city: "Jaipur", distance: "4 km away", type: "Full-time", employer: "Fresh Mart", badge: "Verified", remote: false, desc: "Billing counter and cash handling." },
+          { id: "clerk", title: "Office Clerk", pay: "Rs 18,000/month", city: "Delhi", distance: "2 km away", type: "Full-time", employer: "Rick Retail Store", badge: "Verified", visibility: "boost", remote: false, desc: "Counter billing, records and basic customer help." },
+          { id: "driver", title: "Delivery Driver", pay: "Rs 700/day", city: "Delhi", distance: "Nearby", type: "Daily wage", employer: "City Logistics", badge: "New", remote: false, desc: "Local deliveries, licence required." },
+          { id: "cashier", title: "Cashier", pay: "Rs 16,000/month", city: "Delhi", distance: "4 km away", type: "Full-time", employer: "Fresh Mart", badge: "Verified", remote: false, desc: "Billing counter and cash handling." },
           { id: "remote-data", title: "Data Entry", pay: "Rs 12,000/month", city: "Remote", distance: "Remote", type: "Remote", employer: "AdminWorks", badge: "Verified", remote: true, desc: "Basic typing and spreadsheet work." }
         ],
         applications: [],
@@ -1408,6 +1386,18 @@
       state.user.phone = state.user.phone || state.employer.phone || "";
       state.user.city = state.user.city || state.worker.city || "";
       state.user.location = state.user.location || state.user.city || "";
+      var oldDemoName = ["John","Kumar"].join(" ");
+      var oldDemoPhone = "987" + "654" + "3210";
+      var oldDemoCity = "Jai" + "pur";
+      if (state.worker.name === oldDemoName) state.worker.name = "Aman Lalh";
+      if (state.worker.city === oldDemoCity) state.worker.city = "Delhi";
+      if (state.employer.phone === oldDemoPhone) state.employer.phone = "0000000000";
+      if (!state.user.displayName || state.user.displayName === oldDemoName) state.user.displayName = state.worker.name || "Aman Lalh";
+      if (!state.user.phone || state.user.phone === oldDemoPhone) state.user.phone = "0000000000";
+      if (!state.user.city || state.user.city === oldDemoCity) { state.user.city = "Delhi"; state.user.location = "Delhi"; }
+      state.worker.startAvailability = state.worker.startAvailability || "Immediate";
+      state.worker.availableDays = state.worker.availableDays || ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+      state.worker.shiftPreference = state.worker.shiftPreference || "Morning";
       if (!state.notifications.length) {
         state.notifications = [
           { id: "note-morning", text: "5 new jobs near you today", target: "jobs", read: false, createdAt: Date.now() - 60000 },
@@ -1579,7 +1569,7 @@
         var target = byId(id);
         if (!target) return toast("Please try again.");
         var employerScreens = ["employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","employerProfile"];
-        var workerScreens = ["workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","search","applications"];
+        var workerScreens = ["workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress","jobs","applied","search","applications"];
         if (employerScreens.indexOf(id) >= 0) currentRole = "employer";
         if (workerScreens.indexOf(id) >= 0) currentRole = "worker";
         localStorage.setItem("kkRole", currentRole);
@@ -1634,6 +1624,7 @@
         document.querySelectorAll("[data-i18n]").forEach(function (node) { node.textContent = t(node.dataset.i18n); });
       }
       function fillBasicDefaults() {
+        if (byId("phoneInput") && !byId("phoneInput").value) byId("phoneInput").value = state.user.phone || state.employer.phone || "0000000000";
         byId("workerName").value = state.worker.name || "";
         byId("workerGender").value = state.worker.gender || "";
         byId("workerAge").value = state.worker.age || "";
@@ -1643,7 +1634,7 @@
         byId("contactName").value = state.employer.name || "";
         byId("businessType").value = state.employer.type || "";
         byId("businessPhone").value = state.employer.phone || byId("phoneInput").value || "";
-        if (byId("otpPhoneText")) byId("otpPhoneText").textContent = "+91 " + ((byId("phoneInput").value || state.employer.phone || "98765 43210").trim());
+        if (byId("otpPhoneText")) byId("otpPhoneText").textContent = "+91 " + ((byId("phoneInput").value || state.employer.phone || "0000000000").trim());
       }
       function renderCategories() {
         byId("workCategories").innerHTML = workCategories.map(function (cat) {
@@ -1663,6 +1654,24 @@
             return '<button class="chip selected skill-pill" data-remove-skill="' + skill + '">' + skill + ' <span>x</span></button>';
           }).join("") : '<span class="small">No skills selected yet.</span>';
         }
+      }
+      function renderOnboardingAvailability() {
+        if (!byId("onboardDays")) return;
+        var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+        var selectedDays = state.worker.availableDays || [];
+        var allSelected = days.every(function (day) { return selectedDays.indexOf(day) >= 0; });
+        byId("onboardDays").innerHTML = days.map(function (day) {
+          var selected = selectedDays.indexOf(day) >= 0;
+          return '<button class="choice ' + (selected ? "selected" : "") + '" data-onboard-day="' + day + '"><span class="ci">' + (selected ? "✓" : "") + '</span>' + day + '</button>';
+        }).join("");
+        document.querySelectorAll("[data-onboard-start]").forEach(function (button) {
+          button.classList.toggle("selected", button.dataset.onboardStart === (state.worker.startAvailability || "Immediate"));
+        });
+        var all = document.querySelector("[data-onboard-all-days]");
+        if (all) all.classList.toggle("selected", allSelected);
+        document.querySelectorAll("[data-onboard-shift]").forEach(function (button) {
+          button.classList.toggle("selected", button.dataset.onboardShift === (state.worker.shiftPreference || "Morning"));
+        });
       }
       function renderPayPrefs() {
         if (!byId("payRange")) return;
@@ -1930,7 +1939,7 @@
         if (!editingProfileField) return;
         var body = byId("profileEditBody");
         if (cfg.type === "skills") {
-          var suggested = ["Cleaner","Delivery","Retail","Clerk","Helper","Driver","Cash handling","Data entry"];
+          var suggested = ["Cleaning","Driving","Customer Service","Data Entry","Excel","Inventory Handling","Food Service","Basic Accounting","Communication","Sales","Packing","Warehouse Work"];
           body.innerHTML =
             '<div class="edit-card"><div class="section-label">Your Skills</div><div class="edit-chip-row">' + (editDraft.skills || []).map(function (skill) { return '<button class="edit-chip selected skill-remove" data-edit-remove-skill="' + skill + '">' + skill + '<span>x</span></button>'; }).join("") + '</div></div>' +
             '<div class="edit-card"><label>Add Skills</label><div class="input"><input id="profileEditInput" placeholder="Type a skill"></div><button class="btn outline mt" data-edit-add-skill>+ Add Skill</button></div>' +
@@ -2113,6 +2122,7 @@
       function workerBadges() {
         var badges = [];
         if (state.worker.phoneVerified) badges.push({ label: "Phone Verified", className: "" });
+        if (state.worker.photoVerified) badges.push({ label: "Photo Verified", className: "blue" });
         if (profileComplete()) badges.push({ label: "Profile Complete", className: "blue" });
         if (state.applications.some(function (a) { return a.workerId === state.worker.id; }) || state.worker.active) badges.push({ label: "Active", className: "amber" });
         return badges.slice(0, 3);
@@ -2228,6 +2238,7 @@
         fillBasicDefaults();
         renderCategories();
         renderSkills();
+        renderOnboardingAvailability();
         renderPayPrefs();
         renderNavs();
         if (byId("jobFeed")) renderFeed();
@@ -2260,11 +2271,12 @@
         var workerId = state.defaultWorkerId || state.worker.id || ("worker-" + Date.now());
         state.defaultWorkerId = workerId;
         state.worker.id = workerId;
-        state.worker.name = byId("workerName").value.trim() || state.worker.name || "John Kumar";
+        state.worker.name = byId("workerName").value.trim() || state.worker.name || "Aman Lalh";
         state.worker.gender = byId("workerGender").value || state.worker.gender;
         state.worker.age = byId("workerAge").value.trim() || state.worker.age || "24";
-        state.worker.city = byId("workerCity").value.trim() || state.worker.city || "Jaipur";
+        state.worker.city = byId("workerCity").value.trim() || state.worker.city || "Delhi";
         state.worker.preferredJob = state.worker.preferredJob || "Any Job";
+        state.worker.availability = workerAvailabilityLine();
         state.user.displayName = state.worker.name;
         state.user.city = state.worker.city;
         state.user.location = state.worker.city;
@@ -2279,6 +2291,10 @@
           workPreference: state.worker.preferredJob,
           skills: state.worker.skills.slice(),
           experience: state.worker.experience || "Fresher",
+          availability: state.worker.availability,
+          startAvailability: state.worker.startAvailability,
+          availableDays: (state.worker.availableDays || []).slice(),
+          shiftPreference: state.worker.shiftPreference,
           locationPreference: locationMode,
           preferredPay: state.worker.openAnyPay ? "Open to any pay" : (state.worker.payRange || ""),
           trustBadges: workerBadges().map(function (badge) { return badge.label; }),
@@ -2514,9 +2530,9 @@
           state.messages = [];
           state.notifications = [];
           state.jobs = keepJobs;
-          state.user = { id: "user-demo", displayName: "", phone: "", city: "", location: "" };
-          state.worker = { id: "john", name: "", gender: "", age: "", city: "", experience: "", skills: [], availability: "Immediate", preferredJob: "", preferredType: "", bio: "", phoneVerified: false };
-          state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "", type: "", city: "" };
+          state.user = { id: "user-demo", displayName: "Aman Lalh", phone: "0000000000", city: "Delhi", location: "Delhi" };
+          state.worker = { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "", skills: [], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: false, startAvailability: "Immediate", availableDays: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], shiftPreference: "Morning" };
+          state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "0000000000", type: "", city: "" };
           localStorage.removeItem("kkPendingWorkerRoute");
           localStorage.removeItem("kkPendingEmployerRoute");
           localStorage.removeItem("kkRole");
@@ -2609,6 +2625,30 @@
         }
         var exp = event.target.closest("[data-exp]");
         if (exp) { state.worker.experience = exp.dataset.exp; exp.parentElement.querySelectorAll(".choice").forEach(function (c) { c.classList.remove("selected"); }); exp.classList.add("selected"); save(); return; }
+        var onboardStart = event.target.closest("[data-onboard-start]");
+        if (onboardStart) { state.worker.startAvailability = onboardStart.dataset.onboardStart; save(); renderOnboardingAvailability(); return; }
+        if (event.target.closest("[data-onboard-all-days]")) {
+          var allDays = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+          var hasAllDays = allDays.every(function (day) { return (state.worker.availableDays || []).indexOf(day) >= 0; });
+          state.worker.availableDays = hasAllDays ? [] : allDays.slice();
+          save(); renderOnboardingAvailability(); return;
+        }
+        var onboardDay = event.target.closest("[data-onboard-day]");
+        if (onboardDay) {
+          state.worker.availableDays = state.worker.availableDays || [];
+          var onboardDayIndex = state.worker.availableDays.indexOf(onboardDay.dataset.onboardDay);
+          if (onboardDayIndex >= 0) state.worker.availableDays.splice(onboardDayIndex, 1); else state.worker.availableDays.push(onboardDay.dataset.onboardDay);
+          save(); renderOnboardingAvailability(); return;
+        }
+        var onboardShift = event.target.closest("[data-onboard-shift]");
+        if (onboardShift) { state.worker.shiftPreference = onboardShift.dataset.onboardShift; save(); renderOnboardingAvailability(); return; }
+        if (event.target.closest("[data-upload-photo]")) {
+          state.worker.photoVerified = true;
+          save();
+          toast("Photo added.");
+          show("verifyProgress");
+          return;
+        }
         var locMode = event.target.closest("[data-location-mode]");
         if (locMode) { locationMode = locMode.dataset.locationMode; locMode.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); }); locMode.classList.add("selected"); byId("locationHint").textContent = locationMode === "remote" ? "Showing remote work." : "Showing nearby options."; return; }
         var openPay = event.target.closest("[data-open-pay]");
