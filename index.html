@@ -322,6 +322,7 @@
       text-align: center;
     }
     .btn:active { transform: scale(.975); }
+    .btn:disabled { opacity: .56; cursor: not-allowed; box-shadow: none; transform: none; }
     .primary { color: #fff; background: linear-gradient(135deg, var(--green), #10bd52 58%, var(--blue)); box-shadow: 0 16px 32px rgba(8, 166, 63, .24); }
     .outline { color: var(--green-dark); background: #fff; border: 1.5px solid rgba(8, 166, 63, .32); }
     .danger { color: var(--red); background: #fff1f2; border: 1px solid rgba(229,72,77,.16); }
@@ -1082,10 +1083,11 @@
       <h3>Visibility choice</h3>
       <div class="visibility-plans">
         <button class="plan" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small></button>
-        <button class="plan boost selected" data-visibility="boost"><span class="plan-top"><b>Boost Post</b><span class="plan-price">&#8377;199</span></span><span class="rec-badge">Recommended &#128293;</span><span class="boost-list"><span>&#10003; 3x more visibility</span><span>&#10003; Appears first in job feed</span><span>&#10003; Faster responses</span></span><span class="visibility-note">Most employers choose this</span></button>
+        <button class="plan boost" data-visibility="boost"><span class="plan-top"><b>Boost Post</b><span class="plan-price">&#8377;199</span></span><span class="rec-badge">Recommended &#128293;</span><span class="boost-list"><span>&#10003; 3x more visibility</span><span>&#10003; Appears first in job feed</span><span>&#10003; Faster responses</span></span><span class="visibility-note">Most employers choose this</span></button>
       </div>
+      <span id="visibilityError" class="error-note">Please select a visibility option.</span>
       <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine, lawful, non-misleading, and follows Kaam Karo's posting rules.<span class="safety-links"><button data-legal="guidelines">Job Posting Rules</button><a href="legal/acceptable-use-policy.html" target="_blank" rel="noopener">Acceptable Use Policy</a></span><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
-      <button class="btn primary mt" data-post-job>Publish Job</button>
+      <button id="publishJobBtn" class="btn primary mt" data-post-job disabled>Publish Job</button>
     </section>
 
     <section id="published" class="screen success">
@@ -1220,13 +1222,14 @@
       var currentLegal = "terms";
       var locationMode = "near";
       var payOpen = true;
-      var postVisibility = "boost";
+      var postVisibility = "";
       var reportContext = "general";
       var selectedReportJobId = null;
       var selectedConversationId = null;
       var pointerCard = null;
       var pointerDeltaX = 0;
       var pendingEmployerRoute = localStorage.getItem("kkPendingEmployerRoute") || "";
+      var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
 
       var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","adminModeration","legal","report"];
       var workCategories = ["Delivery","Clerk / Office","Retail / Cashier","Helper","Driver","Cleaner","Security","Data Entry","Kitchen / Cook","Sales","Warehouse","Other"];
@@ -1253,6 +1256,8 @@
       state.notifications = state.notifications || [];
       state.defaultBusinessId = state.defaultBusinessId || "";
       state.businessProfiles = state.businessProfiles || {};
+      state.defaultWorkerId = state.defaultWorkerId || "";
+      state.workerProfiles = state.workerProfiles || {};
       if (!state.notifications.length) {
         state.notifications = [
           { id: "note-morning", text: "5 new jobs near you today", target: "jobs", read: false, createdAt: Date.now() - 60000 },
@@ -1324,8 +1329,8 @@
         save();
       }
       function routeAfterOtp() {
-        var hasWorker = !!state.workerComplete;
-        var hasEmployer = !!state.employerComplete;
+        var hasWorker = hasWorkerProfile();
+        var hasEmployer = hasEmployerProfile();
         var lastMode = localStorage.getItem("kkLastMode") || localStorage.getItem("kkRole");
         if (!hasWorker && !hasEmployer) return show("role");
         if (hasWorker && !hasEmployer) { currentRole = "worker"; localStorage.setItem("kkRole", "worker"); return show("jobs"); }
@@ -1351,6 +1356,32 @@
       }
       function currentBusinessProfile() {
         return state.businessProfiles && state.defaultBusinessId ? state.businessProfiles[state.defaultBusinessId] : null;
+      }
+      function hasWorkerProfile() {
+        return !!(state.workerComplete && state.defaultWorkerId && state.workerProfiles && state.workerProfiles[state.defaultWorkerId]);
+      }
+      function isWorkerRoute(id) {
+        return ["jobs","applied","search","applications","profile"].indexOf(id) >= 0;
+      }
+      function goToWorkerRoute(targetRoute) {
+        if (!hasWorkerProfile()) {
+          pendingWorkerRoute = targetRoute || "jobs";
+          localStorage.setItem("kkPendingWorkerRoute", pendingWorkerRoute);
+          toast("Create your worker profile first.");
+          return show("workerBasic");
+        }
+        return show(targetRoute || "jobs");
+      }
+      function currentWorkerProfile() {
+        return state.workerProfiles && state.defaultWorkerId ? state.workerProfiles[state.defaultWorkerId] : null;
+      }
+      function resetVisibilityChoice() {
+        postVisibility = "";
+        document.querySelectorAll(".visibility-plans .plan").forEach(function (plan) { plan.classList.remove("selected"); });
+        var publish = byId("publishJobBtn");
+        var error = byId("visibilityError");
+        if (publish) publish.disabled = true;
+        if (error) error.style.display = "none";
       }
       function flashJobCard(kind) {
         var card = document.querySelector("#jobFeed .job-card");
@@ -1531,6 +1562,7 @@
         byId("feedSub").textContent = locationMode === "remote" ? "Remote jobs" : "Near " + (state.worker.city || "your city");
       }
       function applyToJob(id) {
+        if (!hasWorkerProfile()) return goToWorkerRoute("jobs");
         selectedJobId = id || filteredJobs("")[jobIndex].id;
         var exists = state.applications.find(function (a) { return a.jobId === selectedJobId && a.workerId === state.worker.id; });
         if (!exists) {
@@ -1798,6 +1830,7 @@
         byId("reviewLocation").textContent = city;
         byId("reviewType").textContent = type;
         byId("reviewDesc").textContent = desc.length > 110 ? desc.slice(0, 110) + "..." : desc;
+        if (byId("publishJobBtn")) byId("publishJobBtn").disabled = !postVisibility;
       }
       function renderPublished() {
         if (!byId("publishedTitle")) return;
@@ -1870,14 +1903,37 @@
       }
       function finishWorker() {
         state.workerComplete = true;
+        var workerId = state.defaultWorkerId || state.worker.id || ("worker-" + Date.now());
+        state.defaultWorkerId = workerId;
+        state.worker.id = workerId;
         state.worker.name = byId("workerName").value.trim() || state.worker.name || "John Kumar";
         state.worker.gender = byId("workerGender").value || state.worker.gender;
         state.worker.age = byId("workerAge").value.trim() || state.worker.age || "24";
         state.worker.city = byId("workerCity").value.trim() || state.worker.city || "Jaipur";
         state.worker.preferredJob = state.worker.preferredJob || "Any Job";
+        state.workerProfiles[workerId] = {
+          workerId: workerId,
+          userId: "user-demo",
+          name: state.worker.name,
+          gender: state.worker.gender,
+          age: state.worker.age,
+          city: state.worker.city,
+          location: state.worker.city,
+          workPreference: state.worker.preferredJob,
+          skills: state.worker.skills.slice(),
+          experience: state.worker.experience || "Fresher",
+          locationPreference: locationMode,
+          preferredPay: state.worker.openAnyPay ? "Open to any pay" : (state.worker.payRange || ""),
+          trustBadges: workerBadges().map(function (badge) { return badge.label; }),
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+        var nextWorkerRoute = pendingWorkerRoute || "jobs";
+        pendingWorkerRoute = "";
+        localStorage.removeItem("kkPendingWorkerRoute");
         save();
         track("worker_onboarding_complete");
-        show("jobs");
+        show(nextWorkerRoute);
       }
       function validateJobDraft() {
         var title = byId("postTitle").value.trim();
@@ -1897,6 +1953,10 @@
         if (!hasEmployerProfile()) return goToEmployerRoute("postJob");
         var draft = validateJobDraft();
         if (!draft) return;
+        if (!postVisibility) {
+          if (byId("visibilityError")) byId("visibilityError").style.display = "block";
+          return toast("Please select a visibility option.");
+        }
         if (!byId("jobRules").checked) {
           byId("jobRulesError").style.display = "block";
           return toast("Please confirm the job is genuine before publishing.");
@@ -2012,7 +2072,7 @@
           return;
         }
         if (event.target.closest("[data-profile-tab]")) {
-          show(currentRole === "employer" ? "employerProfile" : "profile");
+          if (currentRole === "employer") goToEmployerRoute("employerProfile"); else goToWorkerRoute("profile");
           return;
         }
         var switchMode = event.target.closest("[data-switch-mode]");
@@ -2020,12 +2080,21 @@
           currentRole = switchMode.dataset.switchMode;
           localStorage.setItem("kkRole", currentRole);
           toast(currentRole === "employer" ? "Switched to Hire Workers." : "Switched to Find Work.");
-          if (currentRole === "employer") goToEmployerRoute("employerDash"); else show("jobs");
+          if (currentRole === "employer") goToEmployerRoute("employerDash"); else goToWorkerRoute("jobs");
           return;
         }
         var go = event.target.closest("[data-go]");
         if (go) {
-          if (isEmployerRoute(go.dataset.go)) goToEmployerRoute(go.dataset.go); else show(go.dataset.go);
+          var targetRoute = go.dataset.go;
+          if (targetRoute === "chat") {
+            if (currentRole === "employer") goToEmployerRoute("chat"); else goToWorkerRoute("chat");
+          } else if (isEmployerRoute(targetRoute)) {
+            goToEmployerRoute(targetRoute);
+          } else if (isWorkerRoute(targetRoute)) {
+            goToWorkerRoute(targetRoute);
+          } else {
+            show(targetRoute);
+          }
           return;
         }
         if (event.target.closest("[data-send-otp]")) {
@@ -2116,6 +2185,8 @@
           postVisibility = visibility.dataset.visibility;
           visibility.parentElement.querySelectorAll(".plan").forEach(function (p) { p.classList.remove("selected"); });
           visibility.classList.add("selected");
+          if (byId("publishJobBtn")) byId("publishJobBtn").disabled = false;
+          if (byId("visibilityError")) byId("visibilityError").style.display = "none";
           return;
         }
         var finish = event.target.closest("[data-finish-worker]");
@@ -2164,7 +2235,7 @@
         if (event.target.closest("[data-reject-current]")) { setApplicationStatus(null, "Rejected"); return; }
         if (event.target.closest("[data-accept-current]")) { setApplicationStatus(null, "Accepted"); return; }
         if (event.target.closest("[data-review-job]")) {
-          if (validateJobDraft()) show("jobVisibility");
+          if (validateJobDraft()) { resetVisibilityChoice(); show("jobVisibility"); }
           return;
         }
         if (event.target.closest("[data-post-job]")) { addPostedJob(); return; }
