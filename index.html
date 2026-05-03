@@ -733,6 +733,8 @@
     .menu-row { width: 100%; min-height: 64px; display: flex; align-items: center; gap: 13px; padding: 12px 14px; text-align: left; color: var(--ink); }
     .menu-row small { display: block; color: var(--muted); font-size: 12px; font-weight: 750; margin-top: 2px; }
     .menu-foot { margin-top: 14px; padding: 13px; border-radius: 18px; background: #f7fbff; border: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.4; font-weight: 800; }
+    .section-label { margin: 16px 0 8px; color: var(--muted); font-size: 12px; font-weight: 950; letter-spacing: .02em; text-transform: uppercase; }
+    .danger-zone { border-color: rgba(229,72,77,.22); background: #fffafa; }
 
     .chat-safety { padding: 12px 14px; border-radius: 14px; background: #fff7e8; border: 1px solid rgba(245,158,11,.28); color: #8a5600; font-size: 13px; font-weight: 850; margin-bottom: 12px; }
     .chat-safety button { border: 0; background: transparent; padding: 0; color: #8a5600; font-weight: 950; text-decoration: underline; }
@@ -1105,46 +1107,25 @@
     </section>
 
     <section id="profile" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Profile & Settings</h3><span class="tag">Safe</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
       <div class="panel"><div style="display:flex;gap:14px;align-items:center"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow"><b id="profileName">John Kumar</b><br><span class="small" id="profileMeta">Phone Verified - Profile Complete</span></span></div><div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div></div>
-      <h3>Switch Mode</h3>
-      <div class="list">
-        <button class="list-row" data-switch-mode="worker"><span class="tiny"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Switch to Find Work</b><br><span class="small">Open worker job feed</span></span></button>
-        <button class="list-row" data-switch-mode="employer"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Switch to Hire Workers</b><br><span class="small">Open employer dashboard</span></span></button>
+      <div class="panel">
+        <div class="kv"><span>City</span><b id="workerProfileCity">Jaipur</b></div>
+        <div class="kv"><span>Experience</span><b id="workerProfileExperience">1-2 years</b></div>
+        <div class="kv"><span>Preferred work</span><b id="workerProfileWork">Any Job</b></div>
+        <div class="kv"><span>Preferred pay</span><b id="workerProfilePay">Open to any pay</b></div>
       </div>
-      <h3>Legal</h3>
-      <div class="list">
-        <button class="list-row" data-legal="terms"><span class="tiny">T</span><span class="grow">Terms & Conditions</span></button>
-        <button class="list-row" data-legal="privacy"><span class="tiny">P</span><span class="grow">Privacy Policy</span></button>
-        <button class="list-row" data-legal="refund"><span class="tiny">R</span><span class="grow">Refund Policy</span></button>
-        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
-        <a class="list-row" href="legal/acceptable-use-policy.html" target="_blank" rel="noopener"><span class="tiny">A</span><span class="grow">Acceptable Use Policy</span></a>
-        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
-        <button class="list-row" data-logout><span class="tiny"><svg><use href="#i-x"></use></svg></span><span class="grow"><b>Logout</b><br><span class="small">Return to phone login</span></span></button>
-      </div>
+      <div class="panel"><b>Skills</b><div class="toolbar" id="workerProfileSkills"></div></div>
     </section>
 
     <section id="employerProfile" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Employer Profile & Settings</h3><span class="tag">Hiring</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Employer Profile</h3><span class="tag">Hiring</span></div>
       <div class="panel"><div style="display:flex;gap:14px;align-items:center"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b id="employerProfileName">Rick Retail Store</b><br><span class="small" id="employerProfileMeta">New Employer - Phone Verified</span></span></div><div class="toolbar" id="employerProfileBadges"><span class="badge blue">New Employer</span><span class="badge">Phone Verified</span></div></div>
       <div class="panel">
         <div class="kv"><span>Contact person</span><b id="employerContactView">Rick Sharma</b></div>
+        <div class="kv"><span>Location</span><b id="employerLocationView">Jaipur</b></div>
         <div class="kv"><span>Business type</span><b id="employerTypeView">Retail Shop</b></div>
         <div class="kv"><span>Open jobs</span><b id="employerOpenJobsView">1</b></div>
-      </div>
-      <h3>Switch Mode</h3>
-      <div class="list">
-        <button class="list-row" data-switch-mode="worker"><span class="tiny"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Switch to Find Work</b><br><span class="small">Open worker job feed</span></span></button>
-        <button class="list-row" data-switch-mode="employer"><span class="tiny"><svg><use href="#i-chart"></use></svg></span><span class="grow"><b>Switch to Hire Workers</b><br><span class="small">Stay in employer dashboard</span></span></button>
-      </div>
-      <h3>Legal</h3>
-      <div class="list">
-        <button class="list-row" data-legal="terms"><span class="tiny">T</span><span class="grow">Terms & Conditions</span></button>
-        <button class="list-row" data-legal="privacy"><span class="tiny">P</span><span class="grow">Privacy Policy</span></button>
-        <button class="list-row" data-legal="refund"><span class="tiny">R</span><span class="grow">Refund Policy</span></button>
-        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
-        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
-        <button class="list-row" data-logout><span class="tiny"><svg><use href="#i-x"></use></svg></span><span class="grow"><b>Logout</b><br><span class="small">Return to phone login</span></span></button>
       </div>
     </section>
 
@@ -1155,20 +1136,53 @@
 
     <section id="menu" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><span class="tag">Account</span></div>
-      <div class="menu-head"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"><h1>Welcome back</h1><p>Jobs, hiring, messages and trust checks in one place.</p><div class="menu-status"><span>Verified</span><span>Hindi ready</span><span>Secure login</span></div></div>
+      <div class="menu-head"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"><h1 id="drawerName">Welcome back</h1><p id="drawerPhone">Secure phone login</p><div class="menu-status"><span>Verified</span><span>Safe</span><span>Support</span></div></div>
+      <div class="section-label">Account</div>
       <div class="list">
-        <button class="menu-row" data-go="jobs"><span class="ci"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Worker home</b><small>Swipe jobs, apply and chat after match</small></span></button>
-        <button class="menu-row" data-go="employerDash"><span class="ci"><svg><use href="#i-chart"></use></svg></span><span class="grow"><b>Employer dashboard</b><small>Jobs, applicants and matches</small></span></button>
-        <button class="menu-row" data-go="notifications"><span class="ci"><svg><use href="#i-bell"></use></svg></span><span class="grow"><b>Notifications</b><small>Applications and reminders</small></span></button>
-        <button class="menu-row" data-go="applications"><span class="ci"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Applications</b><small>Track applied and matched jobs</small></span></button>
-        <button class="menu-row" data-go="chat"><span class="ci"><svg><use href="#i-message"></use></svg></span><span class="grow"><b>Messages</b><small>Chat after employer accepts</small></span></button>
-        <button class="menu-row" data-profile-tab><span class="ci"><svg><use href="#i-user"></use></svg></span><span class="grow"><b>Profile & Legal</b><small>Trust badges, safety and legal links</small></span></button>
-        <button class="menu-row" data-switch-mode="worker"><span class="ci"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Switch to Find Work</b><small>Worker job feed</small></span></button>
-        <button class="menu-row" data-switch-mode="employer"><span class="ci"><svg><use href="#i-chart"></use></svg></span><span class="grow"><b>Switch to Hire Workers</b><small>Employer dashboard</small></span></button>
-        <button class="menu-row" data-go="adminModeration"><span class="ci"><svg><use href="#i-shield"></use></svg></span><span class="grow"><b>Admin review</b><small>Pending jobs and audit logs</small></span></button>
+        <button class="menu-row" data-go="accountSettings"><span class="ci"><svg><use href="#i-user"></use></svg></span><span class="grow"><b>Account Settings</b><small>Identity, location and role profiles</small></span></button>
+      </div>
+      <div class="section-label">Support</div>
+      <div class="list">
+        <button class="menu-row" data-toast="Help request opened."><span class="ci"><svg><use href="#i-message"></use></svg></span><span class="grow"><b>Help & Support</b><small>Get help with jobs, hiring or account access</small></span></button>
+        <button class="menu-row" data-legal="guidelines"><span class="ci"><svg><use href="#i-shield"></use></svg></span><span class="grow"><b>Safety & Guidelines</b><small>Rules for safe work and trusted hiring</small></span></button>
+      </div>
+      <div class="section-label">Session</div>
+      <div class="list">
         <button class="menu-row" data-logout><span class="ci"><svg><use href="#i-x"></use></svg></span><span class="grow"><b>Logout</b><small>Go back to phone login</small></span></button>
       </div>
-      <div class="menu-foot">Built for simple mobile use: big buttons, clear language, safe phone login and no confusing setup.</div>
+      <div class="menu-foot">Bottom nav is for daily work. This drawer is only for account controls, support and safety.</div>
+    </section>
+
+    <section id="accountSettings" class="screen">
+      <div class="header"><button class="icon" data-menu-back="true">←</button><div><b>Account Settings</b><p class="small">Identity and role profiles</p></div><span class="tag">Global</span></div>
+      <div class="panel">
+        <label>Name</label>
+        <input id="accountName" placeholder="Your name">
+        <label>Location</label>
+        <input id="accountLocation" placeholder="City / Location">
+        <div class="kv mt"><span>Phone</span><b id="accountPhone">9876543210</b></div>
+        <button class="btn primary mt" data-save-account>Save Account</button>
+      </div>
+      <h3>Profiles</h3>
+      <div class="list">
+        <button class="list-row" data-account-profile="worker"><span class="tiny"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Worker Profile</b><br><span class="small" id="workerAccountStatus">Not set up</span></span><span class="status-text" id="workerAccountAction">Set up</span></button>
+        <button class="list-row" data-account-profile="employer"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Employer Profile</b><br><span class="small" id="employerAccountStatus">Not set up</span></span><span class="status-text" id="employerAccountAction">Set up</span></button>
+      </div>
+      <h3>Legal</h3>
+      <div class="list">
+        <button class="list-row" data-legal="terms"><span class="tiny">T</span><span class="grow">Terms & Conditions</span></button>
+        <button class="list-row" data-legal="privacy"><span class="tiny">P</span><span class="grow">Privacy Policy</span></button>
+        <button class="list-row" data-legal="refund"><span class="tiny">R</span><span class="grow">Refund Policy</span></button>
+        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
+        <a class="list-row" href="legal/acceptable-use-policy.html" target="_blank" rel="noopener"><span class="tiny">A</span><span class="grow">Acceptable Use Policy</span></a>
+        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
+      </div>
+      <div class="panel danger-zone">
+        <h3>Delete Account</h3>
+        <p class="small">This will permanently delete your account, jobs, applications, and chats.</p>
+        <input id="deleteConfirmPhone" placeholder="Type your mobile number to confirm">
+        <button id="deleteAccountBtn" class="btn danger mt" data-delete-account disabled>Delete Account</button>
+      </div>
     </section>
 
     <section id="adminModeration" class="screen">
@@ -1231,7 +1245,7 @@
       var pendingEmployerRoute = localStorage.getItem("kkPendingEmployerRoute") || "";
       var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
 
-      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","adminModeration","legal","report"];
+      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","adminModeration","legal","report"];
       var workCategories = ["Delivery","Clerk / Office","Retail / Cashier","Helper","Driver","Cleaner","Security","Data Entry","Kitchen / Cook","Sales","Warehouse","Other"];
       var skillOptions = ["Driving","Cash handling","Excel","Customer support","Cooking","Packing","Cleaning","Security","Data entry","Local language"];
       var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
@@ -1258,6 +1272,12 @@
       state.businessProfiles = state.businessProfiles || {};
       state.defaultWorkerId = state.defaultWorkerId || "";
       state.workerProfiles = state.workerProfiles || {};
+      state.user = state.user || { id: "user-demo", displayName: state.worker.name || "", phone: state.employer.phone || "", city: state.worker.city || "", location: state.worker.city || "" };
+      state.user.id = state.user.id || "user-demo";
+      state.user.displayName = state.user.displayName || state.worker.name || "";
+      state.user.phone = state.user.phone || state.employer.phone || "";
+      state.user.city = state.user.city || state.worker.city || "";
+      state.user.location = state.user.location || state.user.city || "";
       if (!state.notifications.length) {
         state.notifications = [
           { id: "note-morning", text: "5 new jobs near you today", target: "jobs", read: false, createdAt: Date.now() - 60000 },
@@ -1662,8 +1682,53 @@
         byId("employerProfileName").textContent = business ? business.businessName : "Employer Profile";
         byId("employerProfileMeta").textContent = "New Employer - Phone Verified";
         byId("employerContactView").textContent = business ? business.contactPersonName : "Contact person";
+        if (byId("employerLocationView")) byId("employerLocationView").textContent = business ? business.city : (state.user.city || "Location");
         byId("employerTypeView").textContent = business ? business.type : "Business";
         byId("employerOpenJobsView").textContent = state.jobs.length + " open";
+      }
+      function renderAccountSettings() {
+        var phone = state.user.phone || state.employer.phone || "";
+        var displayName = state.user.displayName || state.worker.name || "Kaam Karo user";
+        var city = state.user.city || state.worker.city || "";
+        if (byId("drawerName")) byId("drawerName").textContent = displayName;
+        if (byId("drawerPhone")) byId("drawerPhone").textContent = phone ? ("+91 " + phone) : "Secure phone login";
+        if (!byId("accountName")) return;
+        byId("accountName").value = displayName;
+        byId("accountLocation").value = city;
+        byId("accountPhone").textContent = phone ? ("+91 " + phone) : "Not added";
+        var workerActive = hasWorkerProfile();
+        var employerActive = hasEmployerProfile();
+        byId("workerAccountStatus").textContent = workerActive ? "Active" : "Not set up";
+        byId("workerAccountAction").textContent = workerActive ? "View / Edit" : "Set up";
+        byId("employerAccountStatus").textContent = employerActive ? "Active" : "Not set up";
+        byId("employerAccountAction").textContent = employerActive ? "View / Edit" : "Set up";
+        var deleteButton = byId("deleteAccountBtn");
+        if (deleteButton) deleteButton.disabled = true;
+        if (byId("deleteConfirmPhone")) byId("deleteConfirmPhone").value = "";
+      }
+      function saveAccountSettings() {
+        var name = byId("accountName").value.trim() || state.user.displayName || state.worker.name;
+        var city = byId("accountLocation").value.trim() || state.user.city || state.worker.city;
+        state.user.displayName = name;
+        state.user.city = city;
+        state.user.location = city;
+        state.worker.name = name;
+        state.worker.city = city;
+        if (state.defaultWorkerId && state.workerProfiles[state.defaultWorkerId]) {
+          state.workerProfiles[state.defaultWorkerId].name = name;
+          state.workerProfiles[state.defaultWorkerId].city = city;
+          state.workerProfiles[state.defaultWorkerId].location = city;
+          state.workerProfiles[state.defaultWorkerId].updatedAt = Date.now();
+        }
+        state.employer.name = name;
+        state.employer.city = city;
+        if (state.defaultBusinessId && state.businessProfiles[state.defaultBusinessId]) {
+          state.businessProfiles[state.defaultBusinessId].contactPersonName = name;
+          state.businessProfiles[state.defaultBusinessId].city = city;
+        }
+        save();
+        render();
+        toast("Account updated.");
       }
       function renderAdminQueue() {
         if (!hasEmployerProfile() && currentScreen !== "adminModeration") return;
@@ -1890,6 +1955,7 @@
         renderEmployer();
         renderFullWorkerProfile();
         renderEmployerProfile();
+        renderAccountSettings();
         renderAdminQueue();
         renderChat();
         renderLegal();
@@ -1900,6 +1966,11 @@
         byId("profileName").textContent = state.worker.name || "Worker Profile";
         byId("profileMeta").textContent = profileBadges.map(function (b) { return b.label; }).join(" - ") || "Profile started";
         if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
+        if (byId("workerProfileCity")) byId("workerProfileCity").textContent = state.worker.city || "Not set";
+        if (byId("workerProfileExperience")) byId("workerProfileExperience").textContent = state.worker.experience || "Not set";
+        if (byId("workerProfileWork")) byId("workerProfileWork").textContent = state.worker.preferredJob || "Any Job";
+        if (byId("workerProfilePay")) byId("workerProfilePay").textContent = state.worker.openAnyPay ? "Open to any pay" : (state.worker.payRange || "Not set");
+        if (byId("workerProfileSkills")) byId("workerProfileSkills").innerHTML = (state.worker.skills || []).map(function (s) { return '<span class="badge blue">' + s + '</span>'; }).join("") || '<span class="small">No skills added yet.</span>';
       }
       function finishWorker() {
         state.workerComplete = true;
@@ -1911,6 +1982,9 @@
         state.worker.age = byId("workerAge").value.trim() || state.worker.age || "24";
         state.worker.city = byId("workerCity").value.trim() || state.worker.city || "Jaipur";
         state.worker.preferredJob = state.worker.preferredJob || "Any Job";
+        state.user.displayName = state.worker.name;
+        state.user.city = state.worker.city;
+        state.user.location = state.worker.city;
         state.workerProfiles[workerId] = {
           workerId: workerId,
           userId: "user-demo",
@@ -2071,6 +2145,50 @@
           toast("Logged out.");
           return;
         }
+        if (event.target.closest("[data-save-account]")) {
+          saveAccountSettings();
+          return;
+        }
+        var accountProfile = event.target.closest("[data-account-profile]");
+        if (accountProfile) {
+          if (accountProfile.dataset.accountProfile === "worker") {
+            currentRole = "worker";
+            localStorage.setItem("kkRole", "worker");
+            goToWorkerRoute("profile");
+          } else {
+            currentRole = "employer";
+            localStorage.setItem("kkRole", "employer");
+            goToEmployerRoute("employerProfile");
+          }
+          return;
+        }
+        if (event.target.closest("[data-delete-account]")) {
+          var phoneToConfirm = (state.user.phone || state.employer.phone || "").replace(/\D/g, "");
+          if (byId("deleteConfirmPhone").value.replace(/\D/g, "") !== phoneToConfirm) return toast("Type your mobile number to confirm.");
+          var keepJobs = state.jobs.filter(function (job) { return !job.employerId && !job.businessId; });
+          state.workerComplete = false;
+          state.employerComplete = false;
+          state.workerProfiles = {};
+          state.businessProfiles = {};
+          state.defaultWorkerId = "";
+          state.defaultBusinessId = "";
+          state.applications = [];
+          state.conversations = [];
+          state.messages = [];
+          state.notifications = [];
+          state.jobs = keepJobs;
+          state.user = { id: "user-demo", displayName: "", phone: "", city: "", location: "" };
+          state.worker = { id: "john", name: "", gender: "", age: "", city: "", experience: "", skills: [], availability: "Immediate", preferredJob: "", preferredType: "", bio: "", phoneVerified: false };
+          state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "", type: "", city: "" };
+          localStorage.removeItem("kkPendingWorkerRoute");
+          localStorage.removeItem("kkPendingEmployerRoute");
+          localStorage.removeItem("kkRole");
+          localStorage.removeItem("kkLastMode");
+          save();
+          show("landing");
+          toast("Account deleted.");
+          return;
+        }
         if (event.target.closest("[data-profile-tab]")) {
           if (currentRole === "employer") goToEmployerRoute("employerProfile"); else goToWorkerRoute("profile");
           return;
@@ -2101,6 +2219,7 @@
           var phone = byId("phoneInput").value.replace(/\D/g, "");
           if (phone.length !== 10) return toast("Enter a valid 10 digit phone number.");
           state.employer.phone = phone;
+          state.user.phone = phone;
           save();
           track("otp_requested");
           show("otpCode");
@@ -2111,6 +2230,7 @@
           if (otp.length < 4) return toast("Enter the OTP code.");
           state.worker.phoneVerified = true;
           state.worker.active = true;
+          state.user.phone = state.user.phone || state.employer.phone;
           save();
           track("otp_verified");
           routeAfterOtp();
@@ -2203,6 +2323,9 @@
           state.employer.phone = byId("businessPhone").value.trim() || state.employer.phone;
           state.employer.type = byId("businessType").value || byId("businessTypeOther").value || state.employer.type;
           state.employer.city = state.worker.city || "";
+          state.user.displayName = state.employer.name || state.user.displayName;
+          state.user.city = state.employer.city || state.user.city;
+          state.user.location = state.user.city;
           state.businessProfiles[businessId] = { businessId: businessId, ownerId: state.worker.id, businessName: state.employer.business, contactPersonName: state.employer.name, city: state.employer.city, phone: state.employer.phone, type: state.employer.type, createdAt: Date.now() };
           var nextEmployerRoute = pendingEmployerRoute || "employerDash";
           pendingEmployerRoute = "";
@@ -2247,6 +2370,10 @@
         if (event.target.id === "manualSearch") renderSearch();
         if (event.target.id === "locationSearch") { state.worker.city = event.target.value.trim() || state.worker.city; save(); renderFeed(); }
         if (event.target.id === "jobRules" && event.target.checked) byId("jobRulesError").style.display = "none";
+        if (event.target.id === "deleteConfirmPhone") {
+          var expectedPhone = (state.user.phone || state.employer.phone || "").replace(/\D/g, "");
+          byId("deleteAccountBtn").disabled = event.target.value.replace(/\D/g, "") !== expectedPhone;
+        }
         if (event.target.id === "payPref") { state.worker.payRange = event.target.value.trim(); state.worker.openAnyPay = false; save(); }
         if (event.target.id === "workSearch") {
           var q = event.target.value.trim();
