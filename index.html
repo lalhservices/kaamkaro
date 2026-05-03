@@ -24,9 +24,11 @@
     }
 
     * { box-sizing: border-box; }
-    html { background: #e8eef7; }
+    html { width: 100%; height: 100%; background: #e8eef7; overflow: hidden; }
     body {
       margin: 0;
+      width: 100%;
+      height: 100%;
       color: var(--text);
       overflow: hidden;
       background:
@@ -39,6 +41,7 @@
 
     .phone {
       width: min(430px, 100vw);
+      height: 100vh;
       height: 100dvh;
       margin: 0 auto;
       position: relative;
@@ -48,6 +51,7 @@
     }
     .app {
       width: min(430px, 100vw);
+      height: 100vh;
       height: 100dvh;
       margin: 0 auto;
       position: relative;
@@ -59,7 +63,7 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 84px;
+      min-height: 84px;
       z-index: 50;
       background: rgba(248, 251, 255, 0.96);
       border-bottom: 1px solid rgba(226,232,240,.72);
@@ -69,7 +73,6 @@
       align-items: flex-end;
     }
     .app-header:empty { display: none; }
-    .app-header:empty + .app-scroll { top: 0; }
     .app-header .header {
       width: 100%;
       margin: 0;
@@ -83,11 +86,14 @@
       overflow: hidden;
       padding: 0;
     }
+    .app.has-header .app-scroll { top: 84px; }
+    .app.has-bottom-nav .app-scroll { bottom: calc(74px + env(safe-area-inset-bottom)); }
     .app-scroll::-webkit-scrollbar { display: none; }
     .screen {
       position: absolute;
       inset: 0;
-      height: 100dvh;
+      height: 100%;
+      min-height: 0;
       padding: 0;
       overflow: hidden;
       background: linear-gradient(180deg, #fff, #f8fbff);
@@ -106,19 +112,22 @@
       left: 0;
       right: 0;
       bottom: 0;
+      height: auto;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 22px 22px 40px;
+      padding: 22px 22px calc(110px + env(safe-area-inset-bottom));
       -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      overscroll-behavior: contain;
       scrollbar-width: none;
     }
     .screen-body::-webkit-scrollbar { display: none; }
     .screen.has-header .screen-body {
-      top: 84px;
+      top: 0;
       padding-top: 0;
     }
     .screen.has-nav .screen-body {
-      bottom: calc(78px + env(safe-area-inset-bottom));
+      bottom: 0;
       padding-bottom: 28px;
     }
 
@@ -717,14 +726,16 @@
     }
     .bottom-nav {
       position: absolute;
-      left: 22px;
-      right: 22px;
-      bottom: calc(8px + env(safe-area-inset-bottom));
-      height: 68px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(74px + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
       z-index: 100;
-      border-radius: 24px;
+      border-radius: 24px 24px 0 0;
       background: rgba(255,255,255,0.96);
       border: 1px solid #e2e8f0;
+      border-bottom: 0;
       box-shadow: 0 14px 32px rgba(6,20,47,0.11);
     }
     .nav button { border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; gap: 2px; font-size: 11px; font-weight: 850; padding: 6px 3px 5px; }
@@ -890,7 +901,6 @@
     @media (max-width: 360px) {
       .app-header { padding-left: 16px; padding-right: 16px; }
       .screen-body { padding-left: 16px; padding-right: 16px; }
-      .bottom-nav { left: 16px; right: 16px; }
       .topbar { gap: 8px; padding-bottom: 14px; }
       .brand-logo { width: 124px; }
       .hero .brand-logo { width: 146px; }
@@ -1356,22 +1366,35 @@
       var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","profileEdit","adminModeration","legal","report"];
       var workCategories = ["Delivery","Office Work","Retail","Helper","Driver","Cleaner","Plumber","Electrician","Tiler","Welder","Waiter / Hospitality","Data Entry"];
       var skillOptions = ["Cleaning","Driving","Customer Service","Data Entry","Excel","Inventory Handling","Food Service","Basic Accounting","Communication","Sales","Packing","Warehouse Work"];
+      var defaultJobs = [
+        { id: "clerk", title: "Office Clerk", pay: "Rs 18,000/month", city: "Delhi", distance: "2 km away", type: "Full-time", employer: "Rick Retail Store", badge: "Verified", visibility: "boost", remote: false, desc: "Counter billing, records and basic customer help." },
+        { id: "driver", title: "Delivery Driver", pay: "Rs 700/day", city: "Delhi", distance: "Nearby", type: "Daily wage", employer: "City Logistics", badge: "New", remote: false, desc: "Local deliveries, licence required." },
+        { id: "cashier", title: "Cashier", pay: "Rs 16,000/month", city: "Delhi", distance: "4 km away", type: "Full-time", employer: "Fresh Mart", badge: "Verified", remote: false, desc: "Billing counter and cash handling." },
+        { id: "remote-data", title: "Data Entry", pay: "Rs 12,000/month", city: "Remote", distance: "Remote", type: "Remote", employer: "AdminWorks", badge: "Verified", remote: true, desc: "Basic typing and spreadsheet work." }
+      ];
+      function cloneJobs() {
+        return defaultJobs.map(function (job) { return Object.assign({}, job); });
+      }
       var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
         workerComplete: false,
         employerComplete: false,
         worker: { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "1-2 years", skills: ["Customer Service","Data Entry"], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "Reliable worker, comfortable with office, retail and helper roles.", phoneVerified: true, startAvailability: "Immediate", availableDays: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], shiftPreference: "Morning" },
         employer: { id: "", ownerId: "john", name: "", business: "", phone: "0000000000", type: "", city: "" },
-        jobs: [
-          { id: "clerk", title: "Office Clerk", pay: "Rs 18,000/month", city: "Delhi", distance: "2 km away", type: "Full-time", employer: "Rick Retail Store", badge: "Verified", visibility: "boost", remote: false, desc: "Counter billing, records and basic customer help." },
-          { id: "driver", title: "Delivery Driver", pay: "Rs 700/day", city: "Delhi", distance: "Nearby", type: "Daily wage", employer: "City Logistics", badge: "New", remote: false, desc: "Local deliveries, licence required." },
-          { id: "cashier", title: "Cashier", pay: "Rs 16,000/month", city: "Delhi", distance: "4 km away", type: "Full-time", employer: "Fresh Mart", badge: "Verified", remote: false, desc: "Billing counter and cash handling." },
-          { id: "remote-data", title: "Data Entry", pay: "Rs 12,000/month", city: "Remote", distance: "Remote", type: "Remote", employer: "AdminWorks", badge: "Verified", remote: true, desc: "Basic typing and spreadsheet work." }
-        ],
+        jobs: cloneJobs(),
         applications: [],
         conversations: [],
         messages: [],
         notifications: []
       };
+      state.worker = state.worker || { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "1-2 years", skills: ["Customer Service","Data Entry"], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: true };
+      state.worker.id = state.worker.id || "john";
+      state.worker.name = state.worker.name || "Aman Lalh";
+      state.worker.city = state.worker.city || "Delhi";
+      state.worker.skills = Array.isArray(state.worker.skills) ? state.worker.skills : [];
+      state.worker.preferredJob = state.worker.preferredJob || "Any Job";
+      state.employer = state.employer || { id: "", ownerId: "john", name: "", business: "", phone: "0000000000", type: "", city: "" };
+      if (!Array.isArray(state.jobs) || !state.jobs.length) state.jobs = cloneJobs();
+      state.applications = Array.isArray(state.applications) ? state.applications : [];
       state.auditLogs = state.auditLogs || [];
       state.conversations = state.conversations || [];
       state.messages = state.messages || [];
@@ -1411,6 +1434,9 @@
         job.flagReasons = job.flagReasons || [];
         job.riskScore = job.riskScore || 0;
       });
+      if (!state.jobs.some(function (job) { return (job.status || "approved") === "approved"; })) {
+        state.jobs = cloneJobs().concat(state.jobs);
+      }
 
       var moderationRules = {
         prohibited: [
@@ -1590,7 +1616,7 @@
         track("screen_" + id);
       }
       function navScreenIds() {
-        return ["jobs","applied","search","applications","profile","accountSettings","profileEdit","legal","report","notifications","employerDash","employerJobDetail","applicants","employerJobs","employerProfile","chat"];
+        return ["jobs","applied","search","applications","profile","accountSettings","profileEdit","legal","report","notifications","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","employerProfile","chat"];
       }
       function setupScreenBodies() {
         var navScreens = navScreenIds();
@@ -1612,6 +1638,8 @@
         if (!byId("appHeader")) return;
         var source = byId(currentScreen) ? byId(currentScreen).querySelector(":scope > .header") : null;
         byId("appHeader").innerHTML = source ? '<div class="header">' + source.innerHTML + '</div>' : "";
+        var app = document.querySelector(".app");
+        if (app) app.classList.toggle("has-header", !!source);
       }
       function setLang(lang) {
         currentLang = lang;
@@ -1625,15 +1653,15 @@
       }
       function fillBasicDefaults() {
         if (byId("phoneInput") && !byId("phoneInput").value) byId("phoneInput").value = state.user.phone || state.employer.phone || "0000000000";
-        byId("workerName").value = state.worker.name || "";
-        byId("workerGender").value = state.worker.gender || "";
-        byId("workerAge").value = state.worker.age || "";
-        byId("workerCity").value = state.worker.city || "";
-        byId("locationSearch").value = state.worker.city || "";
-        byId("businessName").value = state.employer.business || "";
-        byId("contactName").value = state.employer.name || "";
-        byId("businessType").value = state.employer.type || "";
-        byId("businessPhone").value = state.employer.phone || byId("phoneInput").value || "";
+        if (byId("workerName")) byId("workerName").value = state.worker.name || "";
+        if (byId("workerGender")) byId("workerGender").value = state.worker.gender || "";
+        if (byId("workerAge")) byId("workerAge").value = state.worker.age || "";
+        if (byId("workerCity")) byId("workerCity").value = state.worker.city || "";
+        if (byId("locationSearch")) byId("locationSearch").value = state.worker.city || "";
+        if (byId("businessName")) byId("businessName").value = state.employer.business || "";
+        if (byId("contactName")) byId("contactName").value = state.employer.name || "";
+        if (byId("businessType")) byId("businessType").value = state.employer.type || "";
+        if (byId("businessPhone")) byId("businessPhone").value = state.employer.phone || (byId("phoneInput") ? byId("phoneInput").value : "") || "";
         if (byId("otpPhoneText")) byId("otpPhoneText").textContent = "+91 " + ((byId("phoneInput").value || state.employer.phone || "0000000000").trim());
       }
       function renderCategories() {
@@ -1701,10 +1729,11 @@
           return true;
         });
         if (!list.length) {
-          byId("feedNotice").textContent = city ? "No jobs very close - showing nearby options in " + state.worker.city + "." : "Showing nearby options.";
+          if (byId("feedNotice")) byId("feedNotice").textContent = city ? "No jobs very close - showing nearby options in " + state.worker.city + "." : "Showing nearby options.";
           list = state.jobs.filter(function (job) { return (job.status || "approved") === "approved" && (!job.remote || locationMode === "remote"); });
+          if (!list.length) list = cloneJobs();
         } else {
-          byId("feedNotice").textContent = locationMode === "remote" ? "Showing remote work - updated just now." : "5 new jobs near you - updated just now.";
+          if (byId("feedNotice")) byId("feedNotice").textContent = locationMode === "remote" ? "Showing remote work - updated just now." : "5 new jobs near you - updated just now.";
         }
         function payValue(job) {
           return Number(String(job.pay || "").replace(/[^\d]/g, "")) || 0;
@@ -1730,6 +1759,7 @@
           '</article><div class="swipe"><button class="circle danger-action" aria-label="Not interested" data-next-job><svg><use href="#i-x"></use></svg></button><button class="circle like-action" aria-label="Interested" data-apply-job="' + job.id + '"><svg><use href="#i-heart"></use></svg></button></div><div class="swipe-labels"><span>Not interested</span><span>Interested</span></div>';
       }
       function renderFeed() {
+        if (!byId("jobFeed")) return;
         var query = byId("jobSearch") ? byId("jobSearch").value : "";
         var list = filteredJobs(query);
         if (jobIndex >= list.length) jobIndex = 0;
@@ -1741,7 +1771,7 @@
           var variation = swipeCount > 0 && swipeCount % 4 === 0 ? '<div class="panel small">Urgent hiring near you - verified employers only.</div>' : "";
           byId("jobFeed").innerHTML = list.length ? variation + '<div class="swipe-stack"><div class="stack-card third"></div><div class="stack-card second"></div>' + jobCard(list[jobIndex]) + '</div>' : "";
         }
-        byId("feedSub").textContent = locationMode === "remote" ? "Remote jobs" : "Near " + (state.worker.city || "your city");
+        if (byId("feedSub")) byId("feedSub").textContent = locationMode === "remote" ? "Remote jobs" : "Near " + (state.worker.city || "your city");
       }
       function applyToJob(id) {
         if (!hasWorkerProfile()) return goToWorkerRoute("jobs");
@@ -2162,6 +2192,8 @@
           byId("bottomNav").innerHTML = currentRole === "employer" ? employer : worker;
           byId("bottomNav").style.display = navScreens.indexOf(currentScreen) >= 0 ? "grid" : "none";
         }
+        var app = document.querySelector(".app");
+        if (app) app.classList.toggle("has-bottom-nav", navScreens.indexOf(currentScreen) >= 0);
       }
       function renderLegal() {
         var item = legal[currentLegal] || legal.terms;
@@ -2233,38 +2265,48 @@
         return { rejected: rejected, reasons: reasons, riskScore: reasons.length * 20 + (rejected ? 60 : 0) };
       }
       function render() {
-        applyCopy();
-        renderAppHeader();
-        fillBasicDefaults();
-        renderCategories();
-        renderSkills();
-        renderOnboardingAvailability();
-        renderPayPrefs();
-        renderNavs();
-        if (byId("jobFeed")) renderFeed();
-        if (byId("searchResults")) renderSearch();
-        if (byId("workerApplications")) renderWorkerApplications();
-        renderEmployer();
-        renderFullWorkerProfile();
-        renderEmployerProfile();
-        renderAccountSettings();
-        renderProfileEdit();
-        renderAdminQueue();
-        renderChat();
-        renderLegal();
-        renderNotifications();
-        renderJobReview();
-        renderPublished();
-        var profileBadges = workerBadges();
-        byId("profileName").textContent = state.worker.name || "Worker Profile";
-        byId("profileMeta").textContent = state.worker.city || state.user.city || "Location not set";
-        if (byId("workerAvatar")) byId("workerAvatar").textContent = initials(state.worker.name || state.user.displayName);
-        if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
-        if (byId("workerProfileLocationText")) byId("workerProfileLocationText").textContent = workerLocationLine();
-        if (byId("workerProfileExperienceText")) byId("workerProfileExperienceText").textContent = workerExperienceLine();
-        if (byId("workerProfileWorkText")) byId("workerProfileWorkText").textContent = workerWorkLine();
-        if (byId("workerProfileAvailabilityText")) byId("workerProfileAvailabilityText").textContent = workerAvailabilityLine();
-        if (byId("workerProfileSkillsText")) byId("workerProfileSkillsText").textContent = (state.worker.skills || []).join(", ") || "No skills added yet";
+        [
+          applyCopy,
+          renderAppHeader,
+          fillBasicDefaults,
+          renderCategories,
+          renderSkills,
+          renderOnboardingAvailability,
+          renderPayPrefs,
+          renderNavs,
+          function () { if (byId("jobFeed")) renderFeed(); },
+          function () { if (byId("searchResults")) renderSearch(); },
+          function () { if (byId("workerApplications")) renderWorkerApplications(); },
+          renderEmployer,
+          renderFullWorkerProfile,
+          renderEmployerProfile,
+          renderAccountSettings,
+          renderProfileEdit,
+          renderAdminQueue,
+          renderChat,
+          renderLegal,
+          renderNotifications,
+          renderJobReview,
+          renderPublished,
+          function () {
+            var profileBadges = workerBadges();
+            if (byId("profileName")) byId("profileName").textContent = state.worker.name || "Worker Profile";
+            if (byId("profileMeta")) byId("profileMeta").textContent = state.worker.city || state.user.city || "Location not set";
+            if (byId("workerAvatar")) byId("workerAvatar").textContent = initials(state.worker.name || state.user.displayName);
+            if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
+            if (byId("workerProfileLocationText")) byId("workerProfileLocationText").textContent = workerLocationLine();
+            if (byId("workerProfileExperienceText")) byId("workerProfileExperienceText").textContent = workerExperienceLine();
+            if (byId("workerProfileWorkText")) byId("workerProfileWorkText").textContent = workerWorkLine();
+            if (byId("workerProfileAvailabilityText")) byId("workerProfileAvailabilityText").textContent = workerAvailabilityLine();
+            if (byId("workerProfileSkillsText")) byId("workerProfileSkillsText").textContent = (state.worker.skills || []).join(", ") || "No skills added yet";
+          }
+        ].forEach(function (step) {
+          try {
+            step();
+          } catch (error) {
+            console.warn("Kaam Karo render step skipped:", error);
+          }
+        });
       }
       function finishWorker() {
         state.workerComplete = true;
@@ -2823,7 +2865,7 @@
       document.querySelectorAll(".screen > nav.nav").forEach(function (nav) { nav.remove(); });
       document.querySelectorAll(".screen:not(.active)").forEach(function (screen) { screen.classList.add("was-right"); });
       fillBasicDefaults();
-      byId("payRange").style.display = "none";
+      if (byId("payRange")) byId("payRange").style.display = "none";
       render();
     })();
   </script>
