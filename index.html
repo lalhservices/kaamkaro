@@ -412,14 +412,32 @@
       align-items: start;
       white-space: normal;
       overflow: hidden;
+      background: #fff;
+      border-color: #e2e8f0;
+      box-shadow: 0 10px 24px rgba(6,20,47,.06);
+      transform: scale(1);
+      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
     }
+    .visibility-plans .plan:active { transform: scale(.97); }
     .visibility-plans .plan b { font-size: 18px; line-height: 1.15; }
     .visibility-plans .plan.boost {
-      background: #f0faf4;
-      border-color: #7bd99a;
-      box-shadow: 0 12px 28px rgba(8,166,63,.13);
+      background: #fff;
+      border-color: #e2e8f0;
+      box-shadow: 0 10px 24px rgba(6,20,47,.06);
     }
-    .visibility-plans .plan.boost.selected { box-shadow: 0 0 0 4px rgba(8,166,63,.1), 0 12px 28px rgba(8,166,63,.13); }
+    .visibility-plans .plan.selected {
+      transform: scale(1.01);
+    }
+    .visibility-plans .plan:not(.boost).selected {
+      background: #f8fbff;
+      border-color: #b8c5d8;
+      box-shadow: 0 0 0 3px rgba(20,87,200,.06), 0 12px 26px rgba(6,20,47,.08);
+    }
+    .visibility-plans .plan.boost.selected {
+      background: #f0faf4;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34,197,94,.12), 0 14px 30px rgba(8,166,63,.16);
+    }
     .rec-badge { width: max-content; max-width: 100%; border-radius: 999px; padding: 7px 10px; background: #dff8e8; color: var(--green-dark); font-size: 12px; font-weight: 950; }
     .visibility-note { color: var(--green-dark); font-size: 12px; font-weight: 900; }
     .review-card { display: grid; gap: 10px; }
@@ -1063,8 +1081,8 @@
       </div>
       <h3>Visibility choice</h3>
       <div class="visibility-plans">
-        <button class="plan selected" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small></button>
-        <button class="plan boost" data-visibility="boost"><span class="plan-top"><b>Boost Post</b><span class="plan-price">&#8377;199</span></span><span class="rec-badge">Recommended &#128293;</span><span class="boost-list"><span>&#10003; 3x more visibility</span><span>&#10003; Appears first in job feed</span><span>&#10003; Faster responses</span></span><span class="visibility-note">Most employers choose this</span></button>
+        <button class="plan" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small></button>
+        <button class="plan boost selected" data-visibility="boost"><span class="plan-top"><b>Boost Post</b><span class="plan-price">&#8377;199</span></span><span class="rec-badge">Recommended &#128293;</span><span class="boost-list"><span>&#10003; 3x more visibility</span><span>&#10003; Appears first in job feed</span><span>&#10003; Faster responses</span></span><span class="visibility-note">Most employers choose this</span></button>
       </div>
       <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine, lawful, non-misleading, and follows Kaam Karo's posting rules.<span class="safety-links"><button data-legal="guidelines">Job Posting Rules</button><a href="legal/acceptable-use-policy.html" target="_blank" rel="noopener">Acceptable Use Policy</a></span><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
       <button class="btn primary mt" data-post-job>Publish Job</button>
@@ -1202,7 +1220,7 @@
       var currentLegal = "terms";
       var locationMode = "near";
       var payOpen = true;
-      var postVisibility = "free";
+      var postVisibility = "boost";
       var reportContext = "general";
       var selectedReportJobId = null;
       var selectedConversationId = null;
