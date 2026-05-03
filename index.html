@@ -399,24 +399,36 @@
     .badge.amber { background: #fff7e8; color: #9a5d00; }
     .badge.red { background: #fff1f2; color: var(--red); }
 
-    .job-card { overflow: hidden; margin-top: 14px; border-radius: 24px; touch-action: pan-y; user-select: none; }
-    .job-card.swipe-like { transform: translateX(10px) rotate(1deg); box-shadow: 0 0 0 5px rgba(8,166,63,.12), var(--shadow); border-color: rgba(8,166,63,.34); }
-    .job-card.swipe-skip { transform: translateX(-10px) rotate(-1deg); box-shadow: 0 0 0 5px rgba(229,72,77,.1), var(--shadow); border-color: rgba(229,72,77,.28); }
+    .job-card { overflow: hidden; margin-top: 14px; border-radius: 24px; touch-action: pan-y; user-select: none; position: relative; }
+    .job-card:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .12s ease;
+    }
+    .job-card.swipe-like { transform: translateX(16px) rotate(2.2deg) scale(1.015); box-shadow: 0 0 0 5px rgba(8,166,63,.12), var(--shadow); border-color: rgba(8,166,63,.34); }
+    .job-card.swipe-like:after { opacity: 1; background: linear-gradient(90deg, rgba(8,166,63,.2), rgba(8,166,63,.04)); }
+    .job-card.swipe-skip { transform: translateX(-16px) rotate(-2.2deg) scale(.99); box-shadow: 0 0 0 5px rgba(229,72,77,.1), var(--shadow); border-color: rgba(229,72,77,.28); }
+    .job-card.swipe-skip:after { opacity: 1; background: linear-gradient(270deg, rgba(229,72,77,.18), rgba(229,72,77,.04)); }
     .job-hero {
-      min-height: 162px;
+      min-height: 188px;
       padding: 18px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: space-between;
       color: #fff;
       background:
         linear-gradient(180deg, rgba(6, 20, 47, .02), rgba(6, 20, 47, .92)),
         linear-gradient(135deg, #1e3a2d, #0c1937 62%, #3b2a1e);
     }
-    .job-hero h2 { color: #fff; font-size: 31px; line-height: 1.04; margin: 12px 0 6px; overflow-wrap: anywhere; }
-    .job-hero p { color: rgba(255,255,255,.88); margin: 0; font-weight: 850; }
+    .job-hero h2 { color: #fff; font-size: 27px; line-height: 1.05; margin: 8px 0 7px; overflow-wrap: anywhere; }
+    .job-hero p { color: rgba(255,255,255,.9); margin: 0; font-weight: 850; }
     .job-meta { padding: 16px; display: grid; gap: 11px; }
-    .pay { color: var(--green-dark); font-size: 26px; font-weight: 950; letter-spacing: 0; }
+    .pay { color: #fff; font-size: 36px; font-weight: 950; letter-spacing: 0; line-height: 1; }
+    .job-hook { color: rgba(255,255,255,.92); font-size: 14px; font-weight: 900; }
+    .trust-line { display: inline-flex; align-items: center; width: max-content; max-width: 100%; border-radius: 999px; padding: 7px 10px; color: var(--green-dark); background: #eaf8ef; font-size: 12px; font-weight: 950; }
     .meta { display: flex; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
     .job-meta .small {
       display: -webkit-box;
@@ -449,7 +461,7 @@
       background: rgba(255,255,255,.97);
       backdrop-filter: blur(8px);
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       box-shadow: 0 10px 28px rgba(6, 20, 47, .09);
       z-index: 20;
     }
@@ -903,7 +915,7 @@
       <h3>Visibility choice</h3>
       <div class="grid">
         <button class="plan selected" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small></button>
-        <button class="plan" data-visibility="boost"><span class="plan-top"><b>₹199 Boosted Post</b><span class="plan-price">₹199</span></span><span class="boost-list"><span>More visibility</span><span>Higher in worker feed</span><span>Urgent badge</span><span>More applicants</span></span></button>
+        <button class="plan" data-visibility="boost"><span class="plan-top"><b>Boost ₹199 (Recommended 🔥)</b><span class="plan-price">₹199</span></span><span class="boost-list"><span>Get 3x more visibility</span><span>Appear first in job feed</span><span>Get faster responses</span><span>Most employers choose this</span></span></button>
       </div>
       <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine, lawful, non-misleading, and follows Kaam Karo's posting rules.<br><button data-legal="guidelines">Job Posting Rules</button> <a href="legal/acceptable-use-policy.html" target="_blank" rel="noopener">Acceptable Use Policy</a><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
       <button class="btn primary mt" data-post-job>Publish Job</button>
@@ -1034,6 +1046,8 @@
       var pointerStartX = 0;
       var activeFilter = "all";
       var jobIndex = 0;
+      var swipeCount = Number(localStorage.getItem("kkSwipeCount") || "0");
+      var appliedToday = Number(localStorage.getItem("kkAppliedToday") || "0");
       var selectedJobId = "clerk";
       var selectedWorkerId = "john";
       var currentLegal = "terms";
@@ -1052,13 +1066,12 @@
         worker: { id: "john", name: "John Kumar", gender: "Male", age: "24", city: "Jaipur", experience: "1-2 years", skills: ["Cash handling","Data entry"], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "Reliable worker, comfortable with office, cashier and helper roles.", phoneVerified: true },
         employer: { name: "Rick Sharma", business: "Rick Retail Store", phone: "9876543210", type: "Retail Shop" },
         jobs: [
-          { id: "clerk", title: "Clerk Job", pay: "Rs 18,000/month", city: "Jaipur", distance: "2 km away", type: "Full-time", employer: "Rick Retail Store", badge: "Verified Employer", remote: false, desc: "Counter billing, records and basic customer help." },
-          { id: "driver", title: "Driver", pay: "Rs 700/day", city: "Jaipur", distance: "Nearby", type: "Daily wage", employer: "City Logistics", badge: "New Employer", remote: false, desc: "Local deliveries, licence required." },
-          { id: "cashier", title: "Cashier", pay: "Rs 16,000/month", city: "Jaipur", distance: "4 km away", type: "Full-time", employer: "Fresh Mart", badge: "Verified Employer", remote: false, desc: "Billing counter and cash handling." },
-          { id: "remote-data", title: "Data Entry", pay: "Rs 12,000/month", city: "Remote", distance: "Remote", type: "Remote", employer: "AdminWorks", badge: "Verified Employer", remote: true, desc: "Basic typing and spreadsheet work." }
+          { id: "clerk", title: "Office Clerk", pay: "Rs 18,000/month", city: "Jaipur", distance: "2 km away", type: "Full-time", employer: "Rick Retail Store", badge: "Verified", visibility: "boost", remote: false, desc: "Counter billing, records and basic customer help." },
+          { id: "driver", title: "Delivery Driver", pay: "Rs 700/day", city: "Jaipur", distance: "Nearby", type: "Daily wage", employer: "City Logistics", badge: "New", remote: false, desc: "Local deliveries, licence required." },
+          { id: "cashier", title: "Cashier", pay: "Rs 16,000/month", city: "Jaipur", distance: "4 km away", type: "Full-time", employer: "Fresh Mart", badge: "Verified", remote: false, desc: "Billing counter and cash handling." },
+          { id: "remote-data", title: "Data Entry", pay: "Rs 12,000/month", city: "Remote", distance: "Remote", type: "Remote", employer: "AdminWorks", badge: "Verified", remote: true, desc: "Basic typing and spreadsheet work." }
         ],
-        applications: [],
-        saved: []
+        applications: []
       };
       state.auditLogs = state.auditLogs || [];
       state.employer.moderationStatus = state.employer.moderationStatus || "active";
@@ -1128,7 +1141,16 @@
         clearTimeout(flashJobCard.timer);
         flashJobCard.timer = setTimeout(function () {
           card.classList.remove("swipe-like", "swipe-skip");
-        }, 220);
+        }, 150);
+      }
+      function recordSwipe(applied) {
+        swipeCount += 1;
+        if (applied) appliedToday += 1;
+        localStorage.setItem("kkSwipeCount", String(swipeCount));
+        localStorage.setItem("kkAppliedToday", String(appliedToday));
+        if (applied && appliedToday > 0 && appliedToday % 3 === 0) {
+          setTimeout(function () { toast(appliedToday + " jobs applied today \uD83D\uDD25"); }, 850);
+        }
       }
       function show(id) {
         var target = byId(id);
@@ -1204,7 +1226,6 @@
         var list = state.jobs.filter(function (job) {
           if ((job.status || "approved") !== "approved") return false;
           if (activeFilter === "remote" || locationMode === "remote") return job.remote;
-          if (activeFilter === "saved") return state.saved.indexOf(job.id) >= 0;
           if (state.worker.preferredJob && state.worker.preferredJob !== "Any Job") {
             var pref = state.worker.preferredJob.toLowerCase().split(" / ")[0];
             if ((job.title + " " + job.type + " " + job.desc).toLowerCase().indexOf(pref) < 0 && activeFilter !== "all") return false;
@@ -1212,25 +1233,34 @@
           if (q && (job.title + " " + job.city + " " + job.employer).toLowerCase().indexOf(q) < 0) return false;
           return true;
         });
-        if (!list.length && activeFilter !== "saved") {
+        if (!list.length) {
           byId("feedNotice").textContent = city ? "No jobs very close - showing nearby options in " + state.worker.city + "." : "Showing nearby options.";
           list = state.jobs.filter(function (job) { return (job.status || "approved") === "approved" && (!job.remote || locationMode === "remote"); });
         } else {
-          byId("feedNotice").textContent = locationMode === "remote" ? "Showing remote work - updated just now." : "3 new jobs near you - updated just now.";
+          byId("feedNotice").textContent = locationMode === "remote" ? "Showing remote work - updated just now." : "5 new jobs near you - updated just now.";
         }
-        return list;
+        return list.sort(function (a, b) {
+          return ((b.visibility === "boost" || b.badge === "Urgent") ? 1 : 0) - ((a.visibility === "boost" || a.badge === "Urgent") ? 1 : 0);
+        });
       }
       function jobCard(job) {
         var applied = state.applications.find(function (a) { return a.jobId === job.id && a.workerId === state.worker.id; });
         return '<article class="job-card">' +
-          '<div class="job-hero"><span class="badge">' + job.badge + '</span><h2>' + job.title + '</h2><p>' + job.city + ' - ' + job.distance + '</p></div>' +
-          '<div class="job-meta"><div class="pay">' + job.pay + '</div><div class="meta"><span>' + job.type + '</span><span>' + job.employer + '</span><span>' + (applied ? "Status: " + applied.status : "Right swipe = Interested") + '</span></div><p class="small">' + job.desc + '</p></div>' +
+          '<div class="job-hero"><div><div class="pay">' + job.pay + '</div><h2>' + job.title + '</h2><p>Location: ' + job.distance + '</p></div><div><span class="badge">Employer: ' + job.badge + '</span><div class="job-hook mt">Start today - 2 shifts</div></div></div>' +
+          '<div class="job-meta"><div class="trust-line">No fees required</div><div class="meta"><span>' + job.type + '</span><span>' + job.employer + '</span><span>12 people applied</span></div><p class="small">' + job.desc + '</p></div>' +
           '</article><div class="swipe"><button class="circle danger-action" aria-label="Not interested" data-next-job><svg><use href="#i-x"></use></svg></button><button class="circle like-action" aria-label="Interested" data-apply-job="' + job.id + '"><svg><use href="#i-heart"></use></svg></button></div><div class="swipe-labels"><span>Not interested</span><span>Interested</span></div><button class="report-link" data-report="job">Report job</button>';
       }
       function renderFeed() {
-        var list = filteredJobs(byId("jobSearch") ? byId("jobSearch").value : "");
+        var query = byId("jobSearch") ? byId("jobSearch").value : "";
+        var list = filteredJobs(query);
         if (jobIndex >= list.length) jobIndex = 0;
-        byId("jobFeed").innerHTML = list.length ? jobCard(list[jobIndex]) : "";
+        if (query.trim()) {
+          byId("jobFeed").innerHTML = list.map(function (job) {
+            return '<button class="list-row" data-select-job="' + job.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.pay + '</b><br><span class="small">' + job.title + ' - ' + job.distance + ' - ' + job.badge + '</span></span><span class="status-text">Apply</span></button>';
+          }).join("");
+        } else {
+          byId("jobFeed").innerHTML = list.length ? jobCard(list[jobIndex]) : "";
+        }
         byId("feedSub").textContent = locationMode === "remote" ? "Remote jobs" : "Near " + (state.worker.city || "your city");
       }
       function applyToJob(id) {
@@ -1245,21 +1275,31 @@
         save();
         track("application_created");
         flashJobCard("like");
-        toast("Applied ✓");
+        toast("Applied \u2713");
+        recordSwipe(true);
+        setTimeout(function () { toast("Employer will review your profile"); }, 500);
+        setTimeout(function () { toast("Employer viewed your profile"); }, 1500);
+        setTimeout(function () { toast("New response from employer"); }, 2600);
         show("applied");
       }
       function nextJob() {
+        if (byId("jobSearch") && byId("jobSearch").value.trim()) return;
         var list = filteredJobs(byId("jobSearch") ? byId("jobSearch").value : "");
         if (!list.length) return;
         flashJobCard("skip");
+        recordSwipe(false);
         jobIndex = (jobIndex + 1) % list.length;
-        setTimeout(renderFeed, 120);
+        renderFeed();
         toast("Not interested");
         track("job_swipe_left");
       }
       function renderSearch() {
         var q = byId("manualSearch") ? byId("manualSearch").value : "";
         var list = filteredJobs(q);
+        if (!q.trim()) {
+          byId("searchResults").innerHTML = '<div class="panel small">Search is optional. Swipe feed stays the fastest way to apply.</div>';
+          return;
+        }
         byId("searchResults").innerHTML = list.map(function (job) {
           return '<button class="list-row" data-select-job="' + job.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.pay + ' · ' + job.city + ' · ' + job.distance + '</span></span><span class="status-text">Apply</span></button>';
         }).join("");
@@ -1370,8 +1410,8 @@
         function nav(target, icon, label, activeScreens) {
           return '<button class="' + (activeScreens.indexOf(currentScreen) >= 0 ? "active" : "") + '" data-go="' + target + '"><b><svg><use href="#' + icon + '"></use></svg></b>' + label + '</button>';
         }
-        var worker = nav("jobs", "i-home", "Home", ["jobs", "applied"]) + nav("search", "i-search", "Search", ["search"]) + nav("applications", "i-briefcase", "Apps", ["applications"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
-        var employer = nav("employerDash", "i-chart", "Dash", ["employerDash"]) + nav("employerJobs", "i-briefcase", "Jobs", ["employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-users", "Talent", ["applicants", "workerProfileView"]) + nav("chat", "i-message", "Chat", ["chat"]) + nav("employerProfile", "i-user", "Profile", ["employerProfile", "legal", "report"]);
+        var worker = nav("jobs", "i-home", "Home", ["jobs", "applied", "search"]) + nav("applications", "i-briefcase", "Applications", ["applications", "chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
+        var employer = nav("employerDash", "i-home", "Home", ["employerDash", "employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-briefcase", "Applications", ["applicants", "workerProfileView", "chat"]) + nav("employerProfile", "i-user", "Profile", ["employerProfile", "legal", "report"]);
         document.querySelectorAll("[data-worker-nav]").forEach(function (n) { n.innerHTML = worker; });
         document.querySelectorAll("[data-employer-nav]").forEach(function (n) { n.innerHTML = employer; });
         if (byId("chatNav")) byId("chatNav").innerHTML = currentRole === "employer" ? employer : worker;
@@ -1501,7 +1541,7 @@
           return;
         }
         var status = moderation.reasons.length ? "pending_review" : "approved";
-        var job = { id: "job-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: draft.type, employer: state.employer.business || "Your Business", badge: postVisibility === "boost" ? "Urgent" : "New Employer", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount() };
+        var job = { id: "job-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: draft.type, employer: state.employer.business || "Your Business", badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount() };
         state.jobs.unshift(job);
         save();
         audit(status === "approved" ? "approved" : "pending_review", status === "approved" ? "Auto-approved" : moderation.reasons.join(", "), job, "system");
@@ -1729,7 +1769,8 @@
         pointerStartX = 0;
         if (delta < -48) nextJob();
         if (delta > 48) {
-          var list = filteredJobs(byId("jobSearch") ? byId("jobSearch").value : "");
+          if (byId("jobSearch") && byId("jobSearch").value.trim()) return;
+          var list = filteredJobs("");
           if (list.length) { track("job_swipe_right"); applyToJob(list[jobIndex].id); }
         }
       });
