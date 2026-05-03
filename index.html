@@ -76,28 +76,51 @@
     }
     .app-scroll {
       position: absolute;
-      top: 112px;
+      top: 0;
       left: 0;
       right: 0;
-      bottom: 104px;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 0 22px 28px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      bottom: 0;
+      overflow: hidden;
+      padding: 0;
     }
     .app-scroll::-webkit-scrollbar { display: none; }
     .screen {
-      position: static;
-      min-height: 100%;
-      padding: 0 0 28px;
-      overflow: visible;
+      position: absolute;
+      inset: 0;
+      height: 100dvh;
+      padding: 0;
+      overflow: hidden;
       background: linear-gradient(180deg, #fff, #f8fbff);
-      display: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(100%);
+      transition: transform .28s cubic-bezier(.2,.85,.2,1), opacity .18s ease;
     }
     .screen::-webkit-scrollbar { display: none; }
-    .screen.active { display: block; }
-    .screen.was-left, .screen.was-right { transform: none; }
+    .screen.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
+    .screen.was-left { transform: translateX(-100%); }
+    .screen.was-right { transform: translateX(100%); }
+    .screen-body {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 22px 22px 40px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .screen-body::-webkit-scrollbar { display: none; }
+    .screen.has-header .screen-body {
+      top: 112px;
+      padding-top: 0;
+    }
+    .screen.has-nav .screen-body {
+      bottom: calc(92px + env(safe-area-inset-bottom));
+      padding-bottom: 28px;
+    }
 
     .topbar, .header {
       display: flex;
@@ -704,7 +727,7 @@
 
     @media (max-width: 360px) {
       .app-header { padding-left: 16px; padding-right: 16px; }
-      .app-scroll { padding-left: 16px; padding-right: 16px; }
+      .screen-body { padding-left: 16px; padding-right: 16px; }
       .bottom-nav { left: 16px; right: 16px; }
       .topbar { gap: 8px; padding-bottom: 14px; }
       .brand-logo { width: 124px; }
@@ -1304,9 +1327,29 @@
         target.classList.add("active");
         target.classList.remove("was-left","was-right");
         currentScreen = id;
-        if (byId("appScroll")) byId("appScroll").scrollTop = 0;
+        var body = target.querySelector(".screen-body");
+        if (body) body.scrollTop = 0;
         render();
         track("screen_" + id);
+      }
+      function navScreenIds() {
+        return ["jobs","applied","search","applications","profile","employerDash","employerJobDetail","applicants","employerJobs","employerProfile","chat"];
+      }
+      function setupScreenBodies() {
+        var navScreens = navScreenIds();
+        document.querySelectorAll(".screen").forEach(function (screen) {
+          if (!screen.querySelector(":scope > .screen-body")) {
+            var body = document.createElement("div");
+            body.className = "screen-body";
+            Array.from(screen.childNodes).forEach(function (node) {
+              if (node.nodeType === 1 && node.classList && node.classList.contains("header")) return;
+              body.appendChild(node);
+            });
+            screen.appendChild(body);
+          }
+          screen.classList.toggle("has-header", !!screen.querySelector(":scope > .header"));
+          screen.classList.toggle("has-nav", navScreens.indexOf(screen.id) >= 0);
+        });
       }
       function renderAppHeader() {
         if (!byId("appHeader")) return;
@@ -1657,7 +1700,7 @@
         var chatLabel = 'Chat' + (unread ? '<span class="nav-badge">' + unread + '</span>' : '');
         var worker = nav("jobs", "i-home", "Home", ["jobs", "applied", "search"]) + nav("applications", "i-briefcase", "Applications", ["applications"]) + nav("chat", "i-message", chatLabel, ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
         var employer = nav("employerDash", "i-home", "Dashboard", ["employerDash", "employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-briefcase", "Applicants", ["applicants", "workerProfileView"]) + nav("chat", "i-message", chatLabel, ["chat"]) + nav("employerProfile", "i-user", "Profile", ["employerProfile", "legal", "report"]);
-        var navScreens = ["jobs","applied","search","applications","profile","employerDash","employerJobDetail","applicants","employerJobs","employerProfile","chat"];
+        var navScreens = navScreenIds();
         if (byId("bottomNav")) {
           byId("bottomNav").innerHTML = currentRole === "employer" ? employer : worker;
           byId("bottomNav").style.display = navScreens.indexOf(currentScreen) >= 0 ? "grid" : "none";
@@ -2113,6 +2156,7 @@
         if (event.key === "Enter") byId("sendChat").click();
       });
       window.kkGo = show;
+      setupScreenBodies();
       document.querySelectorAll(".screen > nav.nav").forEach(function (nav) { nav.remove(); });
       document.querySelectorAll(".screen:not(.active)").forEach(function (screen) { screen.classList.add("was-right"); });
       fillBasicDefaults();
