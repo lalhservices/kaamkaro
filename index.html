@@ -43,27 +43,61 @@
       margin: 0 auto;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(180deg, #fff, #f8fbff);
+      background: #f8fbff;
       box-shadow: 0 30px 90px rgba(6, 20, 47, .24);
     }
-    .screen {
-      position: absolute;
-      inset: 0;
+    .app {
+      width: min(430px, 100vw);
       height: 100dvh;
-      padding: 0 22px calc(150px + env(safe-area-inset-bottom));
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      background: #f8fbff;
+    }
+    .app-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 112px;
+      z-index: 50;
+      background: rgba(248, 251, 255, 0.96);
+      border-bottom: 1px solid rgba(226,232,240,.72);
+      backdrop-filter: blur(12px);
+      padding: calc(14px + env(safe-area-inset-top)) 22px 12px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .app-header:empty { display: none; }
+    .app-header:empty + .app-scroll { top: 0; }
+    .app-header .header {
+      width: 100%;
+      margin: 0;
+    }
+    .app-scroll {
+      position: absolute;
+      top: 112px;
+      left: 0;
+      right: 0;
+      bottom: 104px;
       overflow-y: auto;
       overflow-x: hidden;
-      background: linear-gradient(180deg, #fff, #f8fbff);
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(100%);
-      transition: transform .28s cubic-bezier(.2,.85,.2,1), opacity .18s ease;
+      padding: 0 22px 28px;
+      -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
+    .app-scroll::-webkit-scrollbar { display: none; }
+    .screen {
+      position: static;
+      min-height: 100%;
+      padding: 0 0 28px;
+      overflow: visible;
+      background: linear-gradient(180deg, #fff, #f8fbff);
+      display: none;
+    }
     .screen::-webkit-scrollbar { display: none; }
-    .screen.active { opacity: 1; pointer-events: auto; transform: translateX(0); }
-    .screen.was-left { transform: translateX(-100%); }
-    .screen.was-right { transform: translateX(100%); }
+    .screen.active { display: block; }
+    .screen.was-left, .screen.was-right { transform: none; }
 
     .topbar, .header {
       display: flex;
@@ -72,16 +106,7 @@
       gap: 12px;
       margin-bottom: 14px;
     }
-    .screen > .header {
-      position: sticky;
-      top: 0;
-      z-index: 80;
-      margin: 0 -22px 16px;
-      padding: calc(14px + env(safe-area-inset-top)) 22px 12px;
-      background: rgba(248,251,255,.96);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(226,232,240,.72);
-    }
+    .screen > .header { display: none; }
     .topbar { align-items: flex-start; }
     .brand { display: flex; align-items: center; min-width: 0; }
     .brand-logo { width: clamp(132px, 42vw, 174px); height: auto; display: block; object-fit: contain; }
@@ -502,20 +527,26 @@
     .job-card .report-link { margin: 0; justify-self: start; }
 
     .nav {
-      position: fixed;
-      left: 50%;
-      bottom: calc(12px + env(safe-area-inset-bottom));
-      transform: translateX(-50%);
-      width: min(398px, calc(100vw - 32px));
-      min-height: 70px;
+      height: 78px;
       border: 1px solid rgba(222, 231, 241, .86);
-      border-radius: 26px;
+      border-radius: 28px;
       background: rgba(255,255,255,.94);
       backdrop-filter: blur(10px);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      box-shadow: 0 12px 30px rgba(6, 20, 47, .1);
-      z-index: 999;
+      box-shadow: 0 16px 36px rgba(6,20,47,0.12);
+    }
+    .bottom-nav {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      height: 78px;
+      z-index: 100;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 16px 36px rgba(6,20,47,0.12);
     }
     .nav button { border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; gap: 3px; font-size: 10.5px; font-weight: 850; padding: 8px 3px 7px; }
     .nav b { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 12px; color: currentColor; }
@@ -672,8 +703,9 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     @media (max-width: 360px) {
-      .screen { padding-left: 16px; padding-right: 16px; padding-bottom: calc(156px + env(safe-area-inset-bottom)); }
-      .screen > .header { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
+      .app-header { padding-left: 16px; padding-right: 16px; }
+      .app-scroll { padding-left: 16px; padding-right: 16px; }
+      .bottom-nav { left: 16px; right: 16px; }
       .topbar { gap: 8px; padding-bottom: 14px; }
       .brand-logo { width: 124px; }
       .hero .brand-logo { width: 146px; }
@@ -714,7 +746,9 @@
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
     <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 22V4"/><path d="M5 4h13l-2 5 2 5H5"/></symbol>
   </svg>
-  <main class="phone">
+  <main class="phone app">
+    <header id="appHeader" class="app-header"></header>
+    <div id="appScroll" class="app-scroll">
     <section id="landing" class="screen active hero">
       <div class="topbar">
         <div class="brand"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div>
@@ -894,7 +928,6 @@
       <div class="toolbar" data-filter-group><button class="chip selected" data-filter="all">All</button><button class="chip" data-filter="near">Near Me</button><button class="chip" data-filter="remote">Remote</button></div>
       <div id="feedNotice" class="panel small">Showing nearby options.</div>
       <div id="jobFeed"></div>
-      <nav class="nav" data-worker-nav></nav>
     </section>
 
     <section id="applied" class="screen success">
@@ -912,20 +945,17 @@
       <div id="chatArea" class="chat-area"></div>
       <div class="quick"><button data-quick="I am available">I am available</button><button data-quick="Please share location">Please share location</button><button data-report="chat">Report</button><button data-block>Block</button></div>
       <div class="chat-input"><input id="chatText" placeholder="Type a message"><button id="sendChat">➜</button></div>
-      <nav class="nav" id="chatNav"></nav>
     </section>
 
     <section id="search" class="screen">
       <div class="header"><button class="icon" data-go="jobs">←</button><h3>Search jobs</h3><button class="icon" data-toast="Filters updated."><svg><use href="#i-search"></use></svg></button></div>
       <div class="search"><svg><use href="#i-search"></use></svg><input id="manualSearch" placeholder="Try clerk, driver, cashier, helper"></div>
       <div id="searchResults" class="list"></div>
-      <nav class="nav" data-worker-nav></nav>
     </section>
 
     <section id="applications" class="screen">
       <div class="header"><button class="icon" data-go="jobs">←</button><h3>Applications</h3><span class="tag" id="matchedTag">0 matched</span></div>
       <div id="workerApplications" class="list"></div>
-      <nav class="nav" data-worker-nav></nav>
     </section>
 
     <section id="employerSetup" class="screen">
@@ -945,7 +975,6 @@
       <div class="dash"><div class="dash-top"><div><div class="dash-eyebrow">Rick's active hiring</div><h2 class="dash-title" id="dashTitle">0 applicants waiting</h2></div><span class="dash-badge">Live</span></div><p>Accept good workers to create a match and open chat.</p><div class="dash-actions"><button class="btn primary" data-go="postJob"><svg><use href="#i-plus"></use></svg> Post job</button><button class="btn outline" data-go="employerJobDetail"><svg><use href="#i-users"></use></svg> View applicants</button></div></div>
       <div class="metric-grid"><div class="metric-card"><span>Interested</span><b id="metricInterested">0</b><small>new applications</small></div><div class="metric-card"><span>Accepted</span><b id="metricAccepted">0</b><small>matched workers</small></div><div class="metric-card"><span>Open Jobs</span><b id="metricJobs">1</b><small>ready to hire</small></div><div class="metric-card"><span>Trust</span><b>New</b><small>employer badge</small></div></div>
       <div class="list" id="dashJobs"></div>
-      <nav class="nav" data-employer-nav></nav>
     </section>
 
     <section id="employerJobDetail" class="screen">
@@ -953,7 +982,6 @@
       <div class="panel"><span class="badge blue">Verified Employer</span><h2 id="jobDetailPay" class="mt">Rs 18,000/month</h2><p class="small" id="jobDetailMeta">Jaipur · Full-time · Office</p></div>
       <h3>Applicants</h3>
       <div id="applicantList" class="list"></div>
-      <nav class="nav" data-employer-nav></nav>
     </section>
 
     <section id="workerProfileView" class="screen">
@@ -1002,13 +1030,11 @@
     <section id="applicants" class="screen">
       <div class="header"><button class="icon" data-go="employerDash">←</button><h3>Talent</h3><span class="tag" id="talentCount">0</span></div>
       <div id="allApplicants" class="list"></div>
-      <nav class="nav" data-employer-nav></nav>
     </section>
 
     <section id="employerJobs" class="screen">
       <div class="header"><button class="icon" data-go="employerDash">←</button><h3>My Jobs</h3><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
       <div id="employerJobsList" class="list"></div>
-      <nav class="nav" data-employer-nav></nav>
     </section>
 
     <section id="profile" class="screen">
@@ -1108,6 +1134,8 @@
         <button class="list-row" data-report-reason="Other"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Other</span></button>
       </div>
     </section>
+    </div>
+    <nav id="bottomNav" class="nav bottom-nav"></nav>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -1275,10 +1303,15 @@
         });
         target.classList.add("active");
         target.classList.remove("was-left","was-right");
-        target.scrollTop = 0;
         currentScreen = id;
+        if (byId("appScroll")) byId("appScroll").scrollTop = 0;
         render();
         track("screen_" + id);
+      }
+      function renderAppHeader() {
+        if (!byId("appHeader")) return;
+        var source = byId(currentScreen) ? byId(currentScreen).querySelector(":scope > .header") : null;
+        byId("appHeader").innerHTML = source ? '<div class="header">' + source.innerHTML + '</div>' : "";
       }
       function setLang(lang) {
         currentLang = lang;
@@ -1624,9 +1657,11 @@
         var chatLabel = 'Chat' + (unread ? '<span class="nav-badge">' + unread + '</span>' : '');
         var worker = nav("jobs", "i-home", "Home", ["jobs", "applied", "search"]) + nav("applications", "i-briefcase", "Applications", ["applications"]) + nav("chat", "i-message", chatLabel, ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
         var employer = nav("employerDash", "i-home", "Dashboard", ["employerDash", "employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-briefcase", "Applicants", ["applicants", "workerProfileView"]) + nav("chat", "i-message", chatLabel, ["chat"]) + nav("employerProfile", "i-user", "Profile", ["employerProfile", "legal", "report"]);
-        document.querySelectorAll("[data-worker-nav]").forEach(function (n) { n.innerHTML = worker; });
-        document.querySelectorAll("[data-employer-nav]").forEach(function (n) { n.innerHTML = employer; });
-        if (byId("chatNav")) byId("chatNav").innerHTML = currentRole === "employer" ? employer : worker;
+        var navScreens = ["jobs","applied","search","applications","profile","employerDash","employerJobDetail","applicants","employerJobs","employerProfile","chat"];
+        if (byId("bottomNav")) {
+          byId("bottomNav").innerHTML = currentRole === "employer" ? employer : worker;
+          byId("bottomNav").style.display = navScreens.indexOf(currentScreen) >= 0 ? "grid" : "none";
+        }
       }
       function renderLegal() {
         var item = legal[currentLegal] || legal.terms;
@@ -1698,6 +1733,7 @@
       }
       function render() {
         applyCopy();
+        renderAppHeader();
         fillBasicDefaults();
         renderCategories();
         renderSkills();
@@ -2077,6 +2113,7 @@
         if (event.key === "Enter") byId("sendChat").click();
       });
       window.kkGo = show;
+      document.querySelectorAll(".screen > nav.nav").forEach(function (nav) { nav.remove(); });
       document.querySelectorAll(".screen:not(.active)").forEach(function (screen) { screen.classList.add("was-right"); });
       fillBasicDefaults();
       byId("payRange").style.display = "none";
