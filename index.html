@@ -404,6 +404,24 @@
     .plan-top { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
     .plan-price { font-size: 20px; font-weight: 950; color: var(--green-dark); white-space: nowrap; }
     .plan small { color: var(--muted); font-weight: 800; line-height: 1.35; }
+    .visibility-plans { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .visibility-plans .plan {
+      min-height: 0;
+      padding: 18px;
+      border-radius: 24px;
+      align-items: start;
+      white-space: normal;
+      overflow: hidden;
+    }
+    .visibility-plans .plan b { font-size: 18px; line-height: 1.15; }
+    .visibility-plans .plan.boost {
+      background: #f0faf4;
+      border-color: #7bd99a;
+      box-shadow: 0 12px 28px rgba(8,166,63,.13);
+    }
+    .visibility-plans .plan.boost.selected { box-shadow: 0 0 0 4px rgba(8,166,63,.1), 0 12px 28px rgba(8,166,63,.13); }
+    .rec-badge { width: max-content; max-width: 100%; border-radius: 999px; padding: 7px 10px; background: #dff8e8; color: var(--green-dark); font-size: 12px; font-weight: 950; }
+    .visibility-note { color: var(--green-dark); font-size: 12px; font-weight: 900; }
     .review-card { display: grid; gap: 10px; }
     .review-row { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 9px; border-bottom: 1px solid var(--line); }
     .review-row:last-child { border-bottom: 0; padding-bottom: 0; }
@@ -411,10 +429,12 @@
     .review-row b { text-align: right; overflow-wrap: anywhere; }
     .review-desc { color: var(--text); line-height: 1.45; }
     .boost-list { display: grid; gap: 5px; margin-top: 2px; }
-    .boost-list span { color: var(--muted); font-size: 12px; font-weight: 850; }
+    .boost-list span { color: var(--text); font-size: 13px; font-weight: 850; overflow-wrap: anywhere; }
     .safety-confirm { display: flex; gap: 10px; align-items: flex-start; }
     .safety-confirm input { margin-top: 2px; width: 18px; height: 18px; flex: none; }
     .safety-confirm button { border: 0; background: transparent; color: var(--blue-dark); padding: 0; font-weight: 950; }
+    .safety-links { display: grid; gap: 4px; margin-top: 6px; }
+    .safety-links a, .safety-links button { width: max-content; max-width: 100%; }
     .error-note { display: none; margin-top: 8px; color: var(--red); font-size: 13px; font-weight: 900; }
     .ci {
       width: 38px;
@@ -1042,11 +1062,11 @@
         <div><span class="small">Description preview</span><p class="review-desc" id="reviewDesc">Work details will appear here.</p></div>
       </div>
       <h3>Visibility choice</h3>
-      <div class="grid">
+      <div class="visibility-plans">
         <button class="plan selected" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small></button>
-        <button class="plan" data-visibility="boost"><span class="plan-top"><b>Boost ₹199 (Recommended 🔥)</b><span class="plan-price">₹199</span></span><span class="boost-list"><span>Get 3x more visibility</span><span>Appear first in job feed</span><span>Get faster responses</span><span>Most employers choose this</span></span></button>
+        <button class="plan boost" data-visibility="boost"><span class="plan-top"><b>Boost Post</b><span class="plan-price">&#8377;199</span></span><span class="rec-badge">Recommended &#128293;</span><span class="boost-list"><span>&#10003; 3x more visibility</span><span>&#10003; Appears first in job feed</span><span>&#10003; Faster responses</span></span><span class="visibility-note">Most employers choose this</span></button>
       </div>
-      <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine, lawful, non-misleading, and follows Kaam Karo's posting rules.<br><button data-legal="guidelines">Job Posting Rules</button> <a href="legal/acceptable-use-policy.html" target="_blank" rel="noopener">Acceptable Use Policy</a><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
+      <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine, lawful, non-misleading, and follows Kaam Karo's posting rules.<span class="safety-links"><button data-legal="guidelines">Job Posting Rules</button><a href="legal/acceptable-use-policy.html" target="_blank" rel="noopener">Acceptable Use Policy</a></span><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
       <button class="btn primary mt" data-post-job>Publish Job</button>
     </section>
 
@@ -2170,3 +2190,4 @@
   </script>
 </body>
 </html>
+
