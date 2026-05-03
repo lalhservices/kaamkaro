@@ -1114,8 +1114,17 @@
         <div class="kv"><span>Experience</span><b id="workerProfileExperience">1-2 years</b></div>
         <div class="kv"><span>Preferred work</span><b id="workerProfileWork">Any Job</b></div>
         <div class="kv"><span>Preferred pay</span><b id="workerProfilePay">Open to any pay</b></div>
+        <div class="kv"><span>Availability</span><b id="workerProfileAvailability">Immediate</b></div>
       </div>
       <div class="panel"><b>Skills</b><div class="toolbar" id="workerProfileSkills"></div></div>
+      <button class="btn primary mt" data-switch-mode="employer">Hire Workers</button>
+      <h3>Settings</h3>
+      <div class="list">
+        <button class="list-row" data-go="accountSettings"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow">Account Settings</span></button>
+        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
+        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
+        <button class="list-row" data-logout><span class="tiny"><svg><use href="#i-x"></use></svg></span><span class="grow">Logout</span></button>
+      </div>
     </section>
 
     <section id="employerProfile" class="screen">
@@ -1126,6 +1135,15 @@
         <div class="kv"><span>Location</span><b id="employerLocationView">Jaipur</b></div>
         <div class="kv"><span>Business type</span><b id="employerTypeView">Retail Shop</b></div>
         <div class="kv"><span>Open jobs</span><b id="employerOpenJobsView">1</b></div>
+        <div class="kv"><span>Applicants</span><b id="employerApplicantStatsView">0 waiting</b></div>
+      </div>
+      <button class="btn primary mt" data-switch-mode="worker">Find Work</button>
+      <h3>Settings</h3>
+      <div class="list">
+        <button class="list-row" data-go="accountSettings"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow">Account Settings</span></button>
+        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
+        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
+        <button class="list-row" data-logout><span class="tiny"><svg><use href="#i-x"></use></svg></span><span class="grow">Logout</span></button>
       </div>
     </section>
 
@@ -1168,15 +1186,7 @@
         <button class="list-row" data-account-profile="worker"><span class="tiny"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Worker Profile</b><br><span class="small" id="workerAccountStatus">Not set up</span></span><span class="status-text" id="workerAccountAction">Set up</span></button>
         <button class="list-row" data-account-profile="employer"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Employer Profile</b><br><span class="small" id="employerAccountStatus">Not set up</span></span><span class="status-text" id="employerAccountAction">Set up</span></button>
       </div>
-      <h3>Legal</h3>
-      <div class="list">
-        <button class="list-row" data-legal="terms"><span class="tiny">T</span><span class="grow">Terms & Conditions</span></button>
-        <button class="list-row" data-legal="privacy"><span class="tiny">P</span><span class="grow">Privacy Policy</span></button>
-        <button class="list-row" data-legal="refund"><span class="tiny">R</span><span class="grow">Refund Policy</span></button>
-        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
-        <a class="list-row" href="legal/acceptable-use-policy.html" target="_blank" rel="noopener"><span class="tiny">A</span><span class="grow">Acceptable Use Policy</span></a>
-        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
-      </div>
+      <p class="small center">Using as: <span id="accountModeLine">Worker</span></p>
       <div class="panel danger-zone">
         <h3>Delete Account</h3>
         <p class="small">This will permanently delete your account, jobs, applications, and chats.</p>
@@ -1685,6 +1695,7 @@
         if (byId("employerLocationView")) byId("employerLocationView").textContent = business ? business.city : (state.user.city || "Location");
         byId("employerTypeView").textContent = business ? business.type : "Business";
         byId("employerOpenJobsView").textContent = state.jobs.length + " open";
+        if (byId("employerApplicantStatsView")) byId("employerApplicantStatsView").textContent = state.applications.length + " total";
       }
       function renderAccountSettings() {
         var phone = state.user.phone || state.employer.phone || "";
@@ -1702,6 +1713,7 @@
         byId("workerAccountAction").textContent = workerActive ? "View / Edit" : "Set up";
         byId("employerAccountStatus").textContent = employerActive ? "Active" : "Not set up";
         byId("employerAccountAction").textContent = employerActive ? "View / Edit" : "Set up";
+        if (byId("accountModeLine")) byId("accountModeLine").textContent = currentRole === "employer" ? "Employer" : "Worker";
         var deleteButton = byId("deleteAccountBtn");
         if (deleteButton) deleteButton.disabled = true;
         if (byId("deleteConfirmPhone")) byId("deleteConfirmPhone").value = "";
@@ -1970,6 +1982,7 @@
         if (byId("workerProfileExperience")) byId("workerProfileExperience").textContent = state.worker.experience || "Not set";
         if (byId("workerProfileWork")) byId("workerProfileWork").textContent = state.worker.preferredJob || "Any Job";
         if (byId("workerProfilePay")) byId("workerProfilePay").textContent = state.worker.openAnyPay ? "Open to any pay" : (state.worker.payRange || "Not set");
+        if (byId("workerProfileAvailability")) byId("workerProfileAvailability").textContent = state.worker.availability || "Immediate";
         if (byId("workerProfileSkills")) byId("workerProfileSkills").innerHTML = (state.worker.skills || []).map(function (s) { return '<span class="badge blue">' + s + '</span>'; }).join("") || '<span class="small">No skills added yet.</span>';
       }
       function finishWorker() {
@@ -2197,7 +2210,7 @@
         if (switchMode) {
           currentRole = switchMode.dataset.switchMode;
           localStorage.setItem("kkRole", currentRole);
-          toast(currentRole === "employer" ? "Switched to Hire Workers." : "Switched to Find Work.");
+          toast(currentRole === "employer" ? "Hire Workers mode." : "Find Work mode.");
           if (currentRole === "employer") goToEmployerRoute("employerDash"); else goToWorkerRoute("jobs");
           return;
         }
