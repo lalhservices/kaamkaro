@@ -1226,6 +1226,7 @@
       var selectedConversationId = null;
       var pointerCard = null;
       var pointerDeltaX = 0;
+      var pendingEmployerRoute = localStorage.getItem("kkPendingEmployerRoute") || "";
 
       var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","adminModeration","legal","report"];
       var workCategories = ["Delivery","Clerk / Office","Retail / Cashier","Helper","Driver","Cleaner","Security","Data Entry","Kitchen / Cook","Sales","Warehouse","Other"];
@@ -1234,7 +1235,7 @@
         workerComplete: false,
         employerComplete: false,
         worker: { id: "john", name: "John Kumar", gender: "Male", age: "24", city: "Jaipur", experience: "1-2 years", skills: ["Cash handling","Data entry"], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "Reliable worker, comfortable with office, cashier and helper roles.", phoneVerified: true },
-        employer: { name: "Rick Sharma", business: "Rick Retail Store", phone: "9876543210", type: "Retail Shop" },
+        employer: { id: "", ownerId: "john", name: "", business: "", phone: "9876543210", type: "", city: "" },
         jobs: [
           { id: "clerk", title: "Office Clerk", pay: "Rs 18,000/month", city: "Jaipur", distance: "2 km away", type: "Full-time", employer: "Rick Retail Store", badge: "Verified", visibility: "boost", remote: false, desc: "Counter billing, records and basic customer help." },
           { id: "driver", title: "Delivery Driver", pay: "Rs 700/day", city: "Jaipur", distance: "Nearby", type: "Daily wage", employer: "City Logistics", badge: "New", remote: false, desc: "Local deliveries, licence required." },
@@ -1250,6 +1251,8 @@
       state.conversations = state.conversations || [];
       state.messages = state.messages || [];
       state.notifications = state.notifications || [];
+      state.defaultBusinessId = state.defaultBusinessId || "";
+      state.businessProfiles = state.businessProfiles || {};
       if (!state.notifications.length) {
         state.notifications = [
           { id: "note-morning", text: "5 new jobs near you today", target: "jobs", read: false, createdAt: Date.now() - 60000 },
@@ -1330,6 +1333,24 @@
         if (lastMode === "employer") { currentRole = "employer"; localStorage.setItem("kkRole", "employer"); return show("employerDash"); }
         if (lastMode === "worker") { currentRole = "worker"; localStorage.setItem("kkRole", "worker"); return show("jobs"); }
         show("role");
+      }
+      function hasEmployerProfile() {
+        return !!(state.employerComplete && state.defaultBusinessId && state.businessProfiles && state.businessProfiles[state.defaultBusinessId]);
+      }
+      function isEmployerRoute(id) {
+        return ["employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","employerProfile"].indexOf(id) >= 0;
+      }
+      function goToEmployerRoute(targetRoute) {
+        if (!hasEmployerProfile()) {
+          pendingEmployerRoute = targetRoute || "employerDash";
+          localStorage.setItem("kkPendingEmployerRoute", pendingEmployerRoute);
+          toast("Set up your business first.");
+          return show("employerSetup");
+        }
+        return show(targetRoute || "employerDash");
+      }
+      function currentBusinessProfile() {
+        return state.businessProfiles && state.defaultBusinessId ? state.businessProfiles[state.defaultBusinessId] : null;
       }
       function flashJobCard(kind) {
         var card = document.querySelector("#jobFeed .job-card");
@@ -1414,6 +1435,9 @@
         byId("workerAge").value = state.worker.age || "";
         byId("workerCity").value = state.worker.city || "";
         byId("locationSearch").value = state.worker.city || "";
+        byId("businessName").value = state.employer.business || "";
+        byId("contactName").value = state.employer.name || "";
+        byId("businessType").value = state.employer.type || "";
         byId("businessPhone").value = state.employer.phone || byId("phoneInput").value || "";
         if (byId("otpPhoneText")) byId("otpPhoneText").textContent = "+91 " + ((byId("phoneInput").value || state.employer.phone || "98765 43210").trim());
       }
@@ -1567,6 +1591,7 @@
         return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' · ' + w.city + ' · ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span><button class="icon" data-reject-app="' + app.id + '">x</button><button class="icon" data-accept-app="' + app.id + '">✓</button></div>';
       }
       function renderEmployer() {
+        if (!hasEmployerProfile()) return;
         var apps = state.applications;
         var interested = apps.filter(function (a) { return a.status === "Interested"; }).length;
         var accepted = apps.filter(function (a) { return ["Accepted","Matched","Hired"].indexOf(a.status) >= 0; }).length;
@@ -1601,13 +1626,15 @@
       }
       function renderEmployerProfile() {
         if (!byId("employerProfileName")) return;
-        byId("employerProfileName").textContent = state.employer.business || "Employer Profile";
+        var business = currentBusinessProfile();
+        byId("employerProfileName").textContent = business ? business.businessName : "Employer Profile";
         byId("employerProfileMeta").textContent = "New Employer - Phone Verified";
-        byId("employerContactView").textContent = state.employer.name || "Contact person";
-        byId("employerTypeView").textContent = state.employer.type || "Business";
+        byId("employerContactView").textContent = business ? business.contactPersonName : "Contact person";
+        byId("employerTypeView").textContent = business ? business.type : "Business";
         byId("employerOpenJobsView").textContent = state.jobs.length + " open";
       }
       function renderAdminQueue() {
+        if (!hasEmployerProfile() && currentScreen !== "adminModeration") return;
         if (!byId("adminQueue")) return;
         var pending = state.jobs.filter(function (job) { return job.status === "pending_review"; }).sort(function (a, b) { return (b.riskScore || 0) - (a.riskScore || 0); });
         byId("adminPendingCount").textContent = pending.length + " pending";
@@ -1789,13 +1816,13 @@
         return amount && period ? "Rs " + amount + " " + period : "";
       }
       function employerPostCount() {
-        return state.jobs.filter(function (job) { return job.employer === (state.employer.business || "Your Business"); }).length;
+        return state.jobs.filter(function (job) { return job.businessId === state.defaultBusinessId; }).length;
       }
       function analyzeJobDraft(draft) {
         var text = [
           draft.title,
           draft.desc,
-          state.employer.business || "",
+          (currentBusinessProfile() && currentBusinessProfile().businessName) || "",
           draft.city,
           draft.pay,
           byId("postType").value || ""
@@ -1867,6 +1894,7 @@
         return { title: title, pay: pay, city: city, desc: desc, type: byId("postType").value };
       }
       function addPostedJob() {
+        if (!hasEmployerProfile()) return goToEmployerRoute("postJob");
         var draft = validateJobDraft();
         if (!draft) return;
         if (!byId("jobRules").checked) {
@@ -1876,12 +1904,14 @@
         byId("jobRulesError").style.display = "none";
         var moderation = analyzeJobDraft(draft);
         if (moderation.rejected) {
-          audit("rejected", moderation.reasons.join(", "), { id: "draft-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, type: draft.type, employer: state.employer.business || "Your Business", desc: draft.desc, status: "rejected" }, "system");
+          var rejectedBusiness = currentBusinessProfile();
+          audit("rejected", moderation.reasons.join(", "), { id: "draft-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, type: draft.type, employer: rejectedBusiness ? rejectedBusiness.businessName : "Business", desc: draft.desc, status: "rejected" }, "system");
           toast("This job cannot be published. Please review posting rules.");
           return;
         }
         var status = moderation.reasons.length ? "pending_review" : "approved";
-        var job = { id: "job-" + Date.now(), title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: draft.type, employer: state.employer.business || "Your Business", badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount() };
+        var business = currentBusinessProfile();
+        var job = { id: "job-" + Date.now(), businessId: state.defaultBusinessId, employerId: state.worker.id, companyName: business.businessName, title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: draft.type, employer: business.businessName, badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount() };
         state.jobs.unshift(job);
         save();
         audit(status === "approved" ? "approved" : "pending_review", status === "approved" ? "Auto-approved" : moderation.reasons.join(", "), job, "system");
@@ -1990,11 +2020,14 @@
           currentRole = switchMode.dataset.switchMode;
           localStorage.setItem("kkRole", currentRole);
           toast(currentRole === "employer" ? "Switched to Hire Workers." : "Switched to Find Work.");
-          show(currentRole === "employer" ? "employerDash" : "jobs");
+          if (currentRole === "employer") goToEmployerRoute("employerDash"); else show("jobs");
           return;
         }
         var go = event.target.closest("[data-go]");
-        if (go) { show(go.dataset.go); return; }
+        if (go) {
+          if (isEmployerRoute(go.dataset.go)) goToEmployerRoute(go.dataset.go); else show(go.dataset.go);
+          return;
+        }
         if (event.target.closest("[data-send-otp]")) {
           var phone = byId("phoneInput").value.replace(/\D/g, "");
           if (phone.length !== 10) return toast("Enter a valid 10 digit phone number.");
@@ -2090,11 +2123,20 @@
         var finishEmp = event.target.closest("[data-finish-employer]");
         if (finishEmp) {
           state.employerComplete = true;
-          state.employer.business = byId("businessName").value.trim() || state.employer.business;
-          state.employer.name = byId("contactName").value.trim() || state.employer.name;
+          var businessId = state.defaultBusinessId || ("biz-" + Date.now());
+          state.defaultBusinessId = businessId;
+          state.employer.id = businessId;
+          state.employer.ownerId = state.worker.id;
+          state.employer.business = byId("businessName").value.trim();
+          state.employer.name = byId("contactName").value.trim();
           state.employer.phone = byId("businessPhone").value.trim() || state.employer.phone;
           state.employer.type = byId("businessType").value || byId("businessTypeOther").value || state.employer.type;
-          save(); track("employer_setup_complete"); show("employerDash"); return;
+          state.employer.city = state.worker.city || "";
+          state.businessProfiles[businessId] = { businessId: businessId, ownerId: state.worker.id, businessName: state.employer.business, contactPersonName: state.employer.name, city: state.employer.city, phone: state.employer.phone, type: state.employer.type, createdAt: Date.now() };
+          var nextEmployerRoute = pendingEmployerRoute || "employerDash";
+          pendingEmployerRoute = "";
+          localStorage.removeItem("kkPendingEmployerRoute");
+          save(); track("employer_setup_complete"); show(nextEmployerRoute); return;
         }
         var filter = event.target.closest("[data-filter]");
         if (filter) { activeFilter = filter.dataset.filter; jobIndex = 0; filter.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); }); filter.classList.add("selected"); renderFeed(); return; }
