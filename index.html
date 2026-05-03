@@ -819,6 +819,9 @@
     .metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 11px; }
     .hero > .metric-grid { display: none; }
     .metric-card { padding: 12px; }
+    .profile-metrics .metric-card { padding: 15px 16px; border-radius: 20px; }
+    .profile-metrics .metric-card span { font-size: 12px; color: #667085; }
+    .profile-metrics .metric-card b { font-size: 24px; color: var(--ink); }
     .metric-card.wide { grid-column: 1 / -1; }
     .metric-card span { display: block; color: var(--muted); font-size: 12px; font-weight: 900; margin-bottom: 7px; }
     .metric-card b { display: block; color: var(--ink); font-size: 24px; line-height: 1; letter-spacing: -.3px; }
@@ -1249,9 +1252,9 @@
       <button class="profile-card" data-edit-profile="contactPerson"><span><span>Contact Person</span><b id="employerContactText">Rick Sharma</b></span><i class="arrow">›</i></button>
       <button class="profile-card" data-edit-profile="employerLocation"><span><span>Location</span><b id="employerLocationText">Based in Brisbane</b></span><i class="arrow">›</i></button>
       <button class="profile-card" data-edit-profile="businessType"><span><span>Business Type</span><b id="employerTypeText">Retail Shop</b></span><i class="arrow">›</i></button>
-      <div class="panel">
-        <div class="kv"><span>Active jobs</span><b id="employerOpenJobsView">1</b></div>
-        <div class="kv"><span>Applicants</span><b id="employerApplicantStatsView">0 waiting</b></div>
+      <div class="metric-grid profile-metrics">
+        <div class="metric-card"><span>Active Jobs</span><b id="employerOpenJobsView">1</b></div>
+        <div class="metric-card"><span>Total Applicants</span><b id="employerApplicantStatsView">0</b></div>
       </div>
       <button class="switch-cta mt" data-switch-mode="worker"><svg><use href="#i-user"></use></svg> Switch to Job Search</button>
       <div class="section-label">Settings</div>
@@ -1538,8 +1541,12 @@
         return /^open/i.test(state.worker.preferredJob) ? state.worker.preferredJob : "Open to " + state.worker.preferredJob + " roles";
       }
       function workerAvailabilityLine() {
-        if (state.worker.availableDays && state.worker.availableDays.length) return "Available " + state.worker.availableDays.join(", ") + " for " + (state.worker.shiftPreference || "morning") + " shifts";
-        return state.worker.availability || "Available weekdays and weekend shifts";
+        var start = state.worker.startAvailability || "Immediate";
+        var days = state.worker.availableDays || [];
+        if (start === "On Demand") return "Available on demand, flexible schedule";
+        if (start === "Specific Date") return "Available from a specific date for planned shifts";
+        if (!days.length || days.length === 7) return "Available immediately for weekday and weekend shifts";
+        return "Available immediately on " + days.join(", ") + " for " + (state.worker.shiftPreference || "morning").toLowerCase() + " shifts";
       }
       function resetVisibilityChoice() {
         postVisibility = "";
@@ -1832,8 +1839,8 @@
         if (byId("employerContactText")) byId("employerContactText").textContent = business ? business.contactPersonName : (state.user.displayName || "Contact person");
         if (byId("employerLocationText")) byId("employerLocationText").textContent = "Based in " + (business ? (business.city || state.user.city || "your city") : (state.user.city || "your city"));
         if (byId("employerTypeText")) byId("employerTypeText").textContent = business ? (business.type || "Business") : "Not set";
-        byId("employerOpenJobsView").textContent = state.jobs.length + " open";
-        if (byId("employerApplicantStatsView")) byId("employerApplicantStatsView").textContent = state.applications.length + " total";
+        byId("employerOpenJobsView").textContent = state.jobs.length;
+        if (byId("employerApplicantStatsView")) byId("employerApplicantStatsView").textContent = state.applications.length;
       }
       function renderAccountSettings() {
         var phone = state.user.phone || state.employer.phone || "";
@@ -1910,6 +1917,7 @@
         if (cfg.type === "availability") {
           editDraft.days = (state.worker.availableDays || ["Monday","Tuesday","Friday"]).slice();
           editDraft.shift = state.worker.shiftPreference || "Morning";
+          editDraft.start = state.worker.startAvailability || "Immediate";
         }
         byId("profileEditTitle").textContent = cfg.title;
         byId("profileEditHint").textContent = cfg.hint;
@@ -1942,8 +1950,11 @@
         if (cfg.type === "availability") {
           var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
           var shifts = ["Morning","Afternoon","Evening"];
+          var starts = ["Immediate","On Demand","Specific Date"];
+          var allSelected = days.every(function (day) { return (editDraft.days || []).indexOf(day) >= 0; });
           body.innerHTML =
-            '<div class="edit-card"><div class="section-label">Days</div><div class="grid">' + days.map(function (day) { var selected = (editDraft.days || []).indexOf(day) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-day="' + day + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + day + '</button>'; }).join("") + '</div></div>' +
+            '<div class="edit-card"><div class="section-label">Start Availability</div>' + starts.map(function (start) { var selected = editDraft.start === start; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-start="' + start + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + start + '</button>'; }).join("") + '</div>' +
+            '<div class="edit-card"><div class="section-label">Days</div><button class="option-row ' + (allSelected ? "selected" : "") + '" data-edit-all-days><span class="option-dot">' + (allSelected ? "✓" : "") + '</span>Select All Days</button><div class="grid mt">' + days.map(function (day) { var selected = (editDraft.days || []).indexOf(day) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-day="' + day + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + day + '</button>'; }).join("") + '</div></div>' +
             '<div class="edit-card"><div class="section-label">Shift preference</div>' + shifts.map(function (shift) { var selected = editDraft.shift === shift; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-shift="' + shift + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + shift + '</button>'; }).join("") + '</div>';
           return;
         }
@@ -1989,7 +2000,8 @@
         if (editingProfileField === "workerAvailability") {
           state.worker.availableDays = (editDraft.days || []).slice();
           state.worker.shiftPreference = editDraft.shift || "Morning";
-          state.worker.availability = (state.worker.availableDays.length ? state.worker.availableDays.join(", ") : "Flexible days") + " - " + state.worker.shiftPreference;
+          state.worker.startAvailability = editDraft.start || "Immediate";
+          state.worker.availability = workerAvailabilityLine();
         }
         if (editingProfileField === "businessName") { state.employer.business = value; if (business) business.businessName = value; }
         if (editingProfileField === "contactPerson") { state.employer.name = value; state.user.displayName = value; if (business) business.contactPersonName = value; }
@@ -2439,6 +2451,14 @@
           if (dayIndex >= 0) editDraft.days.splice(dayIndex, 1); else editDraft.days.push(editDay.dataset.editDay);
           markEditDirty(); renderProfileEdit(); return;
         }
+        if (event.target.closest("[data-edit-all-days]")) {
+          var allDays = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+          var currentlyAll = allDays.every(function (day) { return (editDraft.days || []).indexOf(day) >= 0; });
+          editDraft.days = currentlyAll ? [] : allDays.slice();
+          markEditDirty(); renderProfileEdit(); return;
+        }
+        var editStart = event.target.closest("[data-edit-start]");
+        if (editStart) { editDraft.start = editStart.dataset.editStart; markEditDirty(); renderProfileEdit(); return; }
         var editShift = event.target.closest("[data-edit-shift]");
         if (editShift) { editDraft.shift = editShift.dataset.editShift; markEditDirty(); renderProfileEdit(); return; }
         var suggestSkill = event.target.closest("[data-edit-suggest-skill]");
