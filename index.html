@@ -50,7 +50,7 @@
       position: absolute;
       inset: 0;
       height: 100dvh;
-      padding: 20px 22px calc(132px + env(safe-area-inset-bottom));
+      padding: 0 22px calc(150px + env(safe-area-inset-bottom));
       overflow-y: auto;
       overflow-x: hidden;
       background: linear-gradient(180deg, #fff, #f8fbff);
@@ -71,6 +71,16 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 14px;
+    }
+    .screen > .header {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      margin: 0 -22px 16px;
+      padding: calc(14px + env(safe-area-inset-top)) 22px 12px;
+      background: rgba(248,251,255,.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(226,232,240,.72);
     }
     .topbar { align-items: flex-start; }
     .brand { display: flex; align-items: center; min-width: 0; }
@@ -410,7 +420,7 @@
     #jobs [data-filter-group] { margin-top: 9px; padding-bottom: 7px; }
     #jobs #feedNotice { margin: 8px 0 10px; padding: 12px 14px; border-radius: 18px; }
 
-    .swipe-stack { position: relative; min-height: 566px; margin-top: 2px; padding-bottom: 120px; }
+    .swipe-stack { position: relative; min-height: 560px; margin-top: 2px; padding-bottom: 136px; }
     .stack-card {
       position: absolute;
       left: 10px;
@@ -488,12 +498,13 @@
     .gold { color: var(--amber); }
     .gn { color: var(--green); }
     .swipe-labels { display: none; }
-    .report-link { display: block; margin: 0 auto 0; border: 0; background: transparent; color: var(--muted); font-size: 12px; font-weight: 900; }
+    .report-link { display: block; width: max-content; margin: 0 auto; border: 0; background: transparent; color: var(--muted); font-size: 12px; font-weight: 900; }
+    .job-card .report-link { margin: 0; justify-self: start; }
 
     .nav {
       position: fixed;
       left: 50%;
-      bottom: max(12px, env(safe-area-inset-bottom));
+      bottom: calc(12px + env(safe-area-inset-bottom));
       transform: translateX(-50%);
       width: min(398px, calc(100vw - 32px));
       min-height: 70px;
@@ -504,7 +515,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       box-shadow: 0 12px 30px rgba(6, 20, 47, .1);
-      z-index: 20;
+      z-index: 999;
     }
     .nav button { border: 0; background: transparent; color: var(--muted); display: grid; place-items: center; gap: 3px; font-size: 10.5px; font-weight: 850; padding: 8px 3px 7px; }
     .nav b { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 12px; color: currentColor; }
@@ -661,7 +672,8 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     @media (max-width: 360px) {
-      .screen { padding-left: 16px; padding-right: 16px; padding-bottom: calc(136px + env(safe-area-inset-bottom)); }
+      .screen { padding-left: 16px; padding-right: 16px; padding-bottom: calc(156px + env(safe-area-inset-bottom)); }
+      .screen > .header { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
       .topbar { gap: 8px; padding-bottom: 14px; }
       .brand-logo { width: 124px; }
       .hero .brand-logo { width: 146px; }
@@ -669,7 +681,7 @@
       .lang-switch button { font-size: 11px; }
       .title { font-size: 31px; }
       .sub { font-size: 15px; }
-      .swipe-stack { min-height: 548px; padding-bottom: 128px; }
+      .swipe-stack { min-height: 548px; padding-bottom: 146px; }
       .job-hero { min-height: 166px; }
       .pay { font-size: 34px; }
       .job-hero h2 { font-size: 24px; }
@@ -1359,8 +1371,8 @@
         var applied = state.applications.find(function (a) { return a.jobId === job.id && a.workerId === state.worker.id; });
         return '<article class="job-card">' +
           '<div class="job-hero"><div><div class="pay">' + job.pay + '</div><h2>' + job.title + '</h2><p>Location: ' + job.distance + '</p></div><div><span class="badge">Employer: ' + job.badge + '</span><div class="job-hook mt">Start today - 2 shifts</div></div></div>' +
-          '<div class="job-meta"><div class="trust-line">No fees required</div><div class="meta"><span>' + job.type + '</span><span>' + job.employer + '</span><span>12 people applied</span></div><p class="small">' + job.desc + '</p></div>' +
-          '</article><div class="swipe"><button class="circle danger-action" aria-label="Not interested" data-next-job><svg><use href="#i-x"></use></svg></button><button class="circle like-action" aria-label="Interested" data-apply-job="' + job.id + '"><svg><use href="#i-heart"></use></svg></button></div><div class="swipe-labels"><span>Not interested</span><span>Interested</span></div><button class="report-link" data-report="job">Report job</button>';
+          '<div class="job-meta"><div class="trust-line">No fees required</div><div class="meta"><span>' + job.type + '</span><span>' + job.employer + '</span><span>12 people applied</span></div><p class="small">' + job.desc + '</p><button class="report-link" data-report="job">Report job</button></div>' +
+          '</article><div class="swipe"><button class="circle danger-action" aria-label="Not interested" data-next-job><svg><use href="#i-x"></use></svg></button><button class="circle like-action" aria-label="Interested" data-apply-job="' + job.id + '"><svg><use href="#i-heart"></use></svg></button></div><div class="swipe-labels"><span>Not interested</span><span>Interested</span></div>';
       }
       function renderFeed() {
         var query = byId("jobSearch") ? byId("jobSearch").value : "";
