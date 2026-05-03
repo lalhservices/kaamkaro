@@ -1590,7 +1590,7 @@
         track("screen_" + id);
       }
       function navScreenIds() {
-        return ["jobs","applied","search","applications","profile","employerDash","employerJobDetail","applicants","employerJobs","employerProfile","chat"];
+        return ["jobs","applied","search","applications","profile","accountSettings","profileEdit","legal","report","notifications","employerDash","employerJobDetail","applicants","employerJobs","employerProfile","chat"];
       }
       function setupScreenBodies() {
         var navScreens = navScreenIds();
@@ -2155,8 +2155,8 @@
         }
         var unread = state.conversations.reduce(function (sum, c) { return sum + (currentRole === "employer" ? c.unreadEmployer : c.unreadWorker); }, 0);
         var chatLabel = 'Chat' + (unread ? '<span class="nav-badge">' + unread + '</span>' : '');
-        var worker = nav("jobs", "i-home", "Home", ["jobs", "applied", "search"]) + nav("applications", "i-briefcase", "Applications", ["applications"]) + nav("chat", "i-message", chatLabel, ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "legal", "report"]);
-        var employer = nav("employerDash", "i-home", "Dashboard", ["employerDash", "employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-briefcase", "Applicants", ["applicants", "workerProfileView"]) + nav("chat", "i-message", chatLabel, ["chat"]) + nav("employerProfile", "i-user", "Profile", ["employerProfile", "legal", "report"]);
+        var worker = nav("jobs", "i-home", "Home", ["jobs", "applied", "search"]) + nav("applications", "i-briefcase", "Applications", ["applications"]) + nav("chat", "i-message", chatLabel, ["chat"]) + nav("profile", "i-user", "Profile", ["profile", "accountSettings", "profileEdit", "legal", "report", "notifications"]);
+        var employer = nav("employerDash", "i-home", "Dashboard", ["employerDash", "employerJobs", "employerJobDetail", "postJob", "jobVisibility", "published"]) + nav("applicants", "i-briefcase", "Applicants", ["applicants", "workerProfileView"]) + nav("chat", "i-message", chatLabel, ["chat"]) + nav("employerProfile", "i-user", "Profile", ["employerProfile", "accountSettings", "profileEdit", "legal", "report", "notifications"]);
         var navScreens = navScreenIds();
         if (byId("bottomNav")) {
           byId("bottomNav").innerHTML = currentRole === "employer" ? employer : worker;
