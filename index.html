@@ -63,12 +63,12 @@
       top: 0;
       left: 0;
       right: 0;
-      min-height: 84px;
+      min-height: 72px;
       z-index: 50;
       background: rgba(248, 251, 255, 0.96);
       border-bottom: 1px solid rgba(226,232,240,.72);
       backdrop-filter: blur(12px);
-      padding: calc(10px + env(safe-area-inset-top)) 22px 8px;
+      padding: calc(8px + env(safe-area-inset-top)) 22px 7px;
       display: flex;
       align-items: flex-end;
     }
@@ -86,7 +86,7 @@
       overflow: hidden;
       padding: 0;
     }
-    .app.has-header .app-scroll { top: 84px; }
+    .app.has-header .app-scroll { top: 72px; }
     .app.has-bottom-nav .app-scroll { bottom: calc(74px + env(safe-area-inset-bottom)); }
     .app-scroll::-webkit-scrollbar { display: none; }
     .screen {
@@ -139,6 +139,8 @@
       margin-bottom: 14px;
     }
     .screen > .header { display: none; }
+    .app-header .brand-logo.compact { width: clamp(88px, 28vw, 116px); }
+    .app-header .small { white-space: nowrap; font-weight: 900; }
     .topbar { align-items: flex-start; }
     .brand { display: flex; align-items: center; min-width: 0; }
     .brand-logo { width: clamp(132px, 42vw, 174px); height: auto; display: block; object-fit: contain; }
@@ -980,7 +982,7 @@
       <div class="header"><button class="icon" data-go="landing">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title">Enter your phone number</h1>
       <p class="sub">We will send a one-time password by SMS. This keeps your account safe and helps employers trust real people.</p>
-      <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="0000000000" value="0000000000"></label>
+      <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="0000000000"></label>
       <div class="safe-note"><b>✓</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
       <button class="btn primary mt" data-send-otp>Send OTP</button>
       <div class="legal-line">By continuing, you agree to <button data-legal="terms">Terms</button> and <button data-legal="privacy">Privacy Policy</button>.</div>
@@ -1008,28 +1010,33 @@
     </section>
 
     <section id="workerBasic" class="screen">
-      <div class="header"><button class="icon" data-go="role">←</button><span class="small">1/5</span></div>
+      <div class="header"><button class="icon" data-go="role">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">1/5</span></div>
       <div class="progress"><span class="on"></span><span></span><span></span><span></span><span></span></div>
       <h1 class="title">Basic details</h1>
-      <label class="input"><input id="workerName" placeholder="Full name"></label>
+      <label class="input"><input id="workerName" placeholder="Aman Lalh"></label>
       <label class="input mt"><select id="workerGender"><option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option></select></label>
-      <label class="input mt"><input id="workerAge" inputmode="numeric" placeholder="Age"></label>
-      <label class="input mt"><input id="workerCity" placeholder="City / Location"></label>
+      <label class="input mt"><input id="workerAge" inputmode="numeric" placeholder="25"></label>
+      <label class="input mt"><input id="workerCity" placeholder="Delhi"></label>
       <button class="btn primary mt" data-worker-basic>Continue</button>
     </section>
 
     <section id="workerWork" class="screen">
-      <div class="header"><button class="icon" data-go="workerBasic">←</button><span class="small">2/5</span></div>
+      <div class="header"><button class="icon" data-go="workerBasic">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">2/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
       <h1 class="title">Job type</h1>
       <div class="search mt"><svg><use href="#i-search"></use></svg><input id="workSearch" placeholder="Search job title, e.g. clerk, driver, cashier, helper..."></div>
+      <button class="btn outline mt" data-add-job-type>+ Add Role</button>
       <button class="choice mt selected" data-any-job><span class="ci">All</span><span><b>Show All Jobs</b><br><span class="small">On by default. You can still choose preferred roles below.</span></span></button>
+      <div class="panel mt">
+        <div class="review-row"><span>Selected Job Types</span><b id="jobTypeCounter">Show all on</b></div>
+        <div class="toolbar selected-skills" id="selectedJobTypes"></div>
+      </div>
       <div class="grid mt" id="workCategories"></div>
       <button class="btn primary mt" data-go="workerSkills">Continue</button>
     </section>
 
     <section id="workerSkills" class="screen">
-      <div class="header"><button class="icon" data-go="workerWork">←</button><span class="small">3/5</span></div>
+      <div class="header"><button class="icon" data-go="workerWork">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">3/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
       <h1 class="title">Skills & experience</h1>
       <p class="sub">Add skills to improve job matches.</p>
@@ -1053,7 +1060,7 @@
     </section>
 
     <section id="workerLocation" class="screen">
-      <div class="header"><button class="icon" data-go="workerSkills">←</button><span class="small">4/5</span></div>
+      <div class="header"><button class="icon" data-go="workerSkills">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">4/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
       <h1 class="title">Availability</h1>
       <p class="sub">Tell employers when you can start and what shifts work for you.</p>
@@ -1066,12 +1073,12 @@
       <button class="choice selected" data-onboard-all-days><span class="ci">✓</span>Select All Days</button>
       <div class="grid mt" id="onboardDays"></div>
       <div class="section-label">Shift Preference</div>
-      <div class="toolbar" id="onboardShifts"><button class="chip selected" data-onboard-shift="Morning">Morning</button><button class="chip" data-onboard-shift="Afternoon">Afternoon</button><button class="chip" data-onboard-shift="Evening">Evening</button></div>
+      <div class="toolbar" id="onboardShifts"><button class="chip selected" data-onboard-shift="Morning">Morning</button><button class="chip" data-onboard-shift="Afternoon">Afternoon</button><button class="chip" data-onboard-shift="Evening">Evening</button><button class="chip" data-onboard-shift="Anytime">Anytime</button></div>
       <button class="btn primary mt" data-go="workerTrust">Continue</button>
     </section>
 
     <section id="workerTrust" class="screen">
-      <div class="header"><button class="icon" data-go="workerLocation">←</button><span class="small">5/5</span></div>
+      <div class="header"><button class="icon" data-go="workerLocation">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">5/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
       <h1 class="title">Build Trust and Get Hired</h1>
       <p class="sub">Increase your chances of getting hired.</p>
@@ -1364,7 +1371,7 @@
       var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
 
       var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","profileEdit","adminModeration","legal","report"];
-      var workCategories = ["Delivery","Office Work","Retail","Helper","Driver","Cleaner","Plumber","Electrician","Tiler","Welder","Waiter / Hospitality","Data Entry"];
+      var workCategories = ["Delivery","Retail","Office Work","Helper","Driver","Cleaner","Waiter","Data Entry"];
       var skillOptions = ["Cleaning","Driving","Customer Service","Data Entry","Excel","Inventory Handling","Food Service","Basic Accounting","Communication","Sales","Packing","Warehouse Work"];
       var defaultJobs = [
         { id: "clerk", title: "Office Clerk", pay: "Rs 18,000/month", city: "Delhi", distance: "2 km away", type: "Full-time", employer: "Rick Retail Store", badge: "Verified", visibility: "boost", remote: false, desc: "Counter billing, records and basic customer help." },
@@ -1392,6 +1399,7 @@
       state.worker.city = state.worker.city || "Delhi";
       state.worker.skills = Array.isArray(state.worker.skills) ? state.worker.skills : [];
       state.worker.preferredJob = state.worker.preferredJob || "Any Job";
+      state.worker.jobTypes = Array.isArray(state.worker.jobTypes) ? state.worker.jobTypes : [];
       state.employer = state.employer || { id: "", ownerId: "john", name: "", business: "", phone: "0000000000", type: "", city: "" };
       if (!Array.isArray(state.jobs) || !state.jobs.length) state.jobs = cloneJobs();
       state.applications = Array.isArray(state.applications) ? state.applications : [];
@@ -1552,6 +1560,7 @@
         return /experience|retail|customer/i.test(state.worker.experience) ? state.worker.experience : state.worker.experience + " experience in retail and customer-facing roles";
       }
       function workerWorkLine() {
+        if (state.worker.jobTypes && state.worker.jobTypes.length) return "Open to " + state.worker.jobTypes.slice(0, 3).join(", ") + (state.worker.jobTypes.length > 3 ? " and more roles" : " roles");
         if (state.worker.workTypes && state.worker.workTypes.length) return "Open to " + state.worker.workTypes.join(", ").toLowerCase() + " roles";
         if (!state.worker.preferredJob || state.worker.preferredJob === "Any Job") return "Open to full-time and part-time roles";
         return /^open/i.test(state.worker.preferredJob) ? state.worker.preferredJob : "Open to " + state.worker.preferredJob + " roles";
@@ -1652,25 +1661,40 @@
         document.querySelectorAll("[data-i18n]").forEach(function (node) { node.textContent = t(node.dataset.i18n); });
       }
       function fillBasicDefaults() {
-        if (byId("phoneInput") && !byId("phoneInput").value) byId("phoneInput").value = state.user.phone || state.employer.phone || "0000000000";
-        if (byId("workerName")) byId("workerName").value = state.worker.name || "";
-        if (byId("workerGender")) byId("workerGender").value = state.worker.gender || "";
-        if (byId("workerAge")) byId("workerAge").value = state.worker.age || "";
-        if (byId("workerCity")) byId("workerCity").value = state.worker.city || "";
         if (byId("locationSearch")) byId("locationSearch").value = state.worker.city || "";
         if (byId("businessName")) byId("businessName").value = state.employer.business || "";
         if (byId("contactName")) byId("contactName").value = state.employer.name || "";
         if (byId("businessType")) byId("businessType").value = state.employer.type || "";
         if (byId("businessPhone")) byId("businessPhone").value = state.employer.phone || (byId("phoneInput") ? byId("phoneInput").value : "") || "";
-        if (byId("otpPhoneText")) byId("otpPhoneText").textContent = "+91 " + ((byId("phoneInput").value || state.employer.phone || "0000000000").trim());
+        if (byId("otpPhoneText")) byId("otpPhoneText").textContent = "+91 " + (((byId("phoneInput") && byId("phoneInput").value) || state.user.phone || state.employer.phone || "0000000000").trim());
       }
       function renderCategories() {
-        byId("workCategories").innerHTML = workCategories.map(function (cat) {
-          var selected = state.worker.preferredJob === cat;
+        if (!byId("workCategories")) return;
+        byId("workCategories").innerHTML = workCategories.slice(0, 8).map(function (cat) {
+          var selected = (state.worker.jobTypes || []).indexOf(cat) >= 0;
           return '<button class="choice ' + (selected ? "selected" : "") + '" data-work-cat="' + cat + '"><span class="ci">' + cat.slice(0,1) + '</span>' + cat + '</button>';
         }).join("");
         var any = document.querySelector("[data-any-job]");
         if (any) any.classList.toggle("selected", state.worker.preferredJob === "Any Job");
+        if (byId("jobTypeCounter")) byId("jobTypeCounter").textContent = (state.worker.jobTypes || []).length ? state.worker.jobTypes.length + " selected" : "Show all on";
+        if (byId("selectedJobTypes")) {
+          var base = '<button class="chip selected" data-any-job>Show All Jobs</button>';
+          var selectedTypes = (state.worker.jobTypes || []).map(function (type) {
+            return '<button class="chip selected skill-pill" data-remove-job-type="' + type + '">' + type + ' <span>x</span></button>';
+          }).join("");
+          byId("selectedJobTypes").innerHTML = base + selectedTypes;
+        }
+      }
+      function addWorkerJobType(type) {
+        var value = String(type || "").trim();
+        if (!value) return;
+        state.worker.jobTypes = Array.isArray(state.worker.jobTypes) ? state.worker.jobTypes : [];
+        if (state.worker.jobTypes.indexOf(value) < 0) state.worker.jobTypes.push(value);
+        state.worker.preferredJob = "Any Job";
+        if (byId("workSearch")) byId("workSearch").value = "";
+        save();
+        renderCategories();
+        toast(value + " added");
       }
       function renderSkills() {
         byId("skillChips").innerHTML = skillOptions.map(function (skill) {
@@ -2330,7 +2354,7 @@
           age: state.worker.age,
           city: state.worker.city,
           location: state.worker.city,
-          workPreference: state.worker.preferredJob,
+          workPreference: (state.worker.jobTypes && state.worker.jobTypes.length) ? state.worker.jobTypes.join(", ") : state.worker.preferredJob,
           skills: state.worker.skills.slice(),
           experience: state.worker.experience || "Fresher",
           availability: state.worker.availability,
@@ -2573,7 +2597,7 @@
           state.notifications = [];
           state.jobs = keepJobs;
           state.user = { id: "user-demo", displayName: "Aman Lalh", phone: "0000000000", city: "Delhi", location: "Delhi" };
-          state.worker = { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "", skills: [], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: false, startAvailability: "Immediate", availableDays: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], shiftPreference: "Morning" };
+          state.worker = { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "", skills: [], jobTypes: [], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: false, startAvailability: "Immediate", availableDays: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], shiftPreference: "Morning" };
           state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "0000000000", type: "", city: "" };
           localStorage.removeItem("kkPendingWorkerRoute");
           localStorage.removeItem("kkPendingEmployerRoute");
@@ -2645,8 +2669,15 @@
         }
         var anyJob = event.target.closest("[data-any-job]");
         if (anyJob) { state.worker.preferredJob = "Any Job"; save(); renderCategories(); toast("All jobs will be shown."); return; }
+        var addJobType = event.target.closest("[data-add-job-type]");
+        if (addJobType) { addWorkerJobType(byId("workSearch") ? byId("workSearch").value : ""); return; }
         var workCat = event.target.closest("[data-work-cat]");
-        if (workCat) { state.worker.preferredJob = workCat.dataset.workCat; save(); renderCategories(); return; }
+        if (workCat) { addWorkerJobType(workCat.dataset.workCat); return; }
+        var removeJobType = event.target.closest("[data-remove-job-type]");
+        if (removeJobType) {
+          state.worker.jobTypes = (state.worker.jobTypes || []).filter(function (type) { return type !== removeJobType.dataset.removeJobType; });
+          save(); renderCategories(); return;
+        }
         var skill = event.target.closest("[data-skill]");
         if (skill) {
           var i = state.worker.skills.indexOf(skill.dataset.skill);
@@ -2798,11 +2829,11 @@
           byId("deleteAccountBtn").disabled = event.target.value.replace(/\D/g, "") !== expectedPhone;
         }
         if (event.target.id === "payPref") { state.worker.payRange = event.target.value.trim(); state.worker.openAnyPay = false; save(); }
-        if (event.target.id === "workSearch") {
-          var q = event.target.value.trim();
-          if (q) state.worker.preferredJob = q;
-          save();
-          renderCategories();
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.target.id === "workSearch" && event.key === "Enter") {
+          event.preventDefault();
+          addWorkerJobType(event.target.value);
         }
       });
       document.addEventListener("pointerdown", function (event) {
