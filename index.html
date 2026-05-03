@@ -343,6 +343,120 @@
     }
     .choice:active, .list-row:active, .menu-row:active, .plan:active { transform: scale(.985); }
     .panel { padding: 16px; margin: 14px 0; }
+    .profile-hero { display: flex; align-items: center; gap: 14px; padding: 17px; }
+    .avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #eaf8ef, #eef4ff);
+      color: var(--green-dark);
+      font-weight: 950;
+      font-size: 20px;
+      border: 1px solid rgba(8,166,63,.16);
+      flex: none;
+    }
+    .profile-hero h2 { margin: 0 0 4px; font-size: 23px; line-height: 1.05; color: var(--ink); }
+    .profile-hero p { margin: 0; color: var(--muted); font-size: 13px; font-weight: 850; }
+    .profile-card, .settings-card {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 18px;
+      margin: 14px 0;
+      text-align: left;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      box-shadow: 0 12px 32px rgba(6,20,47,.08);
+      transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+    }
+    .profile-card:active, .settings-card:active, .switch-cta:active { transform: scale(.985); }
+    .profile-card span, .settings-card span { display: block; color: var(--muted); font-size: 12px; font-weight: 950; letter-spacing: .03em; text-transform: uppercase; margin-bottom: 5px; }
+    .profile-card b, .settings-card b { display: block; color: var(--ink); font-size: 15px; line-height: 1.35; font-weight: 900; }
+    .profile-card .arrow, .settings-card .arrow { color: var(--muted); font-size: 22px; font-weight: 900; flex: none; }
+    .switch-cta {
+      width: 100%;
+      min-height: 56px;
+      border: 1px solid #d8e4f2;
+      border-radius: 20px;
+      background: #f6faff;
+      color: var(--blue-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(6,20,47,.06);
+    }
+    .settings-list { display: grid; gap: 12px; margin-top: 8px; }
+    .settings-card { margin: 0; min-height: 62px; }
+    .top-save {
+      border: 0;
+      background: transparent;
+      color: var(--green-dark);
+      font-weight: 950;
+      font-size: 14px;
+      padding: 8px;
+    }
+    .top-save:disabled { color: var(--muted); opacity: .5; }
+    .edit-stack { display: grid; gap: 14px; }
+    .edit-card {
+      padding: 16px;
+      border-radius: 22px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 12px 32px rgba(6,20,47,.08);
+    }
+    .option-row {
+      width: 100%;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      color: var(--ink);
+      text-align: left;
+      font-weight: 900;
+      transition: transform .14s ease, background .14s ease, border-color .14s ease;
+    }
+    .option-row:active { transform: scale(.97); }
+    .option-row.selected { background: #f0faf4; border-color: rgba(8,166,63,.48); color: var(--green-dark); }
+    .option-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 2px solid #cbd5e1;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      flex: none;
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .option-row.selected .option-dot { border-color: var(--green); background: var(--green); }
+    .edit-chip-row { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 10px; }
+    .edit-chip {
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      background: #fff;
+      min-height: 40px;
+      padding: 0 13px;
+      color: var(--ink);
+      font-weight: 900;
+      transition: transform .14s ease, background .14s ease, border-color .14s ease;
+    }
+    .edit-chip:active { transform: scale(.97); }
+    .edit-chip.selected { background: #f0faf4; border-color: rgba(8,166,63,.48); color: var(--green-dark); }
+    .skill-remove { padding-right: 10px; }
+    .skill-remove span { color: var(--red); margin-left: 6px; }
     .input, .search {
       min-height: 58px;
       border: 1px solid var(--line);
@@ -1108,42 +1222,44 @@
 
     <section id="profile" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
-      <div class="panel"><div style="display:flex;gap:14px;align-items:center"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow"><b id="profileName">John Kumar</b><br><span class="small" id="profileMeta">Phone Verified - Profile Complete</span></span></div><div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div></div>
-      <div class="panel">
-        <div class="kv"><span>City</span><b id="workerProfileCity">Jaipur</b></div>
-        <div class="kv"><span>Experience</span><b id="workerProfileExperience">1-2 years</b></div>
-        <div class="kv"><span>Preferred work</span><b id="workerProfileWork">Any Job</b></div>
-        <div class="kv"><span>Preferred pay</span><b id="workerProfilePay">Open to any pay</b></div>
-        <div class="kv"><span>Availability</span><b id="workerProfileAvailability">Immediate</b></div>
-      </div>
-      <div class="panel"><b>Skills</b><div class="toolbar" id="workerProfileSkills"></div></div>
-      <button class="btn primary mt" data-switch-mode="employer">Hire Workers</button>
-      <h3>Settings</h3>
-      <div class="list">
-        <button class="list-row" data-go="accountSettings"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow">Account Settings</span></button>
-        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
-        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
-        <button class="list-row" data-logout><span class="tiny"><svg><use href="#i-x"></use></svg></span><span class="grow">Logout</span></button>
+      <div class="panel profile-hero"><span class="avatar" id="workerAvatar">JK</span><span class="grow"><h2 id="profileName">John Kumar</h2><p id="profileMeta">Brisbane</p></span></div>
+      <div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div>
+      <div class="section-label">Work Profile</div>
+      <button class="profile-card" data-edit-profile="workerLocation"><span><span>Location</span><b id="workerProfileLocationText">Based in Brisbane, available for nearby opportunities</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="workerExperience"><span><span>Experience</span><b id="workerProfileExperienceText">2+ years experience in retail and customer-facing roles</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="workerWork"><span><span>Work Preferences</span><b id="workerProfileWorkText">Open to full-time and part-time roles</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="workerAvailability"><span><span>Availability</span><b id="workerProfileAvailabilityText">Available weekdays and weekend shifts</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="workerSkills"><span><span>Skills</span><b id="workerProfileSkillsText">Cash handling, Data entry</b></span><i class="arrow">›</i></button>
+      <button class="switch-cta mt" data-switch-mode="employer"><svg><use href="#i-briefcase"></use></svg> Switch to Hiring</button>
+      <div class="section-label">Settings</div>
+      <div class="settings-list">
+        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">›</i></button>
       </div>
     </section>
 
     <section id="employerProfile" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Employer Profile</h3><span class="tag">Hiring</span></div>
-      <div class="panel"><div style="display:flex;gap:14px;align-items:center"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b id="employerProfileName">Rick Retail Store</b><br><span class="small" id="employerProfileMeta">New Employer - Phone Verified</span></span></div><div class="toolbar" id="employerProfileBadges"><span class="badge blue">New Employer</span><span class="badge">Phone Verified</span></div></div>
+      <div class="panel profile-hero"><span class="avatar" id="employerAvatar">RS</span><span class="grow"><h2 id="employerProfileName">Rick Retail Store</h2><p id="employerProfileMeta">Brisbane</p></span></div>
+      <div class="toolbar" id="employerProfileBadges"><span class="badge blue">New Employer</span><span class="badge">Phone Verified</span></div>
+      <div class="section-label">Business Profile</div>
+      <button class="profile-card" data-edit-profile="businessName"><span><span>Business Name</span><b id="employerBusinessText">Rick Retail Store</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="contactPerson"><span><span>Contact Person</span><b id="employerContactText">Rick Sharma</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="employerLocation"><span><span>Location</span><b id="employerLocationText">Based in Brisbane</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="businessType"><span><span>Business Type</span><b id="employerTypeText">Retail Shop</b></span><i class="arrow">›</i></button>
       <div class="panel">
-        <div class="kv"><span>Contact person</span><b id="employerContactView">Rick Sharma</b></div>
-        <div class="kv"><span>Location</span><b id="employerLocationView">Jaipur</b></div>
-        <div class="kv"><span>Business type</span><b id="employerTypeView">Retail Shop</b></div>
-        <div class="kv"><span>Open jobs</span><b id="employerOpenJobsView">1</b></div>
+        <div class="kv"><span>Active jobs</span><b id="employerOpenJobsView">1</b></div>
         <div class="kv"><span>Applicants</span><b id="employerApplicantStatsView">0 waiting</b></div>
       </div>
-      <button class="btn primary mt" data-switch-mode="worker">Find Work</button>
-      <h3>Settings</h3>
-      <div class="list">
-        <button class="list-row" data-go="accountSettings"><span class="tiny"><svg><use href="#i-user"></use></svg></span><span class="grow">Account Settings</span></button>
-        <button class="list-row" data-report="profile"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Report a Problem</span></button>
-        <button class="list-row" data-legal="guidelines"><span class="tiny">G</span><span class="grow">Community Guidelines</span></button>
-        <button class="list-row" data-logout><span class="tiny"><svg><use href="#i-x"></use></svg></span><span class="grow">Logout</span></button>
+      <button class="switch-cta mt" data-switch-mode="worker"><svg><use href="#i-user"></use></svg> Switch to Job Search</button>
+      <div class="section-label">Settings</div>
+      <div class="settings-list">
+        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">›</i></button>
       </div>
     </section>
 
@@ -1155,13 +1271,9 @@
     <section id="menu" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><span class="tag">Account</span></div>
       <div class="menu-head"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"><h1 id="drawerName">Welcome back</h1><p id="drawerPhone">Secure phone login</p><div class="menu-status"><span>Verified</span><span>Safe</span><span>Support</span></div></div>
-      <div class="section-label">Account</div>
-      <div class="list">
-        <button class="menu-row" data-go="accountSettings"><span class="ci"><svg><use href="#i-user"></use></svg></span><span class="grow"><b>Account Settings</b><small>Identity, location and role profiles</small></span></button>
-      </div>
       <div class="section-label">Support</div>
       <div class="list">
-        <button class="menu-row" data-toast="Help request opened."><span class="ci"><svg><use href="#i-message"></use></svg></span><span class="grow"><b>Help & Support</b><small>Get help with jobs, hiring or account access</small></span></button>
+        <button class="menu-row" data-report="profile"><span class="ci"><svg><use href="#i-flag"></use></svg></span><span class="grow"><b>Report a Problem</b><small>Tell us about unsafe jobs, bugs or account issues</small></span></button>
         <button class="menu-row" data-legal="guidelines"><span class="ci"><svg><use href="#i-shield"></use></svg></span><span class="grow"><b>Safety & Guidelines</b><small>Rules for safe work and trusted hiring</small></span></button>
       </div>
       <div class="section-label">Session</div>
@@ -1173,26 +1285,28 @@
 
     <section id="accountSettings" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><div><b>Account Settings</b><p class="small">Identity and role profiles</p></div><span class="tag">Global</span></div>
-      <div class="panel">
-        <label>Name</label>
-        <input id="accountName" placeholder="Your name">
-        <label>Location</label>
-        <input id="accountLocation" placeholder="City / Location">
-        <div class="kv mt"><span>Phone</span><b id="accountPhone">9876543210</b></div>
-        <button class="btn primary mt" data-save-account>Save Account</button>
-      </div>
-      <h3>Profiles</h3>
-      <div class="list">
-        <button class="list-row" data-account-profile="worker"><span class="tiny"><svg><use href="#i-home"></use></svg></span><span class="grow"><b>Worker Profile</b><br><span class="small" id="workerAccountStatus">Not set up</span></span><span class="status-text" id="workerAccountAction">Set up</span></button>
-        <button class="list-row" data-account-profile="employer"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>Employer Profile</b><br><span class="small" id="employerAccountStatus">Not set up</span></span><span class="status-text" id="employerAccountAction">Set up</span></button>
+      <div class="section-label">Account</div>
+      <button class="settings-card" data-edit-profile="accountName"><span><span>Name</span><b id="accountNameView">Aman Lalh</b></span><i class="arrow">›</i></button>
+      <button class="settings-card" data-edit-profile="accountLocation"><span><span>Location</span><b id="accountLocationView">Brisbane</b></span><i class="arrow">›</i></button>
+      <div class="panel"><div class="kv"><span>Phone</span><b id="accountPhone">9876543210</b></div></div>
+      <div class="section-label">Profiles</div>
+      <div class="settings-list">
+        <button class="settings-card" data-account-profile="worker"><span><span>Worker Profile</span><b id="workerAccountStatus">Not set up</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-account-profile="employer"><span><span>Employer Profile</span><b id="employerAccountStatus">Not set up</b></span><i class="arrow">›</i></button>
       </div>
       <p class="small center">Using as: <span id="accountModeLine">Worker</span></p>
+      <div class="section-label">Danger</div>
       <div class="panel danger-zone">
         <h3>Delete Account</h3>
         <p class="small">This will permanently delete your account, jobs, applications, and chats.</p>
         <input id="deleteConfirmPhone" placeholder="Type your mobile number to confirm">
         <button id="deleteAccountBtn" class="btn danger mt" data-delete-account disabled>Delete Account</button>
       </div>
+    </section>
+
+    <section id="profileEdit" class="screen">
+      <div class="header"><button class="icon" data-menu-back="true">←</button><div><b id="profileEditTitle">Edit profile</b><p class="small" id="profileEditHint">Keep this clear and professional.</p></div><button id="profileEditSaveTop" class="top-save" data-save-profile-edit disabled>Save</button></div>
+      <div id="profileEditBody" class="edit-stack"></div>
     </section>
 
     <section id="adminModeration" class="screen">
@@ -1250,12 +1364,15 @@
       var reportContext = "general";
       var selectedReportJobId = null;
       var selectedConversationId = null;
+      var editingProfileField = "";
+      var editDraft = {};
+      var editDirty = false;
       var pointerCard = null;
       var pointerDeltaX = 0;
       var pendingEmployerRoute = localStorage.getItem("kkPendingEmployerRoute") || "";
       var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
 
-      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","adminModeration","legal","report"];
+      var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerPay","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","profileEdit","adminModeration","legal","report"];
       var workCategories = ["Delivery","Clerk / Office","Retail / Cashier","Helper","Driver","Cleaner","Security","Data Entry","Kitchen / Cook","Sales","Warehouse","Other"];
       var skillOptions = ["Driving","Cash handling","Excel","Customer support","Cooking","Packing","Cleaning","Security","Data entry","Local language"];
       var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
@@ -1404,6 +1521,25 @@
       }
       function currentWorkerProfile() {
         return state.workerProfiles && state.defaultWorkerId ? state.workerProfiles[state.defaultWorkerId] : null;
+      }
+      function initials(value) {
+        return String(value || "KK").trim().split(/\s+/).slice(0, 2).map(function (part) { return part.charAt(0).toUpperCase(); }).join("") || "KK";
+      }
+      function workerLocationLine() {
+        return "Based in " + (state.worker.city || state.user.city || "your city") + ", available for nearby opportunities";
+      }
+      function workerExperienceLine() {
+        if (!state.worker.experience) return "Experience details not added yet";
+        return /experience|retail|customer/i.test(state.worker.experience) ? state.worker.experience : state.worker.experience + " experience in retail and customer-facing roles";
+      }
+      function workerWorkLine() {
+        if (state.worker.workTypes && state.worker.workTypes.length) return "Open to " + state.worker.workTypes.join(", ").toLowerCase() + " roles";
+        if (!state.worker.preferredJob || state.worker.preferredJob === "Any Job") return "Open to full-time and part-time roles";
+        return /^open/i.test(state.worker.preferredJob) ? state.worker.preferredJob : "Open to " + state.worker.preferredJob + " roles";
+      }
+      function workerAvailabilityLine() {
+        if (state.worker.availableDays && state.worker.availableDays.length) return "Available " + state.worker.availableDays.join(", ") + " for " + (state.worker.shiftPreference || "morning") + " shifts";
+        return state.worker.availability || "Available weekdays and weekend shifts";
       }
       function resetVisibilityChoice() {
         postVisibility = "";
@@ -1690,10 +1826,12 @@
         if (!byId("employerProfileName")) return;
         var business = currentBusinessProfile();
         byId("employerProfileName").textContent = business ? business.businessName : "Employer Profile";
-        byId("employerProfileMeta").textContent = "New Employer - Phone Verified";
-        byId("employerContactView").textContent = business ? business.contactPersonName : "Contact person";
-        if (byId("employerLocationView")) byId("employerLocationView").textContent = business ? business.city : (state.user.city || "Location");
-        byId("employerTypeView").textContent = business ? business.type : "Business";
+        byId("employerProfileMeta").textContent = business ? (business.city || state.user.city || "Location") : "Business profile not set";
+        if (byId("employerAvatar")) byId("employerAvatar").textContent = initials(business ? business.businessName : state.user.displayName);
+        if (byId("employerBusinessText")) byId("employerBusinessText").textContent = business ? business.businessName : "Set up your business profile";
+        if (byId("employerContactText")) byId("employerContactText").textContent = business ? business.contactPersonName : (state.user.displayName || "Contact person");
+        if (byId("employerLocationText")) byId("employerLocationText").textContent = "Based in " + (business ? (business.city || state.user.city || "your city") : (state.user.city || "your city"));
+        if (byId("employerTypeText")) byId("employerTypeText").textContent = business ? (business.type || "Business") : "Not set";
         byId("employerOpenJobsView").textContent = state.jobs.length + " open";
         if (byId("employerApplicantStatsView")) byId("employerApplicantStatsView").textContent = state.applications.length + " total";
       }
@@ -1703,16 +1841,14 @@
         var city = state.user.city || state.worker.city || "";
         if (byId("drawerName")) byId("drawerName").textContent = displayName;
         if (byId("drawerPhone")) byId("drawerPhone").textContent = phone ? ("+91 " + phone) : "Secure phone login";
-        if (!byId("accountName")) return;
-        byId("accountName").value = displayName;
-        byId("accountLocation").value = city;
+        if (!byId("accountNameView")) return;
+        byId("accountNameView").textContent = displayName;
+        byId("accountLocationView").textContent = city || "Add location";
         byId("accountPhone").textContent = phone ? ("+91 " + phone) : "Not added";
         var workerActive = hasWorkerProfile();
         var employerActive = hasEmployerProfile();
         byId("workerAccountStatus").textContent = workerActive ? "Active" : "Not set up";
-        byId("workerAccountAction").textContent = workerActive ? "View / Edit" : "Set up";
         byId("employerAccountStatus").textContent = employerActive ? "Active" : "Not set up";
-        byId("employerAccountAction").textContent = employerActive ? "View / Edit" : "Set up";
         if (byId("accountModeLine")) byId("accountModeLine").textContent = currentRole === "employer" ? "Employer" : "Worker";
         var deleteButton = byId("deleteAccountBtn");
         if (deleteButton) deleteButton.disabled = true;
@@ -1741,6 +1877,127 @@
         save();
         render();
         toast("Account updated.");
+      }
+      function profileEditConfig(field) {
+        var business = currentBusinessProfile();
+        var configs = {
+          accountName: { title: "Edit Name", label: "Name", value: state.user.displayName || state.worker.name || "", hint: "Used across profile, chat and employer contact.", type: "text" },
+          accountLocation: { title: "Location", label: "Search city or area", value: state.user.city || state.worker.city || "", hint: "Choose the area used across Kaam Karo.", type: "location" },
+          workerLocation: { title: "Location", label: "Search city or area", value: state.worker.city || state.user.city || "", hint: "Choose where you want work opportunities.", type: "location" },
+          workerSkills: { title: "Edit Skills", label: "Type a skill", value: "", hint: "Keep selected skills visible and controlled.", type: "skills" },
+          workerExperience: { title: "Experience", label: "Experience", value: state.worker.experience || "", hint: "Select one option.", type: "experience" },
+          workerWork: { title: "Work Preferences", label: "Work preferences", value: "", hint: "Select the work types that fit you.", type: "work" },
+          workerAvailability: { title: "Availability", label: "Availability", value: "", hint: "Select days and preferred shift.", type: "availability" },
+          businessName: { title: "Edit Business Name", label: "Business name", value: business ? business.businessName : state.employer.business, hint: "Shown to workers on jobs and chat.", type: "text" },
+          contactPerson: { title: "Edit Contact Person", label: "Contact person", value: business ? business.contactPersonName : state.employer.name, hint: "Used as the hiring contact.", type: "text" },
+          employerLocation: { title: "Location", label: "Search city or area", value: business ? business.city : state.user.city, hint: "Choose the default hiring location.", type: "location" },
+          businessType: { title: "Edit Business Type", label: "Business type", value: business ? business.type : state.employer.type, hint: "Example: Retail Shop, Office, Restaurant.", type: "text" }
+        };
+        return configs[field] || configs.accountName;
+      }
+      function markEditDirty() {
+        editDirty = true;
+        if (byId("profileEditSaveTop")) byId("profileEditSaveTop").disabled = false;
+      }
+      function openProfileEdit(field) {
+        editingProfileField = field;
+        var cfg = profileEditConfig(field);
+        menuReturn = currentScreen;
+        editDirty = false;
+        editDraft = { value: cfg.value || "" };
+        if (cfg.type === "skills") editDraft.skills = (state.worker.skills || []).slice();
+        if (cfg.type === "work") editDraft.workTypes = (state.worker.workTypes || ["Full-time","Part-time"]).slice();
+        if (cfg.type === "availability") {
+          editDraft.days = (state.worker.availableDays || ["Monday","Tuesday","Friday"]).slice();
+          editDraft.shift = state.worker.shiftPreference || "Morning";
+        }
+        byId("profileEditTitle").textContent = cfg.title;
+        byId("profileEditHint").textContent = cfg.hint;
+        show("profileEdit");
+      }
+      function renderProfileEdit() {
+        if (!byId("profileEditBody")) return;
+        var cfg = profileEditConfig(editingProfileField);
+        if (byId("profileEditSaveTop")) byId("profileEditSaveTop").disabled = !editDirty;
+        if (!editingProfileField) return;
+        var body = byId("profileEditBody");
+        if (cfg.type === "skills") {
+          var suggested = ["Cleaner","Delivery","Retail","Clerk","Helper","Driver","Cash handling","Data entry"];
+          body.innerHTML =
+            '<div class="edit-card"><div class="section-label">Your Skills</div><div class="edit-chip-row">' + (editDraft.skills || []).map(function (skill) { return '<button class="edit-chip selected skill-remove" data-edit-remove-skill="' + skill + '">' + skill + '<span>x</span></button>'; }).join("") + '</div></div>' +
+            '<div class="edit-card"><label>Add Skills</label><div class="input"><input id="profileEditInput" placeholder="Type a skill"></div><button class="btn outline mt" data-edit-add-skill>+ Add Skill</button></div>' +
+            '<div class="edit-card"><div class="section-label">Suggested Skills</div><div class="edit-chip-row">' + suggested.map(function (skill) { return '<button class="edit-chip ' + ((editDraft.skills || []).indexOf(skill) >= 0 ? "selected" : "") + '" data-edit-suggest-skill="' + skill + '">' + skill + '</button>'; }).join("") + '</div></div>';
+          return;
+        }
+        if (cfg.type === "experience") {
+          var exp = ["No experience","Less than 1 year","1-2 years","2-5 years","5+ years"];
+          body.innerHTML = '<div class="edit-card">' + exp.map(function (item) { var selected = editDraft.value === item || (!editDraft.value && item === "No experience"); return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-option="' + item + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
+          return;
+        }
+        if (cfg.type === "work") {
+          var types = ["Full-time","Part-time","Contract","Temporary","Internship"];
+          body.innerHTML = '<div class="edit-card">' + types.map(function (item) { var selected = (editDraft.workTypes || []).indexOf(item) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-work="' + item + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
+          return;
+        }
+        if (cfg.type === "availability") {
+          var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+          var shifts = ["Morning","Afternoon","Evening"];
+          body.innerHTML =
+            '<div class="edit-card"><div class="section-label">Days</div><div class="grid">' + days.map(function (day) { var selected = (editDraft.days || []).indexOf(day) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-day="' + day + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + day + '</button>'; }).join("") + '</div></div>' +
+            '<div class="edit-card"><div class="section-label">Shift preference</div>' + shifts.map(function (shift) { var selected = editDraft.shift === shift; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-shift="' + shift + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + shift + '</button>'; }).join("") + '</div>';
+          return;
+        }
+        if (cfg.type === "location") {
+          var suggestions = ["Brisbane","Sydney","Melbourne","Jaipur","Delhi NCR","Chandigarh"];
+          body.innerHTML =
+            '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Search city or area" value="' + (editDraft.value || "") + '"></div></div>' +
+            '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (city) { return '<button class="option-row ' + (editDraft.value === city ? "selected" : "") + '" data-edit-location="' + city + '"><span class="option-dot">' + (editDraft.value === city ? "✓" : "") + '</span>' + city + '</button>'; }).join("") + '</div>';
+          return;
+        }
+        body.innerHTML = '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Type here" value="' + (editDraft.value || "") + '"></div></div>';
+      }
+      function saveProfileEdit() {
+        var input = byId("profileEditInput");
+        var value = input ? input.value.trim() : (editDraft.value || "");
+        var business = currentBusinessProfile();
+        if (profileEditConfig(editingProfileField).type !== "skills" && profileEditConfig(editingProfileField).type !== "availability" && profileEditConfig(editingProfileField).type !== "work" && !value) return toast("Please add a value.");
+        if (editingProfileField === "accountName") {
+          state.user.displayName = value;
+          state.worker.name = value;
+          state.employer.name = value;
+          if (state.defaultWorkerId && state.workerProfiles[state.defaultWorkerId]) state.workerProfiles[state.defaultWorkerId].name = value;
+          if (business) business.contactPersonName = value;
+        }
+        if (editingProfileField === "accountLocation") {
+          state.user.city = value;
+          state.user.location = value;
+          state.worker.city = value;
+          state.employer.city = value;
+          if (state.defaultWorkerId && state.workerProfiles[state.defaultWorkerId]) {
+            state.workerProfiles[state.defaultWorkerId].city = value;
+            state.workerProfiles[state.defaultWorkerId].location = value;
+          }
+          if (business) business.city = value;
+        }
+        if (editingProfileField === "workerLocation") { state.worker.city = value; state.user.city = value; state.user.location = value; }
+        if (editingProfileField === "workerSkills") state.worker.skills = (editDraft.skills || []).slice();
+        if (editingProfileField === "workerExperience") state.worker.experience = value;
+        if (editingProfileField === "workerWork") {
+          state.worker.workTypes = (editDraft.workTypes || []).slice();
+          state.worker.preferredJob = state.worker.workTypes.join(", ");
+        }
+        if (editingProfileField === "workerAvailability") {
+          state.worker.availableDays = (editDraft.days || []).slice();
+          state.worker.shiftPreference = editDraft.shift || "Morning";
+          state.worker.availability = (state.worker.availableDays.length ? state.worker.availableDays.join(", ") : "Flexible days") + " - " + state.worker.shiftPreference;
+        }
+        if (editingProfileField === "businessName") { state.employer.business = value; if (business) business.businessName = value; }
+        if (editingProfileField === "contactPerson") { state.employer.name = value; state.user.displayName = value; if (business) business.contactPersonName = value; }
+        if (editingProfileField === "employerLocation") { state.employer.city = value; state.user.city = value; state.user.location = value; if (business) business.city = value; }
+        if (editingProfileField === "businessType") { state.employer.type = value; if (business) business.type = value; }
+        save();
+        toast("Updated successfully");
+        show(menuReturn || (currentRole === "employer" ? "employerProfile" : "profile"));
       }
       function renderAdminQueue() {
         if (!hasEmployerProfile() && currentScreen !== "adminModeration") return;
@@ -1968,6 +2225,7 @@
         renderFullWorkerProfile();
         renderEmployerProfile();
         renderAccountSettings();
+        renderProfileEdit();
         renderAdminQueue();
         renderChat();
         renderLegal();
@@ -1976,14 +2234,14 @@
         renderPublished();
         var profileBadges = workerBadges();
         byId("profileName").textContent = state.worker.name || "Worker Profile";
-        byId("profileMeta").textContent = profileBadges.map(function (b) { return b.label; }).join(" - ") || "Profile started";
+        byId("profileMeta").textContent = state.worker.city || state.user.city || "Location not set";
+        if (byId("workerAvatar")) byId("workerAvatar").textContent = initials(state.worker.name || state.user.displayName);
         if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
-        if (byId("workerProfileCity")) byId("workerProfileCity").textContent = state.worker.city || "Not set";
-        if (byId("workerProfileExperience")) byId("workerProfileExperience").textContent = state.worker.experience || "Not set";
-        if (byId("workerProfileWork")) byId("workerProfileWork").textContent = state.worker.preferredJob || "Any Job";
-        if (byId("workerProfilePay")) byId("workerProfilePay").textContent = state.worker.openAnyPay ? "Open to any pay" : (state.worker.payRange || "Not set");
-        if (byId("workerProfileAvailability")) byId("workerProfileAvailability").textContent = state.worker.availability || "Immediate";
-        if (byId("workerProfileSkills")) byId("workerProfileSkills").innerHTML = (state.worker.skills || []).map(function (s) { return '<span class="badge blue">' + s + '</span>'; }).join("") || '<span class="small">No skills added yet.</span>';
+        if (byId("workerProfileLocationText")) byId("workerProfileLocationText").textContent = workerLocationLine();
+        if (byId("workerProfileExperienceText")) byId("workerProfileExperienceText").textContent = workerExperienceLine();
+        if (byId("workerProfileWorkText")) byId("workerProfileWorkText").textContent = workerWorkLine();
+        if (byId("workerProfileAvailabilityText")) byId("workerProfileAvailabilityText").textContent = workerAvailabilityLine();
+        if (byId("workerProfileSkillsText")) byId("workerProfileSkillsText").textContent = (state.worker.skills || []).join(", ") || "No skills added yet";
       }
       function finishWorker() {
         state.workerComplete = true;
@@ -2158,8 +2416,54 @@
           toast("Logged out.");
           return;
         }
-        if (event.target.closest("[data-save-account]")) {
-          saveAccountSettings();
+        var editProfile = event.target.closest("[data-edit-profile]");
+        if (editProfile) {
+          openProfileEdit(editProfile.dataset.editProfile);
+          return;
+        }
+        var editOption = event.target.closest("[data-edit-option]");
+        if (editOption) { editDraft.value = editOption.dataset.editOption; markEditDirty(); renderProfileEdit(); return; }
+        var editLocation = event.target.closest("[data-edit-location]");
+        if (editLocation) { editDraft.value = editLocation.dataset.editLocation; markEditDirty(); renderProfileEdit(); return; }
+        var editWork = event.target.closest("[data-edit-work]");
+        if (editWork) {
+          editDraft.workTypes = editDraft.workTypes || [];
+          var workIndex = editDraft.workTypes.indexOf(editWork.dataset.editWork);
+          if (workIndex >= 0) editDraft.workTypes.splice(workIndex, 1); else editDraft.workTypes.push(editWork.dataset.editWork);
+          markEditDirty(); renderProfileEdit(); return;
+        }
+        var editDay = event.target.closest("[data-edit-day]");
+        if (editDay) {
+          editDraft.days = editDraft.days || [];
+          var dayIndex = editDraft.days.indexOf(editDay.dataset.editDay);
+          if (dayIndex >= 0) editDraft.days.splice(dayIndex, 1); else editDraft.days.push(editDay.dataset.editDay);
+          markEditDirty(); renderProfileEdit(); return;
+        }
+        var editShift = event.target.closest("[data-edit-shift]");
+        if (editShift) { editDraft.shift = editShift.dataset.editShift; markEditDirty(); renderProfileEdit(); return; }
+        var suggestSkill = event.target.closest("[data-edit-suggest-skill]");
+        if (suggestSkill) {
+          editDraft.skills = editDraft.skills || [];
+          if (editDraft.skills.indexOf(suggestSkill.dataset.editSuggestSkill) < 0) editDraft.skills.push(suggestSkill.dataset.editSuggestSkill);
+          markEditDirty(); renderProfileEdit(); return;
+        }
+        var removeEditSkill = event.target.closest("[data-edit-remove-skill]");
+        if (removeEditSkill) {
+          editDraft.skills = (editDraft.skills || []).filter(function (skill) { return skill !== removeEditSkill.dataset.editRemoveSkill; });
+          markEditDirty(); renderProfileEdit(); return;
+        }
+        if (event.target.closest("[data-edit-add-skill]")) {
+          var skillInput = byId("profileEditInput");
+          var newSkill = skillInput ? skillInput.value.trim() : "";
+          if (newSkill) {
+            editDraft.skills = editDraft.skills || [];
+            if (editDraft.skills.indexOf(newSkill) < 0) editDraft.skills.push(newSkill);
+            markEditDirty(); renderProfileEdit();
+          }
+          return;
+        }
+        if (event.target.closest("[data-save-profile-edit]")) {
+          saveProfileEdit();
           return;
         }
         var accountProfile = event.target.closest("[data-account-profile]");
@@ -2382,6 +2686,10 @@
         if (event.target.id === "jobSearch") { jobIndex = 0; renderFeed(); }
         if (event.target.id === "manualSearch") renderSearch();
         if (event.target.id === "locationSearch") { state.worker.city = event.target.value.trim() || state.worker.city; save(); renderFeed(); }
+        if (event.target.id === "profileEditInput") {
+          editDraft.value = event.target.value.trim();
+          if (editingProfileField !== "workerSkills") markEditDirty();
+        }
         if (event.target.id === "jobRules" && event.target.checked) byId("jobRulesError").style.display = "none";
         if (event.target.id === "deleteConfirmPhone") {
           var expectedPhone = (state.user.phone || state.employer.phone || "").replace(/\D/g, "");
