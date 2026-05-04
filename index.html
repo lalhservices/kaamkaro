@@ -925,10 +925,18 @@
     .chat-safety button { border: 0; background: transparent; padding: 0; color: #8a5600; font-weight: 950; text-decoration: underline; }
     .chat-area { position: absolute; left: 22px; right: 22px; top: 58px; bottom: 126px; display: flex; flex-direction: column; gap: 12px; margin: 0; overflow-y: auto; overflow-x: hidden; padding: 4px 0 14px; -webkit-overflow-scrolling: touch; }
     #chat.chat-no-composer .chat-area { bottom: 0; }
-    .msg { max-width: 82%; padding: 12px 14px; border-radius: 18px; font-size: 14px; line-height: 1.35; }
+    .msg { max-width: 82%; padding: 12px 14px; border-radius: 18px; font-size: 14px; line-height: 1.35; animation: msgIn .16s ease both; }
     .msg small { display: block; margin-top: 5px; opacity: .72; font-size: 10px; font-weight: 850; }
-    .left { justify-self: start; background: #eef2f7; }
-    .right { justify-self: end; background: var(--green); color: #fff; }
+    .msg.left { align-self: flex-start; background: #eef2f7; }
+    .msg.right { align-self: flex-end; background: var(--green); color: #fff; }
+    .msg.tight { margin-top: -7px; }
+    .msg.mid { border-top-left-radius: 12px; }
+    .msg.right.mid { border-top-left-radius: 18px; border-top-right-radius: 12px; }
+    .date-sep { align-self: center; color: var(--muted); font-size: 12px; font-weight: 950; margin: 6px 0 2px; }
+    .typing { align-self: flex-start; color: var(--muted); font-size: 13px; font-weight: 850; padding: 4px 8px; }
+    .new-msg-indicator { align-self: center; border: 1px solid var(--line); background: #fff; color: var(--green-dark); border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 950; }
+    .msg a { color: inherit; font-weight: 950; }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     .conversation-row .unread { min-width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; background: var(--green); color: #fff; font-size: 11px; font-weight: 950; }
     .quick { position: absolute; left: 22px; right: 22px; bottom: 66px; display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding: 2px 0 8px; scrollbar-width: none; }
     .quick::-webkit-scrollbar { display: none; }
@@ -1085,6 +1093,7 @@
       <h1 class="title">Enter your phone number</h1>
       <p class="sub">We will send a one-time password by SMS. This keeps your account safe and helps employers trust real people.</p>
       <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="0000000000"></label>
+      <p class="small center mt">We'll never share your number.</p>
       <div class="safe-note"><b>Safe</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
       <button class="btn primary mt" data-send-otp>Send OTP</button>
       <div class="legal-line">By continuing, you agree to <button data-legal="terms">Terms</button> and <button data-legal="privacy">Privacy Policy</button>.</div>
@@ -1107,14 +1116,15 @@
       <div class="header"><button class="icon" data-go="otpCode"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="tag">Choose path</span></div>
       <h1 class="title">What do you want to do?</h1>
       <p class="sub">Choose one. You can switch anytime from Menu.</p>
-      <button class="choice mt selected" data-go="workerBasic"><span class="ci"><svg><use href="#i-user"></use></svg></span><span><b>Looking for work</b><br><span class="small">Create profile, apply and chat.</span></span></button>
-      <button class="choice mt" data-go="employerSetup"><span class="ci"><svg><use href="#i-briefcase"></use></svg></span><span><b>Hiring workers</b><br><span class="small">Set up business and post jobs.</span></span></button>
+      <button class="choice mt selected" data-go="workerBasic"><span class="ci"><svg><use href="#i-user"></use></svg></span><span><b>Looking for work</b><br><span class="small">Swipe jobs. Get hired faster.</span></span></button>
+      <button class="choice mt" data-go="employerSetup"><span class="ci"><svg><use href="#i-briefcase"></use></svg></span><span><b>Hiring workers</b><br><span class="small">Post a job. Get workers in minutes.</span></span></button>
     </section>
 
     <section id="workerBasic" class="screen">
       <div class="header"><button class="icon" data-go="role"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">1/5</span></div>
       <div class="progress"><span class="on"></span><span></span><span></span><span></span><span></span></div>
       <h1 class="title">Basic details</h1>
+      <p class="sub">This helps employers find you faster.</p>
       <label class="input"><input id="workerName" placeholder="Aman Lalh"></label>
       <label class="input mt"><select id="workerGender"><option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option></select></label>
       <label class="input mt"><input id="workerAge" inputmode="numeric" placeholder="25"></label>
@@ -1127,6 +1137,7 @@
       <div class="header"><button class="icon" data-go="workerBasic"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">2/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
       <h1 class="title">Job type</h1>
+      <p class="sub">Choose ONE type of job you're looking for.</p>
       <div class="search mt"><svg><use href="#i-search"></use></svg><input id="workSearch" placeholder="Search job title, e.g. clerk, driver, cashier, helper..."></div>
       <button class="btn outline mt" data-add-job-type>+ Add Role</button>
       <div class="panel mt">
@@ -1142,7 +1153,7 @@
       <div class="header"><button class="icon" data-go="workerWork"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">3/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
       <h1 class="title">Skills & experience</h1>
-      <p class="sub">Add skills to improve job matches.</p>
+      <p class="sub">Add 2-3 skills to get better matches.</p>
       <h3 class="mt">Suggested Skills</h3>
       <div class="toolbar" id="skillChips"></div>
       <div class="panel">
@@ -1166,7 +1177,7 @@
       <div class="header"><button class="icon" data-go="workerSkills"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">4/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
       <h1 class="title">Availability</h1>
-      <p class="sub">Tell employers when you can start and what shifts work for you.</p>
+      <p class="sub">Clear availability helps employers select you faster.</p>
       <div class="section-label">Flexible Option</div>
       <button class="choice" data-flexible-availability><span class="ci">Flex</span><span><b>I'm open to any day and any time</b><br><span class="small">Flexible for all days and shifts.</span></span></button>
       <div class="section-label">Start Availability</div>
@@ -1340,7 +1351,7 @@
 
     <section id="profile" class="screen">
       <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
-      <div class="panel profile-hero"><span class="avatar" id="workerAvatar">AL</span><span class="grow"><h2 id="profileName">Aman Lalh</h2><p id="profileMeta">Delhi</p></span></div>
+      <div class="panel profile-hero"><span class="avatar" id="workerAvatar">AL</span><span class="grow"><h2 id="profileName">Aman Lalh</h2><p id="profileMeta">Delhi</p><p class="small">Available for work - Last active today</p></span></div>
       <div class="panel profile-strength"><div class="review-row"><span>Profile Strength</span><b id="profileStrengthText">0%</b></div><div class="bar"><span id="profileStrengthBar" style="width:0%"></span></div><div id="photoBadgeSlot" class="mt"></div></div>
       <div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div>
       <div class="section-label">Work Profile</div>
@@ -1623,7 +1634,7 @@
 
       var copy = {
         en: { heroTitle: "Jobs near you.", heroSub: "Apply in one swipe. Chat after employer accepts.", heroVisual: "Swipe. Match. Start work.", continue: "Continue" },
-        hi: { heroTitle: "आपके पास नौकरियां।", heroSub: "एक स्वाइप में आवेदन करें। नियोक्ता स्वीकार करे तो चैट करें।", heroVisual: "स्वाइप करें। मैच करें। काम शुरू करें।", continue: "जारी रखें" }
+        hi: { heroTitle: "???? ??? ?????????", heroSub: "?? ?????? ??? ????? ????? ???????? ??????? ??? ?? ??? ?????", heroVisual: "?????? ????? ??? ????? ??? ???? ?????", continue: "???? ????" }
       };
       var legal = {
         terms: ["Terms & Conditions", "Kaam Karo connects workers and employers. Use truthful information, do not post illegal jobs, and do not ask workers to pay for employment."],
@@ -1868,7 +1879,7 @@
         if (state.user.photoVerificationStatus === "verified" || state.worker.photoVerified) {
           slot.innerHTML = '<span class="badge">Photo Verified</span>';
         } else {
-          slot.innerHTML = '<button class="badge muted" data-go="verifyId">Verify Photo</button>';
+          slot.innerHTML = '<button class="badge muted" data-go="verifyId">Verify Photo</button><p class="small mt">Complete your profile to increase visibility.</p>';
         }
       }
       function workerPhotoBadgeHtml() {
@@ -2067,7 +2078,7 @@
         var list = filteredJobs("");
         if (jobIndex >= list.length) jobIndex = 0;
         var variation = swipeCount > 0 && swipeCount % 4 === 0 ? '<div class="panel small">Urgent hiring near you - verified employers only.</div>' : "";
-        byId("jobFeed").innerHTML = list.length ? variation + '<div class="swipe-stack"><div class="stack-card third"></div><div class="stack-card second"></div>' + jobCard(list[jobIndex]) + '</div>' : '<div class="panel center"><h3>No more jobs matching your preferences</h3><p class="small">Try widening your choices.</p><button class="btn outline mt" data-go="workerLocation">Update availability</button><button class="btn outline mt" data-refresh-jobs>Refresh</button><button class="btn primary mt" data-go="workerWork">Browse categories</button></div>';
+        byId("jobFeed").innerHTML = list.length ? variation + '<div class="swipe-stack"><div class="stack-card third"></div><div class="stack-card second"></div>' + jobCard(list[jobIndex]) + '</div>' : '<div class="panel center"><h3>No jobs right now - try nearby areas</h3><p class="small">Try widening your choices.</p><button class="btn outline mt" data-go="workerLocation">Update availability</button><button class="btn outline mt" data-refresh-jobs>Refresh</button><button class="btn primary mt" data-go="workerWork">Search another city</button></div>';
         var label = activeFilter === "remote" ? "Remote" : (activeFilter === "near" ? "Nearby" : (activeCity || state.worker.city || state.user.city || "your city"));
         if (byId("feedSub")) byId("feedSub").textContent = label;
         if (byId("selectedCityChip")) byId("selectedCityChip").innerHTML = activeCity ? '<button class="chip selected" data-clear-city>' + activeCity + ' <span>x</span></button>' : "";
@@ -2367,9 +2378,10 @@
         if (existing) return existing;
         var job = state.jobs.find(function (j) { return j.id === app.jobId; }) || state.jobs[0];
         var now = Date.now();
-        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: "Employer accepted your interest! You can now chat directly.", unreadWorker: 1, unreadEmployer: 0 };
+        var starter = "Employer accepted your interest. You can now chat directly.";
+        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: starter, unreadWorker: 1, unreadEmployer: 0 };
         state.conversations.unshift(convo);
-        state.messages.push({ id: "msg-" + now + "-system", conversationId: convo.id, senderId: "system", text: convo.lastMessage, createdAt: now, status: "delivered", flaggedRisk: false });
+        state.messages.push({ id: "msg-" + now + "-system", conversationId: convo.id, senderId: "rick", text: starter, createdAt: now, status: "delivered", deliveryStatus: "delivered", flaggedRisk: false });
         app.status = "Matched";
         notify((state.employer.name || "Employer") + " accepted your application - start chat.", "chat");
         audit("conversation_created", "Employer accepted applicant", job, "system");
@@ -2383,6 +2395,76 @@
       }
       function riskText(text) {
         return ["registration fee","deposit","pay first","joining fee","send money","documents charge"].some(function (term) { return text.toLowerCase().indexOf(term) >= 0; });
+      }
+      function currentUserId() {
+        return currentRole === "employer" ? "rick" : state.worker.id;
+      }
+      function messageSenderId(message) {
+        if (message.senderId === "system" && String(message.text || "").indexOf("Employer accepted your interest") === 0) return "rick";
+        return message.senderId;
+      }
+      function messageStatus(message) {
+        return message.deliveryStatus || message.status || "sent";
+      }
+      function isSameDay(a, b) {
+        var da = new Date(a);
+        var db = new Date(b);
+        return da.getFullYear() === db.getFullYear() && da.getMonth() === db.getMonth() && da.getDate() === db.getDate();
+      }
+      function clockLabel(time) {
+        var d = new Date(time);
+        var hours = d.getHours();
+        var suffix = hours >= 12 ? "pm" : "am";
+        var hour12 = hours % 12 || 12;
+        return String(hour12).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") + " " + suffix;
+      }
+      function dayDiff(time) {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        var date = new Date(time);
+        var start = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+        return Math.round((today - start) / 86400000);
+      }
+      function dateSeparatorLabel(time) {
+        var diff = dayDiff(time);
+        if (diff === 0) return "Today";
+        if (diff === 1) return "Yesterday";
+        var d = new Date(time);
+        var label = d.getDate() + " " + d.toLocaleString("en", { month: "short" });
+        if (d.getFullYear() !== new Date().getFullYear()) label += " " + d.getFullYear();
+        return label;
+      }
+      function messageTimeLabel(time) {
+        var diff = dayDiff(time);
+        if (diff === 0) return clockLabel(time);
+        if (diff === 1) return "Yesterday, " + clockLabel(time);
+        return dateSeparatorLabel(time) + ", " + clockLabel(time);
+      }
+      function escapeHtml(text) {
+        return String(text || "").replace(/[&<>"']/g, function (char) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char];
+        });
+      }
+      function renderMessageText(text) {
+        return escapeHtml(text)
+          .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
+          .replace(/\b(\d{10})\b/g, '<a href="tel:$1">$1</a>');
+      }
+      function renderChatMessages(convo, messages) {
+        if (!messages.length) return '<div class="panel center"><p class="small">No messages yet<br>Start the conversation.</p></div>';
+        return messages.map(function (message, index) {
+          var prev = messages[index - 1];
+          var next = messages[index + 1];
+          var sender = messageSenderId(message);
+          var mine = sender === currentUserId();
+          var prevSame = prev && messageSenderId(prev) === sender && isSameDay(prev.createdAt, message.createdAt) && Math.abs(message.createdAt - prev.createdAt) <= 300000;
+          var nextSame = next && messageSenderId(next) === sender && isSameDay(next.createdAt, message.createdAt) && Math.abs(next.createdAt - message.createdAt) <= 300000;
+          var html = "";
+          if (!prev || !isSameDay(prev.createdAt, message.createdAt)) html += '<div class="date-sep">' + dateSeparatorLabel(message.createdAt) + '</div>';
+          var meta = !nextSame ? '<small>' + messageTimeLabel(message.createdAt) + (mine ? ' &middot; ' + messageStatus(message) : '') + '</small>' : '';
+          html += '<div class="msg ' + (mine ? "right" : "left") + (prevSame ? " tight" : "") + ((prevSame || nextSame) ? " mid" : "") + '">' + renderMessageText(message.text) + (message.flaggedRisk ? '<br><b>Warning: Never pay money to get a job.</b>' : '') + meta + '</div>';
+          return html;
+        }).join("");
       }
       function renderChatList(convos) {
         byId("chat").classList.add("chat-no-composer");
@@ -2411,15 +2493,15 @@
         if (currentRole === "employer") convo.unreadEmployer = 0; else convo.unreadWorker = 0;
         save();
         var msgs = state.messages.filter(function (m) { return m.conversationId === convo.id; });
-        byId("chatArea").innerHTML = msgs.map(function (m) {
-          var mine = currentRole === "employer" ? m.senderId === "rick" : m.senderId === state.worker.id;
-          return '<div class="msg ' + (mine ? "right" : "left") + '">' + m.text.replace(/[<>]/g, "") + (m.flaggedRisk ? '<br><b>Warning: Never pay money to get a job.</b>' : '') + '<small>' + new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ' - ' + m.status + '</small></div>';
-        }).join("") + (currentRole === "employer" && convo.status !== "hired" && convo.status !== "blocked" ? '<button class="btn outline" data-mark-hired>Mark as Hired</button>' : '') + (convo.status === "blocked" ? '<div class="panel small">This chat is blocked/closed. Messages are disabled.</div>' : '');
-        var quicks = currentRole === "employer" ? ["Can you join tomorrow?","Please share experience","Come for interview","Share availability"] : ["I am available","Please share timing","Please share location","What is the salary?"];
+        var area = byId("chatArea");
+        var wasAtBottom = !area || area.scrollHeight - area.scrollTop - area.clientHeight < 48;
+        area.innerHTML = renderChatMessages(convo, msgs) + (currentRole === "employer" && convo.status !== "hired" && convo.status !== "blocked" ? '<button class="btn outline" data-mark-hired>Mark as Hired</button>' : '') + (convo.status === "blocked" ? '<div class="panel small">This chat is blocked/closed. Messages are disabled.</div>' : '');
+        var quicks = currentRole === "employer" ? ["Can you join tomorrow?","Please share experience","Come for interview","Share availability"] : ["I am available","Available today","Can start immediately","What are the timings?","Please share location","What is the salary?"];
         document.querySelector("#chat .quick").style.display = convo.status === "blocked" ? "none" : "flex";
         document.querySelector("#chat .quick").innerHTML = quicks.map(function (q) { return '<button data-quick="' + q + '">' + q + '</button>'; }).join("");
         document.querySelector("#chat .chat-input").style.display = convo.status === "blocked" ? "none" : "flex";
-        byId("chatArea").scrollTop = byId("chatArea").scrollHeight;
+        if (wasAtBottom) area.scrollTop = area.scrollHeight;
+        else area.insertAdjacentHTML("beforeend", '<button class="new-msg-indicator" data-scroll-chat-bottom>New messages down</button>');
       }
       function renderChat() {
         if (!byId("chatSafety")) return;
@@ -2432,7 +2514,7 @@
         if (!convo) return toast("Chat unlocks after employer accepts.");
         if (convo.status === "blocked") return toast("This chat is blocked.");
         var flagged = riskText(text);
-        var msg = { id: "msg-" + Date.now(), conversationId: convo.id, senderId: currentRole === "employer" ? "rick" : state.worker.id, text: text, createdAt: Date.now(), status: "sent", flaggedRisk: flagged };
+        var msg = { id: "msg-" + Date.now(), conversationId: convo.id, senderId: currentRole === "employer" ? "rick" : state.worker.id, text: text, createdAt: Date.now(), status: "sent", deliveryStatus: "sent", flaggedRisk: flagged };
         state.messages.push(msg);
         convo.lastMessage = text;
         convo.updatedAt = Date.now();
@@ -2445,6 +2527,8 @@
         }
         save();
         renderChat();
+        setTimeout(function () { msg.status = "delivered"; msg.deliveryStatus = "delivered"; save(); renderChat(); }, 500);
+        setTimeout(function () { msg.status = "seen"; msg.deliveryStatus = "seen"; save(); renderChat(); }, 1400);
       }
       function profileComplete() {
         return !!(state.worker.name && state.worker.city && state.worker.preferredJob && state.worker.skills.length);
@@ -2790,6 +2874,11 @@
         }
         var openConversation = event.target.closest("[data-open-conversation]");
         if (openConversation) { selectedConversationId = openConversation.dataset.openConversation; show("chat"); return; }
+        if (event.target.closest("[data-scroll-chat-bottom]")) {
+          var chatArea = byId("chatArea");
+          if (chatArea) chatArea.scrollTop = chatArea.scrollHeight;
+          return;
+        }
         var block = event.target.closest("[data-block]");
         if (block) {
           var blocked = currentConversation();
