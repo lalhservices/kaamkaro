@@ -34,17 +34,22 @@
       overflow: hidden;
       overflow-x: hidden;
       background: var(--app-bg);
+      display: grid;
+      place-items: center;
     }
     button, input, textarea, select { font: inherit; }
     button { cursor: pointer; }
 
     .phone {
-      width: min(430px, 100vw);
+      width: 100%;
+      max-width: 430px;
       height: 100vh;
       height: 100dvh;
       margin: 0 auto;
       margin-left: auto;
       margin-right: auto;
+      left: auto;
+      right: auto;
       position: relative;
       overflow: hidden;
       overflow-x: hidden;
@@ -52,12 +57,15 @@
       box-shadow: 0 30px 90px rgba(6, 20, 47, .24);
     }
     .app {
-      width: min(430px, 100vw);
+      width: 100%;
+      max-width: 430px;
       height: 100vh;
       height: 100dvh;
       margin: 0 auto;
       margin-left: auto;
       margin-right: auto;
+      left: auto;
+      right: auto;
       position: relative;
       overflow: hidden;
       overflow-x: hidden;
