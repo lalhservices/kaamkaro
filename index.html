@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -877,19 +877,33 @@
     .menu-row small { display: block; color: var(--muted); font-size: 12px; font-weight: 750; margin-top: 2px; }
     .menu-foot { margin-top: 14px; padding: 13px; border-radius: 18px; background: #f7fbff; border: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.4; font-weight: 800; }
     .section-label { margin: 16px 0 8px; color: var(--muted); font-size: 12px; font-weight: 950; letter-spacing: .02em; text-transform: uppercase; }
-    .danger-zone { border-color: rgba(229,72,77,.22); background: #fffafa; }
+    .danger-zone { border-color: #f4c7c7; background: #fff7f7; border-radius: 24px; padding: 20px; display: grid; gap: 12px; }
+    .danger-zone input,
+    .danger-zone select { width: 100%; height: 56px; border-radius: 18px; border: 1px solid var(--line); background: #fff; padding: 0 14px; font: inherit; font-size: 16px; outline: 0; }
+    .danger-zone .danger-helper { color: var(--red); min-height: 18px; font-size: 12px; font-weight: 850; }
+    .badge.muted { background: #f8fafc; color: var(--muted); border: 1px solid var(--line); }
+    button.badge { cursor: pointer; font: inherit; }
+    .desc-tools { display: grid; gap: 10px; margin-top: 10px; }
+    .desc-helper { margin: 14px 0 0; font-size: 13px; color: var(--muted); font-weight: 750; }
+    .desc-counter { font-size: 12px; color: var(--muted); font-weight: 800; }
+    .desc-error { display: none; color: var(--red); font-size: 12px; font-weight: 850; }
+    .danger-title { margin: 0; }
 
-    .chat-safety { padding: 12px 14px; border-radius: 14px; background: #fff7e8; border: 1px solid rgba(245,158,11,.28); color: #8a5600; font-size: 13px; font-weight: 850; margin-bottom: 12px; }
+    #chat .screen-body { overflow: hidden; padding: 0 22px; }
+    .chat-safety { padding: 12px 14px; border-radius: 14px; background: #fff7e8; border: 1px solid rgba(245,158,11,.28); color: #8a5600; font-size: 13px; font-weight: 850; margin: 0; }
     .chat-safety button { border: 0; background: transparent; padding: 0; color: #8a5600; font-weight: 950; text-decoration: underline; }
-    .chat-area { display: grid; gap: 12px; margin: 16px 0 14px; }
+    .chat-area { position: absolute; left: 22px; right: 22px; top: 58px; bottom: 126px; display: flex; flex-direction: column; gap: 12px; margin: 0; overflow-y: auto; overflow-x: hidden; padding: 4px 0 14px; -webkit-overflow-scrolling: touch; }
+    #chat.chat-no-composer .chat-area { bottom: 0; }
     .msg { max-width: 82%; padding: 12px 14px; border-radius: 18px; font-size: 14px; line-height: 1.35; }
     .msg small { display: block; margin-top: 5px; opacity: .72; font-size: 10px; font-weight: 850; }
     .left { justify-self: start; background: #eef2f7; }
     .right { justify-self: end; background: var(--green); color: #fff; }
     .conversation-row .unread { min-width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; background: var(--green); color: #fff; font-size: 11px; font-weight: 950; }
-    .quick { display: flex; gap: 8px; flex-wrap: wrap; }
+    .quick { position: absolute; left: 22px; right: 22px; bottom: 66px; display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding: 2px 0 8px; scrollbar-width: none; }
+    .quick::-webkit-scrollbar { display: none; }
     .quick button { border: 1px solid var(--line); background: #fff; border-radius: 999px; min-height: 36px; padding: 0 10px; font-size: 12px; font-weight: 850; }
-    .chat-input { position: fixed; left: 50%; bottom: calc(94px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: min(386px, calc(100vw - 44px)); display: flex; gap: 10px; }
+    .quick button { white-space: nowrap; flex: 0 0 auto; }
+    .chat-input { position: absolute; left: 22px; right: 22px; bottom: 8px; transform: none; width: auto; display: flex; gap: 10px; z-index: 50; }
     .chat-input input { flex: 1; height: 50px; border: 1px solid var(--line); border-radius: 999px; padding: 0 16px; outline: 0; box-shadow: 0 8px 22px rgba(6, 20, 47, .06); }
     .chat-input button { width: 50px; height: 50px; border: 0; border-radius: 50%; color: #fff; background: var(--green); font-weight: 950; }
 
@@ -1007,7 +1021,7 @@
         <div class="brand"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div>
         <div class="lang-switch" aria-label="Language">
           <button type="button" class="active" data-lang="en">English</button>
-          <button type="button" data-lang="hi">हिंदी</button>
+          <button type="button" data-lang="hi">à¤¹à¤¿à¤‚à¤¦à¥€</button>
         </div>
       </div>
       <div class="hero-copy">
@@ -1035,17 +1049,17 @@
     </section>
 
     <section id="otp" class="screen">
-      <div class="header"><button class="icon" data-go="landing">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
+      <div class="header"><button class="icon" data-go="landing">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title">Enter your phone number</h1>
       <p class="sub">We will send a one-time password by SMS. This keeps your account safe and helps employers trust real people.</p>
       <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="0000000000"></label>
-      <div class="safe-note"><b>✓</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
+      <div class="safe-note"><b>âœ“</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
       <button class="btn primary mt" data-send-otp>Send OTP</button>
       <div class="legal-line">By continuing, you agree to <button data-legal="terms">Terms</button> and <button data-legal="privacy">Privacy Policy</button>.</div>
     </section>
 
     <section id="otpCode" class="screen">
-      <div class="header"><button class="icon" data-go="otp">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
+      <div class="header"><button class="icon" data-go="otp">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title">Enter OTP</h1>
       <p class="sub">We sent a 6 digit code to <b id="otpPhoneText">+91 98765 43210</b>.</p>
       <label class="input mt"><input id="otpInput" inputmode="numeric" maxlength="6" placeholder="Enter 6 digit OTP"></label>
@@ -1058,7 +1072,7 @@
     </section>
 
     <section id="role" class="screen">
-      <div class="header"><button class="icon" data-go="otpCode">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="tag">Choose path</span></div>
+      <div class="header"><button class="icon" data-go="otpCode">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="tag">Choose path</span></div>
       <h1 class="title">What do you want to do?</h1>
       <p class="sub">Choose one. You can switch anytime from Menu.</p>
       <button class="choice mt selected" data-go="workerBasic"><span class="ci"><svg><use href="#i-user"></use></svg></span><span><b>Looking for work</b><br><span class="small">Create profile, apply and chat.</span></span></button>
@@ -1066,7 +1080,7 @@
     </section>
 
     <section id="workerBasic" class="screen">
-      <div class="header"><button class="icon" data-go="role">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">1/5</span></div>
+      <div class="header"><button class="icon" data-go="role">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">1/5</span></div>
       <div class="progress"><span class="on"></span><span></span><span></span><span></span><span></span></div>
       <h1 class="title">Basic details</h1>
       <label class="input"><input id="workerName" placeholder="Aman Lalh"></label>
@@ -1078,7 +1092,7 @@
     </section>
 
     <section id="workerWork" class="screen">
-      <div class="header"><button class="icon" data-go="workerBasic">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">2/5</span></div>
+      <div class="header"><button class="icon" data-go="workerBasic">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">2/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
       <h1 class="title">Job type</h1>
       <div class="search mt"><svg><use href="#i-search"></use></svg><input id="workSearch" placeholder="Search job title, e.g. clerk, driver, cashier, helper..."></div>
@@ -1093,7 +1107,7 @@
     </section>
 
     <section id="workerSkills" class="screen">
-      <div class="header"><button class="icon" data-go="workerWork">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">3/5</span></div>
+      <div class="header"><button class="icon" data-go="workerWork">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">3/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
       <h1 class="title">Skills & experience</h1>
       <p class="sub">Add skills to improve job matches.</p>
@@ -1117,19 +1131,19 @@
     </section>
 
     <section id="workerLocation" class="screen">
-      <div class="header"><button class="icon" data-go="workerSkills">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">4/5</span></div>
+      <div class="header"><button class="icon" data-go="workerSkills">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">4/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
       <h1 class="title">Availability</h1>
       <p class="sub">Tell employers when you can start and what shifts work for you.</p>
       <div class="section-label">Flexible Option</div>
-      <button class="choice" data-flexible-availability><span class="ci">↔</span><span><b>I'm open to any day and any time</b><br><span class="small">Flexible for all days and shifts.</span></span></button>
+      <button class="choice" data-flexible-availability><span class="ci">â†”</span><span><b>I'm open to any day and any time</b><br><span class="small">Flexible for all days and shifts.</span></span></button>
       <div class="section-label">Start Availability</div>
       <div class="grid" id="onboardStartOptions">
-        <button class="choice" data-onboard-start="Immediate"><span class="ci">✓</span>Immediate</button>
-        <button class="choice" data-onboard-start="On Demand"><span class="ci">↔</span>On Demand</button>
+        <button class="choice" data-onboard-start="Immediate"><span class="ci">âœ“</span>Immediate</button>
+        <button class="choice" data-onboard-start="On Demand"><span class="ci">â†”</span>On Demand</button>
       </div>
       <div class="section-label">Days</div>
-      <button class="choice" data-onboard-all-days><span class="ci">✓</span>Select All Days</button>
+      <button class="choice" data-onboard-all-days><span class="ci">âœ“</span>Select All Days</button>
       <div class="grid mt" id="onboardDays"></div>
       <div class="section-label">Shift Preference</div>
       <div class="toolbar" id="onboardShifts"><button class="chip" data-onboard-shift="Morning">Morning</button><button class="chip" data-onboard-shift="Afternoon">Afternoon</button><button class="chip" data-onboard-shift="Evening">Evening</button><button class="chip" data-onboard-shift="Anytime">Anytime</button></div>
@@ -1137,7 +1151,7 @@
     </section>
 
     <section id="workerTrust" class="screen">
-      <div class="header"><button class="icon" data-go="workerLocation">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">5/5</span></div>
+      <div class="header"><button class="icon" data-go="workerLocation">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">5/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
       <h1 class="title">Build Trust and Get Hired</h1>
       <p class="sub">Increase your chances of getting hired.</p>
@@ -1147,7 +1161,7 @@
     </section>
 
     <section id="verifyId" class="screen">
-      <div class="header"><button class="icon" data-go="workerTrust">←</button><span class="tag">Optional</span></div>
+      <div class="header"><button class="icon" data-go="workerTrust">â†</button><span class="tag">Optional</span></div>
       <h1 class="title">Profile Photo</h1>
       <p class="sub">Take a clear photo of your face, head and shoulders. This is optional and does not block onboarding.</p>
       <div class="panel"><video id="photoCamera" class="camera-preview" autoplay playsinline muted></video><p class="small mt" id="photoCameraStatus">Camera opens first. If permission is blocked, you can continue without photo.</p></div>
@@ -1172,7 +1186,7 @@
     </section>
 
     <section id="applied" class="screen success">
-      <div class="success-icon">✓</div>
+      <div class="success-icon">âœ“</div>
       <h1 class="title">Application sent</h1>
       <p class="sub center">Status: Interested. Employer can accept to start chat.</p>
       <div class="steps"><div class="step"><b>1</b>Your application appears in the employer dashboard.</div><div class="step"><b>2</b>Employer accepts or rejects.</div><div class="step"><b>3</b>Accepted = match + chat.</div></div>
@@ -1184,23 +1198,23 @@
       <div class="header"><button class="icon" data-chat-back>Back</button><div><b id="chatTitle">Chat</b><p class="small" id="chatSub">Matched conversations</p></div><button class="icon" data-report="chat"><svg><use href="#i-flag"></use></svg></button></div>
       <div class="chat-safety" id="chatSafety">Never pay money to get a job. <button data-report="chat">Report</button> suspicious messages.</div>
       <div id="chatArea" class="chat-area"></div>
-      <div class="quick"><button data-quick="I am available">I am available</button><button data-quick="Please share location">Please share location</button><button data-report="chat">Report</button><button data-block>Block</button></div>
-      <div class="chat-input"><input id="chatText" placeholder="Type a message"><button id="sendChat">➜</button></div>
+      <div class="quick"><button data-quick="I am available">I am available</button><button data-quick="Please share location">Please share location</button></div>
+      <div class="chat-input"><input id="chatText" placeholder="Type a message"><button id="sendChat">âžœ</button></div>
     </section>
 
     <section id="search" class="screen">
-      <div class="header"><button class="icon" data-go="jobs">←</button><h3>Search jobs</h3><button class="icon" data-toast="Filters updated."><svg><use href="#i-search"></use></svg></button></div>
+      <div class="header"><button class="icon" data-go="jobs">â†</button><h3>Search jobs</h3><button class="icon" data-toast="Filters updated."><svg><use href="#i-search"></use></svg></button></div>
       <div class="search"><svg><use href="#i-search"></use></svg><input id="manualSearch" placeholder="Try clerk, driver, cashier, helper"></div>
       <div id="searchResults" class="list"></div>
     </section>
 
     <section id="applications" class="screen">
-      <div class="header"><button class="icon" data-go="jobs">←</button><h3>Applications</h3><span class="tag" id="matchedTag">0 matched</span></div>
+      <div class="header"><button class="icon" data-go="jobs">â†</button><h3>Applications</h3><span class="tag" id="matchedTag">0 matched</span></div>
       <div id="workerApplications" class="list"></div>
     </section>
 
     <section id="employerSetup" class="screen">
-      <div class="header"><button class="icon" data-go="role">←</button><span class="tag">Business</span></div>
+      <div class="header"><button class="icon" data-go="role">â†</button><span class="tag">Business</span></div>
       <h1 class="title">Set up your business</h1>
       <p class="sub">This helps workers trust your job posts.</p>
       <label class="input mt"><input id="businessName" placeholder="e.g. Sharma Retail Store"></label>
@@ -1219,20 +1233,20 @@
     </section>
 
     <section id="employerJobDetail" class="screen">
-      <div class="header"><button class="icon" data-go="employerDash">←</button><div><b id="jobDetailTitle">Clerk Job</b><p class="small">Applicants for this role</p></div><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
-      <div class="panel"><span class="badge blue">Verified Employer</span><h2 id="jobDetailPay" class="mt">Rs 18,000/month</h2><p class="small" id="jobDetailMeta">Delhi · Full-time · Office</p></div>
+      <div class="header"><button class="icon" data-go="employerDash">â†</button><div><b id="jobDetailTitle">Clerk Job</b><p class="small">Applicants for this role</p></div><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
+      <div class="panel"><span class="badge blue">Verified Employer</span><h2 id="jobDetailPay" class="mt">Rs 18,000/month</h2><p class="small" id="jobDetailMeta">Delhi Â· Full-time Â· Office</p></div>
       <h3>Applicants</h3>
       <div id="applicantList" class="list"></div>
     </section>
 
     <section id="workerProfileView" class="screen">
-      <div class="header"><button class="icon" data-go="employerJobDetail">←</button><span class="tag" id="profileStatus">Interested</span></div>
+      <div class="header"><button class="icon" data-go="employerJobDetail">â†</button><span class="tag" id="profileStatus">Interested</span></div>
       <div id="fullWorkerProfile"></div>
       <div class="btn-row mt"><button class="btn danger" data-reject-current>Reject</button><button class="btn primary" data-accept-current>Accept & Chat</button></div>
     </section>
 
     <section id="postJob" class="screen">
-      <div class="header"><button class="icon" data-go="employerDash">←</button><span class="tag">Post Job</span></div>
+      <div class="header"><button class="icon" data-go="employerDash">â†</button><span class="tag">Post Job</span></div>
       <h1 class="title">Post a job</h1>
       <label class="input"><input id="postTitle" placeholder="e.g. Shop Assistant, Delivery Driver, Office Clerk"></label>
       <div class="amount-row mt">
@@ -1241,12 +1255,25 @@
       </div>
       <label class="input mt"><input id="postLocation" placeholder="Location, e.g. Delhi"></label>
       <label class="input mt"><select id="postType"><option>Full Time</option><option>Part Time</option><option>Contract</option><option>Temporary</option><option>Internship</option></select></label>
-      <label class="input mt"><textarea id="postDesc" placeholder="Describe the work, timing, responsibilities..."></textarea></label>
+      <p class="desc-helper">Describe the work clearly so workers know what to expect.</p>
+      <label class="input mt"><textarea id="postDesc" maxlength="700" placeholder="Describe the work, timing, responsibilities..."></textarea></label>
+      <div class="desc-tools">
+        <span class="small">Quick add:</span>
+        <div class="toolbar">
+          <button class="chip" data-desc-chip="tasks">Daily tasks and responsibilities</button>
+          <button class="chip" data-desc-chip="shift">Shift timing and days</button>
+          <button class="chip" data-desc-chip="experience">Experience needed</button>
+          <button class="chip" data-desc-chip="location">Workplace location details</button>
+          <button class="chip" data-desc-chip="tools">Any tools or uniform required</button>
+        </div>
+        <span id="postDescCounter" class="desc-counter">0 / 700 characters Â· 25 words minimum</span>
+        <span id="postDescError" class="desc-error">Please add at least 25 words so workers understand the job clearly.</span>
+      </div>
       <button class="btn primary mt" data-review-job>Continue</button>
     </section>
 
     <section id="jobVisibility" class="screen">
-      <div class="header"><button class="icon" data-go="postJob">←</button><span class="tag">Visibility</span></div>
+      <div class="header"><button class="icon" data-go="postJob">â†</button><span class="tag">Visibility</span></div>
       <h1 class="title">Review Job Post</h1>
       <div class="panel review-card">
         <div class="review-row"><span>Job title</span><b id="reviewTitle">Clerk</b></div>
@@ -1266,49 +1293,49 @@
     </section>
 
     <section id="published" class="screen success">
-      <div class="success-icon">✓</div><h1 class="title" id="publishedTitle">Job is live</h1><p class="sub center" id="publishedSub">Workers can now apply. Applicants will appear in your dashboard.</p><button class="btn primary mt" data-go="employerDash">Dashboard</button>
+      <div class="success-icon">âœ“</div><h1 class="title" id="publishedTitle">Job is live</h1><p class="sub center" id="publishedSub">Workers can now apply. Applicants will appear in your dashboard.</p><button class="btn primary mt" data-go="employerDash">Dashboard</button>
     </section>
 
     <section id="applicants" class="screen">
-      <div class="header"><button class="icon" data-go="employerDash">←</button><h3>Talent</h3><span class="tag" id="talentCount">0</span></div>
+      <div class="header"><button class="icon" data-go="employerDash">â†</button><h3>Talent</h3><span class="tag" id="talentCount">0</span></div>
       <div id="allApplicants" class="list"></div>
     </section>
 
     <section id="employerJobs" class="screen">
-      <div class="header"><button class="icon" data-go="employerDash">←</button><h3>My Jobs</h3><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
+      <div class="header"><button class="icon" data-go="employerDash">â†</button><h3>My Jobs</h3><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
       <div id="employerJobsList" class="list"></div>
     </section>
 
     <section id="profile" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
       <div class="panel profile-hero"><span class="avatar" id="workerAvatar">AL</span><span class="grow"><h2 id="profileName">Aman Lalh</h2><p id="profileMeta">Delhi</p></span></div>
-      <div class="panel profile-strength"><div class="review-row"><span>Profile Strength</span><b id="profileStrengthText">0%</b></div><div class="bar"><span id="profileStrengthBar" style="width:0%"></span></div><button class="btn outline mt" data-go="verifyId">Add Selfie Now</button></div>
+      <div class="panel profile-strength"><div class="review-row"><span>Profile Strength</span><b id="profileStrengthText">0%</b></div><div class="bar"><span id="profileStrengthBar" style="width:0%"></span></div><div id="photoBadgeSlot" class="mt"></div></div>
       <div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div>
       <div class="section-label">Work Profile</div>
-      <button class="profile-card" data-edit-profile="workerLocation"><span><span>Location</span><b id="workerProfileLocationText">Based in Brisbane, available for nearby opportunities</b></span><i class="arrow">›</i></button>
-      <button class="profile-card" data-edit-profile="workerExperience"><span><span>Experience</span><b id="workerProfileExperienceText">2+ years experience in retail and customer-facing roles</b></span><i class="arrow">›</i></button>
-      <button class="profile-card" data-edit-profile="workerWork"><span><span>Work Preferences</span><b id="workerProfileWorkText">Open to full-time and part-time roles</b></span><i class="arrow">›</i></button>
-      <button class="profile-card" data-edit-profile="workerAvailability"><span><span>Availability</span><b id="workerProfileAvailabilityText">Available weekdays and weekend shifts</b></span><i class="arrow">›</i></button>
-      <button class="profile-card" data-edit-profile="workerSkills"><span><span>Skills</span><b id="workerProfileSkillsText">Cash handling, Data entry</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="workerLocation"><span><span>Location</span><b id="workerProfileLocationText">Based in Brisbane, available for nearby opportunities</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="workerExperience"><span><span>Experience</span><b id="workerProfileExperienceText">2+ years experience in retail and customer-facing roles</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="workerWork"><span><span>Work Preferences</span><b id="workerProfileWorkText">Open to full-time and part-time roles</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="workerAvailability"><span><span>Availability</span><b id="workerProfileAvailabilityText">Available weekdays and weekend shifts</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="workerSkills"><span><span>Skills</span><b id="workerProfileSkillsText">Cash handling, Data entry</b></span><i class="arrow">â€º</i></button>
       <button class="switch-cta mt" data-switch-mode="employer"><svg><use href="#i-briefcase"></use></svg> Switch to Hiring</button>
       <div class="section-label">Settings</div>
       <div class="settings-list">
-        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">›</i></button>
-        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">›</i></button>
-        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">›</i></button>
-        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">â€º</i></button>
       </div>
     </section>
 
     <section id="employerProfile" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Employer Profile</h3><span class="tag">Hiring</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><h3>Employer Profile</h3><span class="tag">Hiring</span></div>
       <div class="panel profile-hero"><span class="avatar" id="employerAvatar">RS</span><span class="grow"><h2 id="employerProfileName">Rick Retail Store</h2><p id="employerProfileMeta">Brisbane</p></span></div>
       <div class="toolbar" id="employerProfileBadges"><span class="badge blue">New Employer</span><span class="badge">Phone Verified</span></div>
       <div class="section-label">Business Profile</div>
-      <button class="profile-card" data-edit-profile="businessName"><span><span>Business Name</span><b id="employerBusinessText">Rick Retail Store</b></span><i class="arrow">›</i></button>
-      <button class="profile-card" data-edit-profile="contactPerson"><span><span>Contact Person</span><b id="employerContactText">Rick Sharma</b></span><i class="arrow">›</i></button>
-      <button class="profile-card" data-edit-profile="employerLocation"><span><span>Location</span><b id="employerLocationText">Based in Brisbane</b></span><i class="arrow">›</i></button>
-      <button class="profile-card" data-edit-profile="businessType"><span><span>Business Type</span><b id="employerTypeText">Retail Shop</b></span><i class="arrow">›</i></button>
+      <button class="profile-card" data-edit-profile="businessName"><span><span>Business Name</span><b id="employerBusinessText">Rick Retail Store</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="contactPerson"><span><span>Contact Person</span><b id="employerContactText">Rick Sharma</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="employerLocation"><span><span>Location</span><b id="employerLocationText">Based in Brisbane</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="businessType"><span><span>Business Type</span><b id="employerTypeText">Retail Shop</b></span><i class="arrow">â€º</i></button>
       <div class="metric-grid profile-metrics">
         <div class="metric-card"><span>Active Jobs</span><b id="employerOpenJobsView">1</b></div>
         <div class="metric-card"><span>Total Applicants</span><b id="employerApplicantStatsView">0</b></div>
@@ -1316,20 +1343,20 @@
       <button class="switch-cta mt" data-switch-mode="worker"><svg><use href="#i-user"></use></svg> Switch to Job Search</button>
       <div class="section-label">Settings</div>
       <div class="settings-list">
-        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">›</i></button>
-        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">›</i></button>
-        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">›</i></button>
-        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">â€º</i></button>
       </div>
     </section>
 
     <section id="notifications" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Notifications</h3><button class="icon">✓</button></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><h3>Notifications</h3><button class="icon">âœ“</button></div>
       <div class="list" id="notificationList"></div>
     </section>
 
     <section id="menu" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><span class="tag">Account</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><span class="tag">Account</span></div>
       <div class="menu-head"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"><h1 id="drawerName">Welcome back</h1><p id="drawerPhone">Secure phone login</p><div class="menu-status"><span>Verified</span><span>Safe</span><span>Support</span></div></div>
       <div class="section-label">Support</div>
       <div class="list">
@@ -1344,52 +1371,54 @@
     </section>
 
     <section id="accountSettings" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><div><b>Account Settings</b><p class="small">Identity and role profiles</p></div><span class="tag">Global</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><div><b>Account Settings</b><p class="small">Identity and role profiles</p></div><span class="tag">Global</span></div>
       <div class="section-label">Account</div>
-      <button class="settings-card" data-edit-profile="accountName"><span><span>Name</span><b id="accountNameView">Aman Lalh</b></span><i class="arrow">›</i></button>
-      <button class="settings-card" data-edit-profile="accountLocation"><span><span>Location</span><b id="accountLocationView">Brisbane</b></span><i class="arrow">›</i></button>
-      <button class="settings-card" data-settings-modal="phone"><span><span>Change Phone Number</span><b id="accountPhone">0000000000</b></span><i class="arrow">›</i></button>
-      <button class="settings-card" data-settings-modal="notifications"><span><span>Notifications</span><b>Job matches, chat and updates</b></span><i class="arrow">›</i></button>
-      <button class="settings-card" data-settings-modal="privacy"><span><span>Privacy</span><b>Location, selfie and profile visibility</b></span><i class="arrow">›</i></button>
-      <button class="settings-card" data-settings-modal="faq"><span><span>Help & FAQ</span><b>Common questions</b></span><i class="arrow">›</i></button>
-      <button class="settings-card" data-settings-modal="refer"><span><span>Refer & Earn</span><b>Share Kaam Karo</b></span><i class="arrow">›</i></button>
-      <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">›</i></button>
+      <button class="settings-card" data-edit-profile="accountName"><span><span>Name</span><b id="accountNameView">Aman Lalh</b></span><i class="arrow">â€º</i></button>
+      <button class="settings-card" data-edit-profile="accountLocation"><span><span>Location</span><b id="accountLocationView">Brisbane</b></span><i class="arrow">â€º</i></button>
+      <button class="settings-card" data-settings-modal="phone"><span><span>Change Phone Number</span><b id="accountPhone">0000000000</b></span><i class="arrow">â€º</i></button>
+      <button class="settings-card" data-settings-modal="notifications"><span><span>Notifications</span><b>Job matches, chat and updates</b></span><i class="arrow">â€º</i></button>
+      <button class="settings-card" data-settings-modal="privacy"><span><span>Privacy</span><b>Location, selfie and profile visibility</b></span><i class="arrow">â€º</i></button>
+      <button class="settings-card" data-settings-modal="faq"><span><span>Help & FAQ</span><b>Common questions</b></span><i class="arrow">â€º</i></button>
+      <button class="settings-card" data-settings-modal="refer"><span><span>Refer & Earn</span><b>Share Kaam Karo</b></span><i class="arrow">â€º</i></button>
+      <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">â€º</i></button>
       <div class="section-label">Profiles</div>
       <div class="settings-list">
-        <button class="settings-card" data-account-profile="worker"><span><span>Worker Profile</span><b id="workerAccountStatus">Not set up</b></span><i class="arrow">›</i></button>
-        <button class="settings-card" data-account-profile="employer"><span><span>Employer Profile</span><b id="employerAccountStatus">Not set up</b></span><i class="arrow">›</i></button>
+        <button class="settings-card" data-account-profile="worker"><span><span>Worker Profile</span><b id="workerAccountStatus">Not set up</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-account-profile="employer"><span><span>Employer Profile</span><b id="employerAccountStatus">Not set up</b></span><i class="arrow">â€º</i></button>
       </div>
       <p class="small center">Using as: <span id="accountModeLine">Worker</span></p>
       <div class="section-label">Danger</div>
       <div class="panel danger-zone">
-        <h3>Delete Account</h3>
+        <span class="section-label">DANGER ZONE</span>
+        <h3 class="danger-title">Delete Account</h3>
         <p class="small">This will permanently delete your account, jobs, applications, and chats.</p>
-        <label class="input mt"><select id="deleteReason"><option value="">Select reason</option><option>Not finding jobs</option><option>Privacy concern</option><option>Created by mistake</option><option>Other</option></select></label>
-        <input id="deleteConfirmPhone" placeholder="Type your mobile number to confirm">
-        <button id="deleteAccountBtn" class="btn danger mt" data-delete-account disabled>Delete Account</button>
+        <label><span class="small"><b>Why are you deleting your account? (optional)</b></span><select id="deleteReason"><option value="">Select reason</option><option>Found a job elsewhere</option><option>Not enough jobs in my area</option><option>Too many notifications</option><option>Other</option></select></label>
+        <label><span class="small"><b>Confirm your mobile number</b><br>Enter the same 10-digit number used for this account.</span><input id="deleteConfirmPhone" inputmode="numeric" maxlength="10" placeholder="0000000000"></label>
+        <span id="deletePhoneError" class="danger-helper"></span>
+        <button id="deleteAccountBtn" class="btn danger mt" data-delete-account disabled>Permanently Delete Account</button>
       </div>
     </section>
 
     <section id="profileEdit" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><div><b id="profileEditTitle">Edit profile</b><p class="small" id="profileEditHint">Keep this clear and professional.</p></div><button id="profileEditSaveTop" class="top-save" data-save-profile-edit disabled>Save</button></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><div><b id="profileEditTitle">Edit profile</b><p class="small" id="profileEditHint">Keep this clear and professional.</p></div><button id="profileEditSaveTop" class="top-save" data-save-profile-edit disabled>Save</button></div>
       <div id="profileEditBody" class="edit-stack"></div>
     </section>
 
     <section id="adminModeration" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><div><b>Admin Review</b><p class="small">Pending jobs sorted by risk score</p></div><span class="tag" id="adminPendingCount">0</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><div><b>Admin Review</b><p class="small">Pending jobs sorted by risk score</p></div><span class="tag" id="adminPendingCount">0</span></div>
       <div id="adminQueue" class="list"></div>
       <h3>Audit logs</h3>
       <div id="auditLogs" class="list"></div>
     </section>
 
     <section id="legal" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><span class="tag">Legal</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><span class="tag">Legal</span></div>
       <h1 class="title" id="legalTitle">Terms & Conditions</h1>
       <div class="panel small" id="legalBody"></div>
     </section>
 
     <section id="report" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">←</button><span class="tag">Safety</span></div>
+      <div class="header"><button class="icon" data-menu-back="true">â†</button><span class="tag">Safety</span></div>
       <h1 class="title">Report a problem</h1>
       <p class="sub">Tell us what happened. Reports help keep Kaam Karo safe.</p>
       <div class="list">
@@ -1409,10 +1438,10 @@
     <nav id="bottomNav" class="nav bottom-nav"></nav>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <div id="undoBar" class="undo-bar"><span id="undoText">Skipped job</span><button data-undo-swipe>↩ Undo</button></div>
+  <div id="undoBar" class="undo-bar"><span id="undoText">Skipped job</span><button data-undo-swipe>â†© Undo</button></div>
   <div id="appModal" class="modal-backdrop" role="dialog" aria-modal="true">
     <div class="modal-card">
-      <div class="review-row"><h3 id="modalTitle">Details</h3><button class="icon" data-close-modal>×</button></div>
+      <div class="review-row"><h3 id="modalTitle">Details</h3><button class="icon" data-close-modal>Ã—</button></div>
       <div id="modalBody" class="mt"></div>
     </div>
   </div>
@@ -1494,6 +1523,10 @@
       state.user.phone = state.user.phone || state.employer.phone || "";
       state.user.city = state.user.city || state.worker.city || "";
       state.user.location = state.user.location || state.user.city || "";
+      state.user.phoneVerified = !!(state.user.phoneVerified || state.worker.phoneVerified);
+      state.user.photoVerificationStatus = state.user.photoVerificationStatus || (state.user.photoVerified || state.worker.photoVerified ? "verified" : "not_uploaded");
+      state.user.photoVerified = state.user.photoVerificationStatus === "verified";
+      state.worker.photoVerified = state.user.photoVerificationStatus === "verified";
       var oldDemoName = ["John","Kumar"].join(" ");
       var oldDemoPhone = "987" + "654" + "3210";
       var oldDemoCity = "Jai" + "pur";
@@ -1558,7 +1591,7 @@
 
       var copy = {
         en: { heroTitle: "Jobs near you.", heroSub: "Apply in one swipe. Chat after employer accepts.", heroVisual: "Swipe. Match. Start work.", continue: "Continue" },
-        hi: { heroTitle: "आपके पास नौकरियां.", heroSub: "एक स्वाइप में आवेदन करें. नियोक्ता स्वीकार करे, फिर चैट शुरू करें.", heroVisual: "स्वाइप करें. मैच करें. काम शुरू करें.", continue: "आगे बढ़ें" }
+        hi: { heroTitle: "à¤†à¤ªà¤•à¥‡ à¤ªà¤¾à¤¸ à¤¨à¥Œà¤•à¤°à¤¿à¤¯à¤¾à¤‚.", heroSub: "à¤à¤• à¤¸à¥à¤µà¤¾à¤‡à¤ª à¤®à¥‡à¤‚ à¤†à¤µà¥‡à¤¦à¤¨ à¤•à¤°à¥‡à¤‚. à¤¨à¤¿à¤¯à¥‹à¤•à¥à¤¤à¤¾ à¤¸à¥à¤µà¥€à¤•à¤¾à¤° à¤•à¤°à¥‡, à¤«à¤¿à¤° à¤šà¥ˆà¤Ÿ à¤¶à¥à¤°à¥‚ à¤•à¤°à¥‡à¤‚.", heroVisual: "à¤¸à¥à¤µà¤¾à¤‡à¤ª à¤•à¤°à¥‡à¤‚. à¤®à¥ˆà¤š à¤•à¤°à¥‡à¤‚. à¤•à¤¾à¤® à¤¶à¥à¤°à¥‚ à¤•à¤°à¥‡à¤‚.", continue: "à¤†à¤—à¥‡ à¤¬à¤¢à¤¼à¥‡à¤‚" }
       };
       var legal = {
         terms: ["Terms & Conditions", "Kaam Karo connects workers and employers. Use truthful information, do not post illegal jobs, and do not ask workers to pay for employment."],
@@ -1786,17 +1819,53 @@
       }
       function renderPhotoStatus() {
         if (byId("photoStatus")) {
-          byId("photoStatus").textContent = state.worker.photoVerified ? "Photo uploaded successfully" : "Verified accounts may appear more prominently to employers.";
+          byId("photoStatus").textContent = state.worker.photoVerified ? "✔ Photo uploaded successfully" : "Verified accounts may appear more prominently to employers.";
         }
       }
       function profileStrength() {
-        var score = 0;
-        if (state.worker.name) score += 20;
-        if (state.worker.city) score += 20;
-        if ((state.worker.skills || []).length) score += 20;
-        if (state.worker.experience) score += 15;
-        if (state.worker.photoVerified) score += 25;
-        return Math.min(100, score);
+        var phoneVerified = !!(state.user.phoneVerified || state.worker.phoneVerified);
+        var photoVerified = state.user.photoVerificationStatus === "verified" || state.user.photoVerified === true || state.worker.photoVerified === true;
+        if (phoneVerified && photoVerified) return 100;
+        if (phoneVerified) return 70;
+        return 0;
+      }
+      function renderPhotoBadge() {
+        var slot = byId("photoBadgeSlot");
+        if (!slot) return;
+        if (state.user.photoVerificationStatus === "verified" || state.worker.photoVerified) {
+          slot.innerHTML = '<span class="badge">âœ“ Photo Verified</span>';
+        } else {
+          slot.innerHTML = '<button class="badge muted" data-go="verifyId">Verify Photo</button>';
+        }
+      }
+      function workerPhotoBadgeHtml() {
+        return (state.user.photoVerificationStatus === "verified" || state.worker.photoVerified) ? '<span class="badge">âœ“ Photo Verified</span>' : '<span class="small">No photo</span>';
+      }
+      function descriptionWordCount(text) {
+        return String(text || "").trim().split(/\s+/).filter(Boolean).length;
+      }
+      function renderPostDescCounter() {
+        var desc = byId("postDesc");
+        if (!desc) return;
+        var words = descriptionWordCount(desc.value);
+        if (byId("postDescCounter")) byId("postDescCounter").textContent = desc.value.length + " / 700 characters · 25 words minimum";
+        if (byId("postDescError")) byId("postDescError").style.display = words > 0 && words < 25 ? "block" : "none";
+      }
+      function addDescriptionSentence(kind) {
+        var desc = byId("postDesc");
+        if (!desc) return;
+        var suggestions = {
+          tasks: "Daily tasks include helping with customer service, stock handling, and supporting the team during busy hours.",
+          shift: "Shift timing can be flexible and will be discussed with the selected worker.",
+          experience: "Previous experience is helpful but not required. Training can be provided.",
+          location: "Workplace location details will be shared clearly before joining, including reporting point and nearby landmarks.",
+          tools: "Any tools, uniform, or required documents will be explained before the worker accepts the job. Must have Degree in Business management."
+        };
+        var sentence = suggestions[kind] || "";
+        if (!sentence) return;
+        desc.value = ((desc.value.trim() ? desc.value.trim() + "\n\n" : "") + sentence).slice(0, 700);
+        renderPostDescCounter();
+        desc.focus();
       }
       function openModal(title, body) {
         if (!byId("appModal")) return;
@@ -1856,7 +1925,7 @@
         var allSelected = days.every(function (day) { return selectedDays.indexOf(day) >= 0; });
         byId("onboardDays").innerHTML = days.map(function (day) {
           var selected = selectedDays.indexOf(day) >= 0;
-          return '<button class="choice ' + (selected ? "selected" : "") + '" data-onboard-day="' + day + '"><span class="ci">' + (selected ? "✓" : "") + '</span>' + day + '</button>';
+          return '<button class="choice ' + (selected ? "selected" : "") + '" data-onboard-day="' + day + '"><span class="ci">' + (selected ? "âœ“" : "") + '</span>' + day + '</button>';
         }).join("");
         document.querySelectorAll("[data-onboard-start]").forEach(function (button) {
           button.classList.toggle("selected", button.dataset.onboardStart === state.worker.startAvailability);
@@ -2015,7 +2084,7 @@
           return;
         }
         byId("searchResults").innerHTML = list.map(function (job) {
-          return '<button class="list-row" data-select-job="' + job.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.pay + ' · ' + job.city + ' · ' + job.distance + '</span></span><span class="status-text">Apply</span></button>';
+          return '<button class="list-row" data-select-job="' + job.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.pay + ' Â· ' + job.city + ' Â· ' + job.distance + '</span></span><span class="status-text">Apply</span></button>';
         }).join("");
       }
       function renderWorkerApplications() {
@@ -2032,7 +2101,7 @@
       function renderApplicantCard(app) {
         var job = state.jobs.find(function (j) { return j.id === app.jobId; });
         var w = state.worker;
-        return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' · ' + w.city + ' · ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span><button class="icon" data-reject-app="' + app.id + '">x</button><button class="icon" data-accept-app="' + app.id + '">✓</button></div>';
+        return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' · ' + w.city + ' · ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span><div class="mt">' + workerPhotoBadgeHtml() + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span><button class="icon" data-reject-app="' + app.id + '">x</button><button class="icon" data-accept-app="' + app.id + '">✓</button></div>';
       }
       function renderEmployer() {
         if (!hasEmployerProfile()) return;
@@ -2050,12 +2119,12 @@
         var job = state.jobs.find(function (j) { return j.id === selectedJobId; }) || state.jobs[0];
         byId("jobDetailTitle").textContent = job.title;
         byId("jobDetailPay").textContent = job.pay;
-        byId("jobDetailMeta").textContent = job.city + " · " + job.type + " · " + job.employer;
+        byId("jobDetailMeta").textContent = job.city + " Â· " + job.type + " Â· " + job.employer;
         var jobApps = apps.filter(function (a) { return a.jobId === job.id; });
         byId("applicantList").innerHTML = jobApps.length ? jobApps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants yet. The feed will keep showing this job to relevant workers.</div>';
         byId("allApplicants").innerHTML = apps.length ? apps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants yet.</div>';
         byId("talentCount").textContent = apps.length + " applicants";
-        byId("employerJobsList").innerHTML = state.jobs.map(function (j) { return '<button class="list-row" data-job-detail="' + j.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' · ' + j.city + '</span></span><span class="status-text">Open</span></button>'; }).join("");
+        byId("employerJobsList").innerHTML = state.jobs.map(function (j) { return '<button class="list-row" data-job-detail="' + j.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' Â· ' + j.city + '</span></span><span class="status-text">Open</span></button>'; }).join("");
       }
       function renderFullWorkerProfile() {
         var w = state.worker;
@@ -2064,7 +2133,7 @@
         byId("profileStatus").textContent = app.status;
         byId("profileStatus").className = "tag";
         byId("fullWorkerProfile").innerHTML =
-          '<div class="panel"><div class="toolbar">' + badges + '</div><h1 class="title mt">' + w.name + '</h1><p class="sub">' + w.bio + '</p></div>' +
+          '<div class="panel"><div class="toolbar">' + badges + workerPhotoBadgeHtml() + '</div><h1 class="title mt">' + w.name + '</h1><p class="sub">' + w.bio + '</p></div>' +
           '<div class="panel"><div class="kv"><span>Age</span><b>' + w.age + '</b></div><div class="kv"><span>City</span><b>' + w.city + '</b></div><div class="kv"><span>Experience</span><b>' + w.experience + '</b></div><div class="kv"><span>Availability</span><b>' + w.availability + '</b></div><div class="kv"><span>Preferred type</span><b>' + w.preferredType + '</b></div></div>' +
           '<div class="panel"><b>Skills</b><div class="toolbar">' + w.skills.map(function (s) { return '<span class="badge blue">' + s + '</span>'; }).join("") + '</div></div>';
       }
@@ -2099,6 +2168,7 @@
         var deleteButton = byId("deleteAccountBtn");
         if (deleteButton) deleteButton.disabled = true;
         if (byId("deleteConfirmPhone")) byId("deleteConfirmPhone").value = "";
+        if (byId("deletePhoneError")) byId("deletePhoneError").textContent = "";
       }
       function saveAccountSettings() {
         var name = byId("accountName").value.trim() || state.user.displayName || state.worker.name;
@@ -2178,12 +2248,12 @@
         }
         if (cfg.type === "experience") {
           var exp = ["No experience","Less than 1 year","1-2 years","2-5 years","5+ years"];
-          body.innerHTML = '<div class="edit-card">' + exp.map(function (item) { var selected = editDraft.value === item || (!editDraft.value && item === "No experience"); return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-option="' + item + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
+          body.innerHTML = '<div class="edit-card">' + exp.map(function (item) { var selected = editDraft.value === item || (!editDraft.value && item === "No experience"); return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-option="' + item + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
           return;
         }
         if (cfg.type === "work") {
           var types = ["Full-time","Part-time","Contract","Temporary","Internship"];
-          body.innerHTML = '<div class="edit-card">' + types.map(function (item) { var selected = (editDraft.workTypes || []).indexOf(item) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-work="' + item + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
+          body.innerHTML = '<div class="edit-card">' + types.map(function (item) { var selected = (editDraft.workTypes || []).indexOf(item) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-work="' + item + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
           return;
         }
         if (cfg.type === "availability") {
@@ -2192,16 +2262,16 @@
           var starts = ["Immediate","On Demand","Specific Date"];
           var allSelected = days.every(function (day) { return (editDraft.days || []).indexOf(day) >= 0; });
           body.innerHTML =
-            '<div class="edit-card"><div class="section-label">Start Availability</div>' + starts.map(function (start) { var selected = editDraft.start === start; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-start="' + start + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + start + '</button>'; }).join("") + '</div>' +
-            '<div class="edit-card"><div class="section-label">Days</div><button class="option-row ' + (allSelected ? "selected" : "") + '" data-edit-all-days><span class="option-dot">' + (allSelected ? "✓" : "") + '</span>Select All Days</button><div class="grid mt">' + days.map(function (day) { var selected = (editDraft.days || []).indexOf(day) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-day="' + day + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + day + '</button>'; }).join("") + '</div></div>' +
-            '<div class="edit-card"><div class="section-label">Shift preference</div>' + shifts.map(function (shift) { var selected = editDraft.shift === shift; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-shift="' + shift + '"><span class="option-dot">' + (selected ? "✓" : "") + '</span>' + shift + '</button>'; }).join("") + '</div>';
+            '<div class="edit-card"><div class="section-label">Start Availability</div>' + starts.map(function (start) { var selected = editDraft.start === start; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-start="' + start + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + start + '</button>'; }).join("") + '</div>' +
+            '<div class="edit-card"><div class="section-label">Days</div><button class="option-row ' + (allSelected ? "selected" : "") + '" data-edit-all-days><span class="option-dot">' + (allSelected ? "âœ“" : "") + '</span>Select All Days</button><div class="grid mt">' + days.map(function (day) { var selected = (editDraft.days || []).indexOf(day) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-day="' + day + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + day + '</button>'; }).join("") + '</div></div>' +
+            '<div class="edit-card"><div class="section-label">Shift preference</div>' + shifts.map(function (shift) { var selected = editDraft.shift === shift; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-shift="' + shift + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + shift + '</button>'; }).join("") + '</div>';
           return;
         }
         if (cfg.type === "location") {
           var suggestions = ["Brisbane","Sydney","Melbourne","Jaipur","Delhi NCR","Chandigarh"];
           body.innerHTML =
             '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Search city or area" value="' + (editDraft.value || "") + '"></div></div>' +
-            '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (city) { return '<button class="option-row ' + (editDraft.value === city ? "selected" : "") + '" data-edit-location="' + city + '"><span class="option-dot">' + (editDraft.value === city ? "✓" : "") + '</span>' + city + '</button>'; }).join("") + '</div>';
+            '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (city) { return '<button class="option-row ' + (editDraft.value === city ? "selected" : "") + '" data-edit-location="' + city + '"><span class="option-dot">' + (editDraft.value === city ? "âœ“" : "") + '</span>' + city + '</button>'; }).join("") + '</div>';
           return;
         }
         body.innerHTML = '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Type here" value="' + (editDraft.value || "") + '"></div></div>';
@@ -2269,7 +2339,7 @@
         if (existing) return existing;
         var job = state.jobs.find(function (j) { return j.id === app.jobId; }) || state.jobs[0];
         var now = Date.now();
-        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: "🎉 Employer accepted your interest! You can now chat directly.", unreadWorker: 1, unreadEmployer: 0 };
+        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: "ðŸŽ‰ Employer accepted your interest! You can now chat directly.", unreadWorker: 1, unreadEmployer: 0 };
         state.conversations.unshift(convo);
         state.messages.push({ id: "msg-" + now + "-system", conversationId: convo.id, senderId: "system", text: convo.lastMessage, createdAt: now, status: "delivered", flaggedRisk: false });
         app.status = "Matched";
@@ -2287,6 +2357,7 @@
         return ["registration fee","deposit","pay first","joining fee","send money","documents charge"].some(function (term) { return text.toLowerCase().indexOf(term) >= 0; });
       }
       function renderChatList(convos) {
+        byId("chat").classList.add("chat-no-composer");
         document.querySelector("#chat .quick").style.display = "none";
         document.querySelector("#chat .chat-input").style.display = "none";
         byId("chatTitle").textContent = "Chat";
@@ -2304,6 +2375,7 @@
         }).join("");
       }
       function renderActiveChat(convo) {
+        byId("chat").classList.toggle("chat-no-composer", convo.status === "blocked");
         var job = state.jobs.find(function (j) { return j.id === convo.jobId; }) || state.jobs[0];
         var status = convo.status === "hired" ? "Hired" : convo.status === "blocked" ? "Closed" : "Matched";
         byId("chatTitle").textContent = conversationTitle(convo);
@@ -2316,9 +2388,10 @@
           return '<div class="msg ' + (mine ? "right" : "left") + '">' + m.text.replace(/[<>]/g, "") + (m.flaggedRisk ? '<br><b>Warning: Never pay money to get a job.</b>' : '') + '<small>' + new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ' - ' + m.status + '</small></div>';
         }).join("") + (currentRole === "employer" && convo.status !== "hired" && convo.status !== "blocked" ? '<button class="btn outline" data-mark-hired>Mark as Hired</button>' : '') + (convo.status === "blocked" ? '<div class="panel small">This chat is blocked/closed. Messages are disabled.</div>' : '');
         var quicks = currentRole === "employer" ? ["Can you join tomorrow?","Please share experience","Come for interview","Share availability"] : ["I am available","Please share timing","Please share location","What is the salary?"];
-        document.querySelector("#chat .quick").style.display = "flex";
-        document.querySelector("#chat .quick").innerHTML = quicks.map(function (q) { return '<button data-quick="' + q + '">' + q + '</button>'; }).join("") + '<button data-report="chat">Report</button><button data-block>Block</button>';
+        document.querySelector("#chat .quick").style.display = convo.status === "blocked" ? "none" : "flex";
+        document.querySelector("#chat .quick").innerHTML = quicks.map(function (q) { return '<button data-quick="' + q + '">' + q + '</button>'; }).join("");
         document.querySelector("#chat .chat-input").style.display = convo.status === "blocked" ? "none" : "flex";
+        byId("chatArea").scrollTop = byId("chatArea").scrollHeight;
       }
       function renderChat() {
         if (!byId("chatSafety")) return;
@@ -2351,7 +2424,6 @@
       function workerBadges() {
         var badges = [];
         if (state.worker.phoneVerified) badges.push({ label: "Phone Verified", className: "" });
-        if (state.worker.photoVerified) badges.push({ label: "Photo Verified", className: "blue" });
         if (profileComplete()) badges.push({ label: "Profile Complete", className: "blue" });
         if (state.applications.some(function (a) { return a.workerId === state.worker.id; }) || state.worker.active) badges.push({ label: "Active", className: "amber" });
         return badges.slice(0, 3);
@@ -2473,6 +2545,7 @@
           renderOnboardingAvailability,
           renderPayPrefs,
           renderPhotoStatus,
+          renderPhotoBadge,
           renderNavs,
           function () { if (byId("jobFeed")) renderFeed(); },
           function () { if (byId("searchResults")) renderSearch(); },
@@ -2487,6 +2560,7 @@
           renderLegal,
           renderNotifications,
           renderJobReview,
+          renderPostDescCounter,
           renderPublished,
           function () {
             var profileBadges = workerBadges();
@@ -2541,6 +2615,7 @@
           shiftPreference: state.worker.shiftPreference,
           locationPreference: locationMode,
           preferredPay: state.worker.openAnyPay ? "Open to any pay" : (state.worker.payRange || ""),
+          photoVerificationStatus: state.user.photoVerificationStatus || "not_uploaded",
           trustBadges: workerBadges().map(function (badge) { return badge.label; }),
           createdAt: Date.now(),
           updatedAt: Date.now()
@@ -2563,7 +2638,12 @@
         if (!amount) return toast("Salary required.");
         if (!period) return toast("Salary type required.");
         if (!city) return toast("Location required.");
-        if (desc.length < 25) return toast("Job description must be at least 25 characters.");
+        if (desc.length > 700) return toast("Job description must be 700 characters or less.");
+        if (descriptionWordCount(desc) < 25) {
+          if (byId("postDescError")) byId("postDescError").style.display = "block";
+          return toast("Please add at least 25 words so workers understand the job clearly.");
+        }
+        if (byId("postDescError")) byId("postDescError").style.display = "none";
         return { title: title, pay: pay, city: city, desc: desc, type: byId("postType").value };
       }
       function addPostedJob() {
@@ -2595,9 +2675,37 @@
         track(postVisibility === "boost" ? "employer_job_boosted_posted" : "employer_job_free_posted");
         show("published");
       }
+      function performAccountDelete() {
+        var keepJobs = state.jobs.filter(function (job) { return !job.employerId && !job.businessId; });
+        state.workerComplete = false;
+        state.employerComplete = false;
+        state.workerProfiles = {};
+        state.businessProfiles = {};
+        state.defaultWorkerId = "";
+        state.defaultBusinessId = "";
+        state.applications = [];
+        state.conversations = [];
+        state.messages = [];
+        state.notifications = [];
+        state.jobs = keepJobs;
+        state.user = { id: "user-demo", displayName: "", phone: "", city: "", location: "", phoneVerified: false, photoVerificationStatus: "not_uploaded", photoVerified: false };
+        state.worker = { id: "john", name: "", gender: "", age: "", city: "", experience: "", skills: [], jobTypes: [], availability: "", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: false, photoVerified: false, startAvailability: "", availableDays: [], shiftPreference: "", flexibleAvailability: false };
+        state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "", type: "", city: "" };
+        localStorage.removeItem("kkPendingWorkerRoute");
+        localStorage.removeItem("kkPendingEmployerRoute");
+        localStorage.removeItem("kkRole");
+        localStorage.removeItem("kkLastMode");
+        save();
+        closeModal();
+        show("landing");
+        toast("Account deleted");
+      }
       document.addEventListener("click", function (event) {
         var lang = event.target.closest("[data-lang]");
         if (lang) return setLang(lang.dataset.lang);
+        var descChip = event.target.closest("[data-desc-chip]");
+        if (descChip) { addDescriptionSentence(descChip.dataset.descChip); return; }
+        if (event.target.closest("[data-confirm-delete-account]")) { performAccountDelete(); return; }
         var legalLink = event.target.closest("[data-legal]");
         if (legalLink) { currentLegal = legalLink.dataset.legal; show("legal"); return; }
         var menuBack = event.target.closest("[data-menu-back]");
@@ -2693,11 +2801,11 @@
         }
         if (event.target.closest("[data-change-phone-flow]")) { phoneUpdatePending = true; closeModal(); show("otp"); toast("Enter new phone number"); return; }
         var saveModal = event.target.closest("[data-save-modal]");
-        if (saveModal) { closeModal(); toast(saveModal.dataset.saveModal + " ✅"); return; }
+        if (saveModal) { closeModal(); toast(saveModal.dataset.saveModal + " âœ…"); return; }
         var openJob = event.target.closest("[data-open-job-modal]");
         if (openJob && !event.target.closest("button")) {
           var detailJob = state.jobs.find(function (job) { return job.id === openJob.dataset.openJobModal; });
-          if (detailJob) openModal(detailJob.title, '<div class="panel"><h2>' + detailJob.pay + '</h2><p class="small">' + detailJob.city + ' · ' + detailJob.type + ' · Posted 3h ago</p><span class="badge amber">Hiring today</span></div><p class="small mt">' + detailJob.desc + '</p><button class="btn primary mt" data-apply-job="' + detailJob.id + '">Apply</button>');
+          if (detailJob) openModal(detailJob.title, '<div class="panel"><h2>' + detailJob.pay + '</h2><p class="small">' + detailJob.city + ' Â· ' + detailJob.type + ' Â· Posted 3h ago</p><span class="badge amber">Hiring today</span></div><p class="small mt">' + detailJob.desc + '</p><button class="btn primary mt" data-apply-job="' + detailJob.id + '">Apply</button>');
           return;
         }
         if (event.target.closest("[data-undo-swipe]")) {
@@ -2794,32 +2902,9 @@
           return;
         }
         if (event.target.closest("[data-delete-account]")) {
-          var phoneToConfirm = (state.user.phone || state.employer.phone || "").replace(/\D/g, "");
-          if (byId("deleteConfirmPhone").value.replace(/\D/g, "") !== phoneToConfirm) return toast("Type your mobile number to confirm.");
-          if (!byId("deleteReason").value) return toast("Select a reason first.");
-          if (!confirm("Final warning: permanently delete your account and data?")) return;
-          var keepJobs = state.jobs.filter(function (job) { return !job.employerId && !job.businessId; });
-          state.workerComplete = false;
-          state.employerComplete = false;
-          state.workerProfiles = {};
-          state.businessProfiles = {};
-          state.defaultWorkerId = "";
-          state.defaultBusinessId = "";
-          state.applications = [];
-          state.conversations = [];
-          state.messages = [];
-          state.notifications = [];
-          state.jobs = keepJobs;
-          state.user = { id: "user-demo", displayName: "", phone: "", city: "", location: "" };
-          state.worker = { id: "john", name: "", gender: "", age: "", city: "", experience: "", skills: [], jobTypes: [], availability: "", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: false, startAvailability: "", availableDays: [], shiftPreference: "", flexibleAvailability: false };
-          state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "", type: "", city: "" };
-          localStorage.removeItem("kkPendingWorkerRoute");
-          localStorage.removeItem("kkPendingEmployerRoute");
-          localStorage.removeItem("kkRole");
-          localStorage.removeItem("kkLastMode");
-          save();
-          show("landing");
-          toast("Account deleted.");
+          var expectedDeletePhone = (state.user.phone || state.employer.phone || "").replace(/\D/g, "").slice(-10);
+          if (byId("deleteConfirmPhone").value.replace(/\D/g, "") !== expectedDeletePhone) return toast("Type your mobile number to confirm.");
+          openModal("Are you absolutely sure?", '<p>This cannot be undone. All your data and history will be removed.</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn danger" data-confirm-delete-account>Permanently Delete</button></div>');
           return;
         }
         if (event.target.closest("[data-profile-tab]")) {
@@ -2877,11 +2962,12 @@
           var otp = byId("otpInput").value.replace(/\D/g, "");
           if (otp.length < 4) return toast("Enter the OTP code.");
           state.worker.phoneVerified = true;
+          state.user.phoneVerified = true;
           state.worker.active = true;
           state.user.phone = state.user.phone || state.employer.phone;
           save();
           track("otp_verified");
-          if (phoneUpdatePending) { phoneUpdatePending = false; toast("Phone number updated ✅"); show("accountSettings"); return; }
+          if (phoneUpdatePending) { phoneUpdatePending = false; toast("Phone number updated âœ…"); show("accountSettings"); return; }
           routeAfterOtp();
           return;
         }
@@ -2961,6 +3047,8 @@
         }
         if (event.target.closest("[data-upload-photo]")) {
           if (byId("photoCameraStatus")) byId("photoCameraStatus").textContent = "Face check passed. One clear face detected.";
+          state.user.photoVerificationStatus = "verified";
+          state.user.photoVerified = true;
           state.worker.photoVerified = true;
           stopPhotoCamera();
           save();
@@ -3077,6 +3165,7 @@
       document.addEventListener("input", function (event) {
         if (event.target.id === "jobSearch") { jobIndex = 0; renderFeed(); }
         if (event.target.id === "manualSearch") renderSearch();
+        if (event.target.id === "postDesc") renderPostDescCounter();
         if (event.target.id === "locationSearch") { state.worker.city = event.target.value.trim() || state.worker.city; save(); renderFeed(); }
         if (event.target.id === "profileEditInput") {
           editDraft.value = event.target.value.trim();
@@ -3084,8 +3173,12 @@
         }
         if (event.target.id === "jobRules" && event.target.checked) byId("jobRulesError").style.display = "none";
         if (event.target.id === "deleteConfirmPhone") {
-          var expectedPhone = (state.user.phone || state.employer.phone || "").replace(/\D/g, "");
-          byId("deleteAccountBtn").disabled = event.target.value.replace(/\D/g, "") !== expectedPhone;
+          var typedDeletePhone = event.target.value.replace(/\D/g, "").slice(0, 10);
+          event.target.value = typedDeletePhone;
+          var expectedPhone = (state.user.phone || state.employer.phone || "").replace(/\D/g, "").slice(-10);
+          var matches = typedDeletePhone === expectedPhone && expectedPhone.length === 10;
+          byId("deleteAccountBtn").disabled = !matches;
+          if (byId("deletePhoneError")) byId("deletePhoneError").textContent = typedDeletePhone.length === 10 && !matches ? "Number does not match this account." : "";
         }
         if (event.target.id === "payPref") { state.worker.payRange = event.target.value.trim(); state.worker.openAnyPay = false; save(); }
       });
