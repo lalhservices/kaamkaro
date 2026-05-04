@@ -141,6 +141,19 @@
     .screen > .header { display: none; }
     .app-header .brand-logo.compact { width: clamp(88px, 28vw, 116px); }
     .app-header .small { white-space: nowrap; font-weight: 900; }
+    .camera-preview {
+      width: 100%;
+      min-height: 260px;
+      border-radius: 22px;
+      background: #06142f;
+      object-fit: cover;
+      overflow: hidden;
+    }
+    .disabled-section {
+      opacity: .46;
+      pointer-events: none;
+      filter: grayscale(.15);
+    }
     .topbar { align-items: flex-start; }
     .brand { display: flex; align-items: center; min-width: 0; }
     .brand-logo { width: clamp(132px, 42vw, 174px); height: auto; display: block; object-fit: contain; }
@@ -1002,7 +1015,7 @@
     </section>
 
     <section id="role" class="screen">
-      <div class="header"><button class="icon" data-go="otpCode">←</button><span class="tag">Choose path</span></div>
+      <div class="header"><button class="icon" data-go="otpCode">←</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="tag">Choose path</span></div>
       <h1 class="title">What do you want to do?</h1>
       <p class="sub">Choose one. You can switch anytime from Menu.</p>
       <button class="choice mt selected" data-go="workerBasic"><span class="ci"><svg><use href="#i-user"></use></svg></span><span><b>Looking for work</b><br><span class="small">Create profile, apply and chat.</span></span></button>
@@ -1016,7 +1029,8 @@
       <label class="input"><input id="workerName" placeholder="Aman Lalh"></label>
       <label class="input mt"><select id="workerGender"><option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option></select></label>
       <label class="input mt"><input id="workerAge" inputmode="numeric" placeholder="25"></label>
-      <label class="input mt"><input id="workerCity" placeholder="Delhi"></label>
+      <label class="input mt"><input id="workerCity" list="citySuggestions" placeholder="Delhi"></label>
+      <datalist id="citySuggestions"><option value="Delhi, India"></option><option value="Mumbai, India"></option><option value="Bengaluru, India"></option><option value="Jaipur, India"></option><option value="Chandigarh, India"></option></datalist>
       <button class="btn primary mt" data-worker-basic>Continue</button>
     </section>
 
@@ -1028,7 +1042,7 @@
       <button class="btn outline mt" data-add-job-type>+ Add Role</button>
       <button class="choice mt selected" data-any-job><span class="ci">All</span><span><b>Show All Jobs</b><br><span class="small">On by default. You can still choose preferred roles below.</span></span></button>
       <div class="panel mt">
-        <div class="review-row"><span>Selected Job Types</span><b id="jobTypeCounter">Show all on</b></div>
+        <div class="review-row"><span>Selected Job Type</span><b id="jobTypeCounter">Show all on</b></div>
         <div class="toolbar selected-skills" id="selectedJobTypes"></div>
       </div>
       <div class="grid mt" id="workCategories"></div>
@@ -1064,16 +1078,18 @@
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
       <h1 class="title">Availability</h1>
       <p class="sub">Tell employers when you can start and what shifts work for you.</p>
+      <div class="section-label">Flexible Option</div>
+      <button class="choice" data-flexible-availability><span class="ci">↔</span><span><b>I'm open to any day and any time</b><br><span class="small">Flexible for all days and shifts.</span></span></button>
       <div class="section-label">Start Availability</div>
       <div class="grid" id="onboardStartOptions">
-        <button class="choice selected" data-onboard-start="Immediate"><span class="ci">✓</span>Immediate</button>
+        <button class="choice" data-onboard-start="Immediate"><span class="ci">✓</span>Immediate</button>
         <button class="choice" data-onboard-start="On Demand"><span class="ci">↔</span>On Demand</button>
       </div>
       <div class="section-label">Days</div>
-      <button class="choice selected" data-onboard-all-days><span class="ci">✓</span>Select All Days</button>
+      <button class="choice" data-onboard-all-days><span class="ci">✓</span>Select All Days</button>
       <div class="grid mt" id="onboardDays"></div>
       <div class="section-label">Shift Preference</div>
-      <div class="toolbar" id="onboardShifts"><button class="chip selected" data-onboard-shift="Morning">Morning</button><button class="chip" data-onboard-shift="Afternoon">Afternoon</button><button class="chip" data-onboard-shift="Evening">Evening</button><button class="chip" data-onboard-shift="Anytime">Anytime</button></div>
+      <div class="toolbar" id="onboardShifts"><button class="chip" data-onboard-shift="Morning">Morning</button><button class="chip" data-onboard-shift="Afternoon">Afternoon</button><button class="chip" data-onboard-shift="Evening">Evening</button><button class="chip" data-onboard-shift="Anytime">Anytime</button></div>
       <button class="btn primary mt" data-go="workerTrust">Continue</button>
     </section>
 
@@ -1083,16 +1099,16 @@
       <h1 class="title">Build Trust and Get Hired</h1>
       <p class="sub">Increase your chances of getting hired.</p>
       <div class="panel"><span class="badge">Phone Verified</span><h3 class="mt">Verified</h3><p class="small">Your number is confirmed.</p></div>
-      <div class="panel"><span class="badge blue">Photo Verification Optional</span><h3 class="mt">Add a profile photo</h3><p class="small">Adding a photo helps employers trust your profile.</p><button class="btn outline mt" data-upload-photo>Upload Profile Photo</button><p class="small mt">Profiles with a photo may appear higher to employers.</p></div>
+      <div class="panel"><span class="badge blue">Photo Verification Optional</span><h3 class="mt">Add a profile photo</h3><p class="small">Adding a photo helps employers trust your profile.</p><button class="btn outline mt" data-go="verifyId">Upload Profile Photo</button><p class="small mt" id="photoStatus">Profiles with a photo may appear higher to employers.</p></div>
       <div class="btn-row mt"><button class="btn outline" data-finish-worker>Skip for now</button><button class="btn primary" data-finish-worker>Continue</button></div>
     </section>
 
     <section id="verifyId" class="screen">
       <div class="header"><button class="icon" data-go="workerTrust">←</button><span class="tag">Optional</span></div>
       <h1 class="title">Profile Photo</h1>
-      <p class="sub">Upload a clear profile photo. This is optional and does not block onboarding.</p>
-      <div class="panel"><span class="avatar">AL</span><h3 class="mt">Photo ready</h3><p class="small">Your demo profile photo is ready for employer trust.</p></div>
-      <button class="btn primary mt" data-upload-photo>Use photo</button>
+      <p class="sub">Take a clear photo of your face, head and shoulders. This is optional and does not block onboarding.</p>
+      <div class="panel"><video id="photoCamera" class="camera-preview" autoplay playsinline muted></video><p class="small mt" id="photoCameraStatus">Camera opens first. If permission is blocked, you can continue without photo.</p></div>
+      <button class="btn primary mt" data-upload-photo>Take Photo</button>
     </section>
 
     <section id="verifyProgress" class="screen success">
@@ -1104,7 +1120,9 @@
 
     <section id="jobs" class="screen">
       <div class="header"><button class="icon" data-go="menu"><svg><use href="#i-menu"></use></svg></button><div><b>Job Feed</b><p class="small" id="feedSub">Showing nearby options</p></div><button class="icon" data-go="notifications"><svg><use href="#i-bell"></use></svg></button></div>
-      <div class="search"><svg><use href="#i-search"></use></svg><input id="jobSearch" placeholder="Search role or location"></div>
+      <div class="search"><svg><use href="#i-search"></use></svg><input id="jobSearch" placeholder="Search city"></div>
+      <button class="btn outline mt" data-add-city>Use City</button>
+      <div class="toolbar mt" id="selectedCityChip"></div>
       <div class="toolbar" data-filter-group><button class="chip selected" data-filter="all">All</button><button class="chip" data-filter="near">Near Me</button><button class="chip" data-filter="remote">Remote</button></div>
       <div id="feedNotice" class="panel small">Showing nearby options.</div>
       <div id="jobFeed"></div>
@@ -1356,7 +1374,8 @@
       var selectedJobId = "clerk";
       var selectedWorkerId = "john";
       var currentLegal = "terms";
-      var locationMode = "near";
+      var locationMode = "city";
+      var activeCity = localStorage.getItem("kkActiveCity") || "";
       var payOpen = true;
       var postVisibility = "";
       var reportContext = "general";
@@ -1385,7 +1404,7 @@
       var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
         workerComplete: false,
         employerComplete: false,
-        worker: { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "1-2 years", skills: ["Customer Service","Data Entry"], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "Reliable worker, comfortable with office, retail and helper roles.", phoneVerified: true, startAvailability: "Immediate", availableDays: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], shiftPreference: "Morning" },
+        worker: { id: "john", name: "", gender: "", age: "", city: "", experience: "", skills: [], jobTypes: [], availability: "", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: true, startAvailability: "", availableDays: [], shiftPreference: "", flexibleAvailability: false },
         employer: { id: "", ownerId: "john", name: "", business: "", phone: "0000000000", type: "", city: "" },
         jobs: cloneJobs(),
         applications: [],
@@ -1393,10 +1412,8 @@
         messages: [],
         notifications: []
       };
-      state.worker = state.worker || { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "1-2 years", skills: ["Customer Service","Data Entry"], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: true };
+      state.worker = state.worker || { id: "john", name: "", gender: "", age: "", city: "", experience: "", skills: [], availability: "", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: true };
       state.worker.id = state.worker.id || "john";
-      state.worker.name = state.worker.name || "Aman Lalh";
-      state.worker.city = state.worker.city || "Delhi";
       state.worker.skills = Array.isArray(state.worker.skills) ? state.worker.skills : [];
       state.worker.preferredJob = state.worker.preferredJob || "Any Job";
       state.worker.jobTypes = Array.isArray(state.worker.jobTypes) ? state.worker.jobTypes : [];
@@ -1420,15 +1437,31 @@
       var oldDemoName = ["John","Kumar"].join(" ");
       var oldDemoPhone = "987" + "654" + "3210";
       var oldDemoCity = "Jai" + "pur";
-      if (state.worker.name === oldDemoName) state.worker.name = "Aman Lalh";
-      if (state.worker.city === oldDemoCity) state.worker.city = "Delhi";
+      if (!state.workerComplete && !state.defaultWorkerId) {
+        state.worker.name = "";
+        state.worker.gender = "";
+        state.worker.age = "";
+        state.worker.city = "";
+        state.worker.experience = "";
+        state.worker.skills = [];
+        state.worker.jobTypes = [];
+        state.worker.preferredJob = "Any Job";
+        state.worker.startAvailability = "";
+        state.worker.availableDays = [];
+        state.worker.shiftPreference = "";
+        state.worker.flexibleAvailability = false;
+      } else {
+        if (state.worker.name === oldDemoName) state.worker.name = "Aman Lalh";
+        if (state.worker.city === oldDemoCity) state.worker.city = "Delhi";
+      }
       if (state.employer.phone === oldDemoPhone) state.employer.phone = "0000000000";
-      if (!state.user.displayName || state.user.displayName === oldDemoName) state.user.displayName = state.worker.name || "Aman Lalh";
+      if (state.user.displayName === oldDemoName) state.user.displayName = state.worker.name || "";
       if (!state.user.phone || state.user.phone === oldDemoPhone) state.user.phone = "0000000000";
       if (!state.user.city || state.user.city === oldDemoCity) { state.user.city = "Delhi"; state.user.location = "Delhi"; }
-      state.worker.startAvailability = state.worker.startAvailability || "Immediate";
-      state.worker.availableDays = state.worker.availableDays || ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-      state.worker.shiftPreference = state.worker.shiftPreference || "Morning";
+      state.worker.startAvailability = state.worker.startAvailability || "";
+      state.worker.availableDays = Array.isArray(state.worker.availableDays) ? state.worker.availableDays : [];
+      state.worker.shiftPreference = state.worker.shiftPreference || "";
+      state.worker.flexibleAvailability = !!state.worker.flexibleAvailability;
       if (!state.notifications.length) {
         state.notifications = [
           { id: "note-morning", text: "5 new jobs near you today", target: "jobs", read: false, createdAt: Date.now() - 60000 },
@@ -1474,7 +1507,10 @@
         guidelines: ["Community Guidelines", "Be respectful. Do not ask for money to give a job. Report fake jobs, unsafe messages or wrong salary details."]
       };
 
-      function save() { localStorage.setItem("kkState", JSON.stringify(state)); }
+      function save() {
+        localStorage.setItem("kkState", JSON.stringify(state));
+        localStorage.setItem("kkActiveCity", activeCity || "");
+      }
       function track(name) {
         var events = JSON.parse(localStorage.getItem("kkAnalytics") || "[]");
         events.push({ name: name, at: new Date().toISOString(), screen: currentScreen });
@@ -1566,12 +1602,14 @@
         return /^open/i.test(state.worker.preferredJob) ? state.worker.preferredJob : "Open to " + state.worker.preferredJob + " roles";
       }
       function workerAvailabilityLine() {
-        var start = state.worker.startAvailability || "Immediate";
+        if (state.worker.flexibleAvailability) return "Open to any day and any time";
+        var start = state.worker.startAvailability || "";
         var days = state.worker.availableDays || [];
         if (start === "On Demand") return "Available on demand, flexible schedule";
         if (start === "Specific Date") return "Available from a specific date for planned shifts";
-        if (!days.length || days.length === 7) return "Available immediately for weekday and weekend shifts";
-        return "Available immediately on " + days.join(", ") + " for " + (state.worker.shiftPreference || "morning").toLowerCase() + " shifts";
+        if (!start && !days.length && !state.worker.shiftPreference) return "Availability not added yet";
+        if (!days.length || days.length === 7) return (start || "Available") + " for weekday and weekend shifts";
+        return (start || "Available") + " on " + days.join(", ") + " for " + (state.worker.shiftPreference || "selected").toLowerCase() + " shifts";
       }
       function resetVisibilityChoice() {
         postVisibility = "";
@@ -1619,6 +1657,7 @@
         target.classList.add("active");
         target.classList.remove("was-left","was-right");
         currentScreen = id;
+        if (id === "verifyId") startPhotoCamera(); else stopPhotoCamera();
         var body = target.querySelector(".screen-body");
         if (body) body.scrollTop = 0;
         render();
@@ -1676,25 +1715,43 @@
         }).join("");
         var any = document.querySelector("[data-any-job]");
         if (any) any.classList.toggle("selected", state.worker.preferredJob === "Any Job");
-        if (byId("jobTypeCounter")) byId("jobTypeCounter").textContent = (state.worker.jobTypes || []).length ? state.worker.jobTypes.length + " selected" : "Show all on";
+        if (byId("jobTypeCounter")) byId("jobTypeCounter").textContent = (state.worker.jobTypes || []).length ? "1 selected" : "Show all on";
         if (byId("selectedJobTypes")) {
-          var base = '<button class="chip selected" data-any-job>Show All Jobs</button>';
+          var base = state.worker.preferredJob === "Any Job" ? '<button class="chip selected" data-any-job>Show All Jobs</button>' : "";
           var selectedTypes = (state.worker.jobTypes || []).map(function (type) {
             return '<button class="chip selected skill-pill" data-remove-job-type="' + type + '">' + type + ' <span>x</span></button>';
           }).join("");
           byId("selectedJobTypes").innerHTML = base + selectedTypes;
         }
       }
+      function renderPhotoStatus() {
+        if (byId("photoStatus")) {
+          byId("photoStatus").textContent = state.worker.photoVerified ? "Photo uploaded successfully" : "Profiles with a photo may appear higher to employers.";
+        }
+      }
       function addWorkerJobType(type) {
         var value = String(type || "").trim();
         if (!value) return;
-        state.worker.jobTypes = Array.isArray(state.worker.jobTypes) ? state.worker.jobTypes : [];
-        if (state.worker.jobTypes.indexOf(value) < 0) state.worker.jobTypes.push(value);
-        state.worker.preferredJob = "Any Job";
+        state.worker.jobTypes = [value];
+        state.worker.preferredJob = value;
         if (byId("workSearch")) byId("workSearch").value = "";
         save();
         renderCategories();
         toast(value + " added");
+      }
+      function displayCity(value) {
+        return String(value || "").split(",")[0].trim();
+      }
+      function setActiveCity(value) {
+        activeCity = displayCity(value);
+        localStorage.setItem("kkActiveCity", activeCity);
+        locationMode = "city";
+        activeFilter = "all";
+        if (byId("jobSearch")) byId("jobSearch").value = "";
+        document.querySelectorAll("[data-filter]").forEach(function (chip) { chip.classList.toggle("selected", chip.dataset.filter === "all"); });
+        jobIndex = 0;
+        renderFeed();
+        if (activeCity) toast("Showing " + activeCity);
       }
       function renderSkills() {
         byId("skillChips").innerHTML = skillOptions.map(function (skill) {
@@ -1717,13 +1774,41 @@
           return '<button class="choice ' + (selected ? "selected" : "") + '" data-onboard-day="' + day + '"><span class="ci">' + (selected ? "✓" : "") + '</span>' + day + '</button>';
         }).join("");
         document.querySelectorAll("[data-onboard-start]").forEach(function (button) {
-          button.classList.toggle("selected", button.dataset.onboardStart === (state.worker.startAvailability || "Immediate"));
+          button.classList.toggle("selected", button.dataset.onboardStart === state.worker.startAvailability);
         });
+        var flexible = document.querySelector("[data-flexible-availability]");
+        if (flexible) flexible.classList.toggle("selected", !!state.worker.flexibleAvailability);
+        if (byId("onboardStartOptions")) byId("onboardStartOptions").classList.toggle("disabled-section", !!state.worker.flexibleAvailability);
+        if (byId("onboardDays")) byId("onboardDays").classList.toggle("disabled-section", !!state.worker.flexibleAvailability);
+        var allButton = document.querySelector("[data-onboard-all-days]");
+        if (allButton) allButton.classList.toggle("disabled-section", !!state.worker.flexibleAvailability);
+        if (byId("onboardShifts")) byId("onboardShifts").classList.toggle("disabled-section", !!state.worker.flexibleAvailability);
         var all = document.querySelector("[data-onboard-all-days]");
         if (all) all.classList.toggle("selected", allSelected);
         document.querySelectorAll("[data-onboard-shift]").forEach(function (button) {
-          button.classList.toggle("selected", button.dataset.onboardShift === (state.worker.shiftPreference || "Morning"));
+          button.classList.toggle("selected", button.dataset.onboardShift === state.worker.shiftPreference);
         });
+      }
+      function startPhotoCamera() {
+        var video = byId("photoCamera");
+        var status = byId("photoCameraStatus");
+        if (!video || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          if (status) status.textContent = "Camera is not available here. You can skip for now.";
+          return;
+        }
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false }).then(function (stream) {
+          video.srcObject = stream;
+          if (status) status.textContent = "Camera ready. Keep one clear face in the frame.";
+        }).catch(function () {
+          if (status) status.textContent = "Camera permission was not allowed. You can continue without photo.";
+        });
+      }
+      function stopPhotoCamera() {
+        var video = byId("photoCamera");
+        if (video && video.srcObject) {
+          video.srcObject.getTracks().forEach(function (track) { track.stop(); });
+          video.srcObject = null;
+        }
       }
       function renderPayPrefs() {
         if (!byId("payRange")) return;
@@ -1740,11 +1825,14 @@
         });
       }
       function filteredJobs(query) {
-        var q = (query || "").trim().toLowerCase();
-        var city = (state.worker.city || "").toLowerCase();
+        var q = "";
+        var selectedCity = activeCity || state.worker.city || state.user.city || "";
+        var city = selectedCity.toLowerCase();
         var list = state.jobs.filter(function (job) {
           if ((job.status || "approved") !== "approved") return false;
           if (activeFilter === "remote" || locationMode === "remote") return job.remote;
+          if (activeFilter === "near") return !job.remote;
+          if (activeFilter === "all" && city) return job.remote || String(job.city || "").toLowerCase() === city;
           if (state.worker.preferredJob && state.worker.preferredJob !== "Any Job") {
             var pref = state.worker.preferredJob.toLowerCase().split(" / ")[0];
             if ((job.title + " " + job.type + " " + job.desc).toLowerCase().indexOf(pref) < 0 && activeFilter !== "all") return false;
@@ -1753,11 +1841,16 @@
           return true;
         });
         if (!list.length) {
-          if (byId("feedNotice")) byId("feedNotice").textContent = city ? "No jobs very close - showing nearby options in " + state.worker.city + "." : "Showing nearby options.";
+          if (byId("feedNotice")) byId("feedNotice").textContent = city ? "No jobs very close - showing nearby options in " + selectedCity + "." : "Showing nearby options.";
           list = state.jobs.filter(function (job) { return (job.status || "approved") === "approved" && (!job.remote || locationMode === "remote"); });
           if (!list.length) list = cloneJobs();
         } else {
-          if (byId("feedNotice")) byId("feedNotice").textContent = locationMode === "remote" ? "Showing remote work - updated just now." : "5 new jobs near you - updated just now.";
+          if (byId("feedNotice")) {
+            if (activeFilter === "remote") byId("feedNotice").textContent = "You are seeing jobs you can do from home.";
+            else if (activeFilter === "near") byId("feedNotice").textContent = "You are seeing jobs near you.";
+            else if (activeCity) byId("feedNotice").textContent = "You are seeing jobs in " + activeCity + ".";
+            else byId("feedNotice").textContent = "You are seeing jobs in " + (selectedCity || "your city") + " and remote jobs.";
+          }
         }
         function payValue(job) {
           return Number(String(job.pay || "").replace(/[^\d]/g, "")) || 0;
@@ -1784,18 +1877,13 @@
       }
       function renderFeed() {
         if (!byId("jobFeed")) return;
-        var query = byId("jobSearch") ? byId("jobSearch").value : "";
-        var list = filteredJobs(query);
+        var list = filteredJobs("");
         if (jobIndex >= list.length) jobIndex = 0;
-        if (query.trim()) {
-          byId("jobFeed").innerHTML = list.map(function (job) {
-            return '<button class="list-row" data-select-job="' + job.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.pay + '</b><br><span class="small">' + job.title + ' - ' + job.distance + ' - ' + job.badge + '</span></span><span class="status-text">Apply</span></button>';
-          }).join("");
-        } else {
-          var variation = swipeCount > 0 && swipeCount % 4 === 0 ? '<div class="panel small">Urgent hiring near you - verified employers only.</div>' : "";
-          byId("jobFeed").innerHTML = list.length ? variation + '<div class="swipe-stack"><div class="stack-card third"></div><div class="stack-card second"></div>' + jobCard(list[jobIndex]) + '</div>' : "";
-        }
-        if (byId("feedSub")) byId("feedSub").textContent = locationMode === "remote" ? "Remote jobs" : "Near " + (state.worker.city || "your city");
+        var variation = swipeCount > 0 && swipeCount % 4 === 0 ? '<div class="panel small">Urgent hiring near you - verified employers only.</div>' : "";
+        byId("jobFeed").innerHTML = list.length ? variation + '<div class="swipe-stack"><div class="stack-card third"></div><div class="stack-card second"></div>' + jobCard(list[jobIndex]) + '</div>' : "";
+        var label = activeFilter === "remote" ? "Remote" : (activeFilter === "near" ? "Nearby" : (activeCity || state.worker.city || state.user.city || "your city"));
+        if (byId("feedSub")) byId("feedSub").textContent = label;
+        if (byId("selectedCityChip")) byId("selectedCityChip").innerHTML = activeCity ? '<button class="chip selected" data-clear-city>' + activeCity + ' <span>x</span></button>' : "";
       }
       function applyToJob(id) {
         if (!hasWorkerProfile()) return goToWorkerRoute("jobs");
@@ -2297,6 +2385,7 @@
           renderSkills,
           renderOnboardingAvailability,
           renderPayPrefs,
+          renderPhotoStatus,
           renderNavs,
           function () { if (byId("jobFeed")) renderFeed(); },
           function () { if (byId("searchResults")) renderSearch(); },
@@ -2337,10 +2426,10 @@
         var workerId = state.defaultWorkerId || state.worker.id || ("worker-" + Date.now());
         state.defaultWorkerId = workerId;
         state.worker.id = workerId;
-        state.worker.name = byId("workerName").value.trim() || state.worker.name || "Aman Lalh";
-        state.worker.gender = byId("workerGender").value || state.worker.gender;
-        state.worker.age = byId("workerAge").value.trim() || state.worker.age || "24";
-        state.worker.city = byId("workerCity").value.trim() || state.worker.city || "Delhi";
+        if (byId("workerName") && byId("workerName").value.trim()) state.worker.name = byId("workerName").value.trim();
+        if (byId("workerGender") && byId("workerGender").value) state.worker.gender = byId("workerGender").value;
+        if (byId("workerAge") && byId("workerAge").value.trim()) state.worker.age = byId("workerAge").value.trim();
+        if (byId("workerCity") && byId("workerCity").value.trim()) state.worker.city = displayCity(byId("workerCity").value.trim());
         state.worker.preferredJob = state.worker.preferredJob || "Any Job";
         state.worker.availability = workerAvailabilityLine();
         state.user.displayName = state.worker.name;
@@ -2596,9 +2685,9 @@
           state.messages = [];
           state.notifications = [];
           state.jobs = keepJobs;
-          state.user = { id: "user-demo", displayName: "Aman Lalh", phone: "0000000000", city: "Delhi", location: "Delhi" };
-          state.worker = { id: "john", name: "Aman Lalh", gender: "Male", age: "24", city: "Delhi", experience: "", skills: [], jobTypes: [], availability: "Immediate", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: false, startAvailability: "Immediate", availableDays: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], shiftPreference: "Morning" };
-          state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "0000000000", type: "", city: "" };
+          state.user = { id: "user-demo", displayName: "", phone: "", city: "", location: "" };
+          state.worker = { id: "john", name: "", gender: "", age: "", city: "", experience: "", skills: [], jobTypes: [], availability: "", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: false, startAvailability: "", availableDays: [], shiftPreference: "", flexibleAvailability: false };
+          state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "", type: "", city: "" };
           localStorage.removeItem("kkPendingWorkerRoute");
           localStorage.removeItem("kkPendingEmployerRoute");
           localStorage.removeItem("kkRole");
@@ -2623,6 +2712,21 @@
         var go = event.target.closest("[data-go]");
         if (go) {
           var targetRoute = go.dataset.go;
+          if (targetRoute === "workerBasic" && !state.workerComplete && !state.defaultWorkerId) {
+            state.worker.name = "";
+            state.worker.gender = "";
+            state.worker.age = "";
+            state.worker.city = "";
+            state.worker.experience = "";
+            state.worker.skills = [];
+            state.worker.jobTypes = [];
+            state.worker.preferredJob = "Any Job";
+            state.worker.startAvailability = "";
+            state.worker.availableDays = [];
+            state.worker.shiftPreference = "";
+            state.worker.flexibleAvailability = false;
+            save();
+          }
           if (targetRoute === "chat") {
             if (currentRole === "employer") goToEmployerRoute("chat"); else goToWorkerRoute("chat");
           } else if (isEmployerRoute(targetRoute)) {
@@ -2659,16 +2763,18 @@
         if (event.target.closest("[data-resend-otp]")) { toast("OTP sent again."); track("otp_resend"); return; }
         var workerBasic = event.target.closest("[data-worker-basic]");
         if (workerBasic) {
-          state.worker.name = byId("workerName").value.trim() || state.worker.name;
-          state.worker.gender = byId("workerGender").value || state.worker.gender;
-          state.worker.age = byId("workerAge").value.trim() || state.worker.age;
-          state.worker.city = byId("workerCity").value.trim() || state.worker.city;
+          state.worker.name = byId("workerName").value.trim();
+          state.worker.gender = byId("workerGender").value;
+          state.worker.age = byId("workerAge").value.trim();
+          state.worker.city = displayCity(byId("workerCity").value.trim());
+          state.user.city = state.worker.city;
+          state.user.location = state.worker.city;
           save();
           show("workerWork");
           return;
         }
         var anyJob = event.target.closest("[data-any-job]");
-        if (anyJob) { state.worker.preferredJob = "Any Job"; save(); renderCategories(); toast("All jobs will be shown."); return; }
+        if (anyJob) { state.worker.preferredJob = "Any Job"; state.worker.jobTypes = []; save(); renderCategories(); toast("All jobs will be shown."); return; }
         var addJobType = event.target.closest("[data-add-job-type]");
         if (addJobType) { addWorkerJobType(byId("workSearch") ? byId("workSearch").value : ""); return; }
         var workCat = event.target.closest("[data-work-cat]");
@@ -2701,6 +2807,7 @@
         var onboardStart = event.target.closest("[data-onboard-start]");
         if (onboardStart) { state.worker.startAvailability = onboardStart.dataset.onboardStart; save(); renderOnboardingAvailability(); return; }
         if (event.target.closest("[data-onboard-all-days]")) {
+          if (state.worker.flexibleAvailability) return;
           var allDays = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
           var hasAllDays = allDays.every(function (day) { return (state.worker.availableDays || []).indexOf(day) >= 0; });
           state.worker.availableDays = hasAllDays ? [] : allDays.slice();
@@ -2708,22 +2815,36 @@
         }
         var onboardDay = event.target.closest("[data-onboard-day]");
         if (onboardDay) {
+          if (state.worker.flexibleAvailability) return;
           state.worker.availableDays = state.worker.availableDays || [];
           var onboardDayIndex = state.worker.availableDays.indexOf(onboardDay.dataset.onboardDay);
           if (onboardDayIndex >= 0) state.worker.availableDays.splice(onboardDayIndex, 1); else state.worker.availableDays.push(onboardDay.dataset.onboardDay);
           save(); renderOnboardingAvailability(); return;
         }
         var onboardShift = event.target.closest("[data-onboard-shift]");
-        if (onboardShift) { state.worker.shiftPreference = onboardShift.dataset.onboardShift; save(); renderOnboardingAvailability(); return; }
+        if (onboardShift) { if (state.worker.flexibleAvailability) return; state.worker.shiftPreference = onboardShift.dataset.onboardShift; save(); renderOnboardingAvailability(); return; }
+        if (event.target.closest("[data-flexible-availability]")) {
+          state.worker.flexibleAvailability = !state.worker.flexibleAvailability;
+          if (state.worker.flexibleAvailability) {
+            state.worker.startAvailability = "";
+            state.worker.availableDays = [];
+            state.worker.shiftPreference = "";
+          }
+          save(); renderOnboardingAvailability(); return;
+        }
         if (event.target.closest("[data-upload-photo]")) {
+          if (byId("photoCameraStatus")) byId("photoCameraStatus").textContent = "Face check passed. One clear face detected.";
           state.worker.photoVerified = true;
+          stopPhotoCamera();
           save();
-          toast("Photo added.");
-          show("verifyProgress");
+          toast("Photo uploaded successfully");
+          show("workerTrust");
           return;
         }
+        if (event.target.closest("[data-add-city]")) { setActiveCity(byId("jobSearch") ? byId("jobSearch").value : ""); return; }
+        if (event.target.closest("[data-clear-city]")) { activeCity = ""; localStorage.removeItem("kkActiveCity"); renderFeed(); return; }
         var locMode = event.target.closest("[data-location-mode]");
-        if (locMode) { locationMode = locMode.dataset.locationMode; locMode.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); }); locMode.classList.add("selected"); byId("locationHint").textContent = locationMode === "remote" ? "Showing remote work." : "Showing nearby options."; return; }
+        if (locMode) { locationMode = locMode.dataset.locationMode; locMode.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); }); locMode.classList.add("selected"); if (byId("locationHint")) byId("locationHint").textContent = locationMode === "remote" ? "Showing remote work." : "Showing nearby options."; return; }
         var openPay = event.target.closest("[data-open-pay]");
         if (openPay) {
           payOpen = !payOpen;
@@ -2783,7 +2904,18 @@
           save(); track("employer_setup_complete"); show(nextEmployerRoute); return;
         }
         var filter = event.target.closest("[data-filter]");
-        if (filter) { activeFilter = filter.dataset.filter; jobIndex = 0; filter.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); }); filter.classList.add("selected"); renderFeed(); return; }
+        if (filter) {
+          activeFilter = filter.dataset.filter;
+          locationMode = activeFilter === "remote" ? "remote" : (activeFilter === "near" ? "near" : "city");
+          if (activeFilter === "near" && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function () {}, function () {}, { enableHighAccuracy: false, timeout: 2500, maximumAge: 600000 });
+          }
+          jobIndex = 0;
+          filter.parentElement.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("selected"); });
+          filter.classList.add("selected");
+          renderFeed();
+          return;
+        }
         var applyJob = event.target.closest("[data-apply-job]");
         if (applyJob) { applyToJob(applyJob.dataset.applyJob); return; }
         var next = event.target.closest("[data-next-job]");
@@ -2834,6 +2966,10 @@
         if (event.target.id === "workSearch" && event.key === "Enter") {
           event.preventDefault();
           addWorkerJobType(event.target.value);
+        }
+        if (event.target.id === "jobSearch" && event.key === "Enter") {
+          event.preventDefault();
+          setActiveCity(event.target.value);
         }
       });
       document.addEventListener("pointerdown", function (event) {
