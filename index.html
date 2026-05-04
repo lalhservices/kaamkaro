@@ -1,7 +1,7 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#06142f">
   <title>Kaam Karo</title>
@@ -20,7 +20,7 @@
       --amber: #f59e0b;
       --red: #e5484d;
       --shadow: 0 16px 42px rgba(6, 20, 47, .12);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      font-family: Inter, system-ui, "Noto Sans Devanagari", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
     }
 
     * { box-sizing: border-box; }
@@ -194,14 +194,14 @@
     .green { color: var(--green); }
 
     .lang-switch {
-      width: 112px;
+      width: 88px;
       min-height: 40px;
       padding: 3px;
       border: 1px solid var(--line);
       border-radius: 999px;
       background: #fff;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 3px;
       box-shadow: 0 8px 22px rgba(6, 20, 47, .06);
       flex: none;
@@ -1012,6 +1012,7 @@
     <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
     <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 22V4"/><path d="M5 4h13l-2 5 2 5H5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6 9 12l6 6"/><path d="M10 12h10"/></symbol>
   </svg>
   <main class="phone app">
     <header id="appHeader" class="app-header"></header>
@@ -1021,7 +1022,7 @@
         <div class="brand"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div>
         <div class="lang-switch" aria-label="Language">
           <button type="button" class="active" data-lang="en">English</button>
-          <button type="button" data-lang="hi">à¤¹à¤¿à¤‚à¤¦à¥€</button>
+          
         </div>
       </div>
       <div class="hero-copy">
@@ -1049,17 +1050,17 @@
     </section>
 
     <section id="otp" class="screen">
-      <div class="header"><button class="icon" data-go="landing">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
+      <div class="header"><button class="icon" data-go="landing"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title">Enter your phone number</h1>
       <p class="sub">We will send a one-time password by SMS. This keeps your account safe and helps employers trust real people.</p>
       <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="0000000000"></label>
-      <div class="safe-note"><b>âœ“</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
+      <div class="safe-note"><b>Safe</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
       <button class="btn primary mt" data-send-otp>Send OTP</button>
       <div class="legal-line">By continuing, you agree to <button data-legal="terms">Terms</button> and <button data-legal="privacy">Privacy Policy</button>.</div>
     </section>
 
     <section id="otpCode" class="screen">
-      <div class="header"><button class="icon" data-go="otp">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
+      <div class="header"><button class="icon" data-go="otp"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title">Enter OTP</h1>
       <p class="sub">We sent a 6 digit code to <b id="otpPhoneText">+91 98765 43210</b>.</p>
       <label class="input mt"><input id="otpInput" inputmode="numeric" maxlength="6" placeholder="Enter 6 digit OTP"></label>
@@ -1072,7 +1073,7 @@
     </section>
 
     <section id="role" class="screen">
-      <div class="header"><button class="icon" data-go="otpCode">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="tag">Choose path</span></div>
+      <div class="header"><button class="icon" data-go="otpCode"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="tag">Choose path</span></div>
       <h1 class="title">What do you want to do?</h1>
       <p class="sub">Choose one. You can switch anytime from Menu.</p>
       <button class="choice mt selected" data-go="workerBasic"><span class="ci"><svg><use href="#i-user"></use></svg></span><span><b>Looking for work</b><br><span class="small">Create profile, apply and chat.</span></span></button>
@@ -1080,7 +1081,7 @@
     </section>
 
     <section id="workerBasic" class="screen">
-      <div class="header"><button class="icon" data-go="role">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">1/5</span></div>
+      <div class="header"><button class="icon" data-go="role"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">1/5</span></div>
       <div class="progress"><span class="on"></span><span></span><span></span><span></span><span></span></div>
       <h1 class="title">Basic details</h1>
       <label class="input"><input id="workerName" placeholder="Aman Lalh"></label>
@@ -1092,7 +1093,7 @@
     </section>
 
     <section id="workerWork" class="screen">
-      <div class="header"><button class="icon" data-go="workerBasic">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">2/5</span></div>
+      <div class="header"><button class="icon" data-go="workerBasic"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">2/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
       <h1 class="title">Job type</h1>
       <div class="search mt"><svg><use href="#i-search"></use></svg><input id="workSearch" placeholder="Search job title, e.g. clerk, driver, cashier, helper..."></div>
@@ -1107,7 +1108,7 @@
     </section>
 
     <section id="workerSkills" class="screen">
-      <div class="header"><button class="icon" data-go="workerWork">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">3/5</span></div>
+      <div class="header"><button class="icon" data-go="workerWork"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">3/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
       <h1 class="title">Skills & experience</h1>
       <p class="sub">Add skills to improve job matches.</p>
@@ -1131,19 +1132,19 @@
     </section>
 
     <section id="workerLocation" class="screen">
-      <div class="header"><button class="icon" data-go="workerSkills">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">4/5</span></div>
+      <div class="header"><button class="icon" data-go="workerSkills"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">4/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
       <h1 class="title">Availability</h1>
       <p class="sub">Tell employers when you can start and what shifts work for you.</p>
       <div class="section-label">Flexible Option</div>
-      <button class="choice" data-flexible-availability><span class="ci">â†”</span><span><b>I'm open to any day and any time</b><br><span class="small">Flexible for all days and shifts.</span></span></button>
+      <button class="choice" data-flexible-availability><span class="ci">Flex</span><span><b>I'm open to any day and any time</b><br><span class="small">Flexible for all days and shifts.</span></span></button>
       <div class="section-label">Start Availability</div>
       <div class="grid" id="onboardStartOptions">
-        <button class="choice" data-onboard-start="Immediate"><span class="ci">âœ“</span>Immediate</button>
-        <button class="choice" data-onboard-start="On Demand"><span class="ci">â†”</span>On Demand</button>
+        <button class="choice" data-onboard-start="Immediate"><span class="ci">OK</span>Immediate</button>
+        <button class="choice" data-onboard-start="On Demand"><span class="ci">Flex</span>On Demand</button>
       </div>
       <div class="section-label">Days</div>
-      <button class="choice" data-onboard-all-days><span class="ci">âœ“</span>Select All Days</button>
+      <button class="choice" data-onboard-all-days><span class="ci">OK</span>Select All Days</button>
       <div class="grid mt" id="onboardDays"></div>
       <div class="section-label">Shift Preference</div>
       <div class="toolbar" id="onboardShifts"><button class="chip" data-onboard-shift="Morning">Morning</button><button class="chip" data-onboard-shift="Afternoon">Afternoon</button><button class="chip" data-onboard-shift="Evening">Evening</button><button class="chip" data-onboard-shift="Anytime">Anytime</button></div>
@@ -1151,7 +1152,7 @@
     </section>
 
     <section id="workerTrust" class="screen">
-      <div class="header"><button class="icon" data-go="workerLocation">â†</button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">5/5</span></div>
+      <div class="header"><button class="icon" data-go="workerLocation"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">5/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
       <h1 class="title">Build Trust and Get Hired</h1>
       <p class="sub">Increase your chances of getting hired.</p>
@@ -1161,7 +1162,7 @@
     </section>
 
     <section id="verifyId" class="screen">
-      <div class="header"><button class="icon" data-go="workerTrust">â†</button><span class="tag">Optional</span></div>
+      <div class="header"><button class="icon" data-go="workerTrust"><svg><use href="#i-back"></use></svg></button><span class="tag">Optional</span></div>
       <h1 class="title">Profile Photo</h1>
       <p class="sub">Take a clear photo of your face, head and shoulders. This is optional and does not block onboarding.</p>
       <div class="panel"><video id="photoCamera" class="camera-preview" autoplay playsinline muted></video><p class="small mt" id="photoCameraStatus">Camera opens first. If permission is blocked, you can continue without photo.</p></div>
@@ -1186,7 +1187,7 @@
     </section>
 
     <section id="applied" class="screen success">
-      <div class="success-icon">âœ“</div>
+      <div class="success-icon">Done</div>
       <h1 class="title">Application sent</h1>
       <p class="sub center">Status: Interested. Employer can accept to start chat.</p>
       <div class="steps"><div class="step"><b>1</b>Your application appears in the employer dashboard.</div><div class="step"><b>2</b>Employer accepts or rejects.</div><div class="step"><b>3</b>Accepted = match + chat.</div></div>
@@ -1199,22 +1200,22 @@
       <div class="chat-safety" id="chatSafety">Never pay money to get a job. <button data-report="chat">Report</button> suspicious messages.</div>
       <div id="chatArea" class="chat-area"></div>
       <div class="quick"><button data-quick="I am available">I am available</button><button data-quick="Please share location">Please share location</button></div>
-      <div class="chat-input"><input id="chatText" placeholder="Type a message"><button id="sendChat">âžœ</button></div>
+      <div class="chat-input"><input id="chatText" placeholder="Type a message"><button id="sendChat">Send</button></div>
     </section>
 
     <section id="search" class="screen">
-      <div class="header"><button class="icon" data-go="jobs">â†</button><h3>Search jobs</h3><button class="icon" data-toast="Filters updated."><svg><use href="#i-search"></use></svg></button></div>
+      <div class="header"><button class="icon" data-go="jobs"><svg><use href="#i-back"></use></svg></button><h3>Search jobs</h3><button class="icon" data-toast="Filters updated."><svg><use href="#i-search"></use></svg></button></div>
       <div class="search"><svg><use href="#i-search"></use></svg><input id="manualSearch" placeholder="Try clerk, driver, cashier, helper"></div>
       <div id="searchResults" class="list"></div>
     </section>
 
     <section id="applications" class="screen">
-      <div class="header"><button class="icon" data-go="jobs">â†</button><h3>Applications</h3><span class="tag" id="matchedTag">0 matched</span></div>
+      <div class="header"><button class="icon" data-go="jobs"><svg><use href="#i-back"></use></svg></button><h3>Applications</h3><span class="tag" id="matchedTag">0 matched</span></div>
       <div id="workerApplications" class="list"></div>
     </section>
 
     <section id="employerSetup" class="screen">
-      <div class="header"><button class="icon" data-go="role">â†</button><span class="tag">Business</span></div>
+      <div class="header"><button class="icon" data-go="role"><svg><use href="#i-back"></use></svg></button><span class="tag">Business</span></div>
       <h1 class="title">Set up your business</h1>
       <p class="sub">This helps workers trust your job posts.</p>
       <label class="input mt"><input id="businessName" placeholder="e.g. Sharma Retail Store"></label>
@@ -1233,20 +1234,20 @@
     </section>
 
     <section id="employerJobDetail" class="screen">
-      <div class="header"><button class="icon" data-go="employerDash">â†</button><div><b id="jobDetailTitle">Clerk Job</b><p class="small">Applicants for this role</p></div><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
-      <div class="panel"><span class="badge blue">Verified Employer</span><h2 id="jobDetailPay" class="mt">Rs 18,000/month</h2><p class="small" id="jobDetailMeta">Delhi Â· Full-time Â· Office</p></div>
+      <div class="header"><button class="icon" data-go="employerDash"><svg><use href="#i-back"></use></svg></button><div><b id="jobDetailTitle">Clerk Job</b><p class="small">Applicants for this role</p></div><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
+      <div class="panel"><span class="badge blue">Verified Employer</span><h2 id="jobDetailPay" class="mt">Rs 18,000/month</h2><p class="small" id="jobDetailMeta">Delhi - Full-time - Office</p></div>
       <h3>Applicants</h3>
       <div id="applicantList" class="list"></div>
     </section>
 
     <section id="workerProfileView" class="screen">
-      <div class="header"><button class="icon" data-go="employerJobDetail">â†</button><span class="tag" id="profileStatus">Interested</span></div>
+      <div class="header"><button class="icon" data-go="employerJobDetail"><svg><use href="#i-back"></use></svg></button><span class="tag" id="profileStatus">Interested</span></div>
       <div id="fullWorkerProfile"></div>
       <div class="btn-row mt"><button class="btn danger" data-reject-current>Reject</button><button class="btn primary" data-accept-current>Accept & Chat</button></div>
     </section>
 
     <section id="postJob" class="screen">
-      <div class="header"><button class="icon" data-go="employerDash">â†</button><span class="tag">Post Job</span></div>
+      <div class="header"><button class="icon" data-go="employerDash"><svg><use href="#i-back"></use></svg></button><span class="tag">Post Job</span></div>
       <h1 class="title">Post a job</h1>
       <label class="input"><input id="postTitle" placeholder="e.g. Shop Assistant, Delivery Driver, Office Clerk"></label>
       <div class="amount-row mt">
@@ -1266,14 +1267,14 @@
           <button class="chip" data-desc-chip="location">Workplace location details</button>
           <button class="chip" data-desc-chip="tools">Any tools or uniform required</button>
         </div>
-        <span id="postDescCounter" class="desc-counter">0 / 700 characters Â· 25 words minimum</span>
+        <span id="postDescCounter" class="desc-counter">0 / 700 characters - 25 words minimum</span>
         <span id="postDescError" class="desc-error">Please add at least 25 words so workers understand the job clearly.</span>
       </div>
       <button class="btn primary mt" data-review-job>Continue</button>
     </section>
 
     <section id="jobVisibility" class="screen">
-      <div class="header"><button class="icon" data-go="postJob">â†</button><span class="tag">Visibility</span></div>
+      <div class="header"><button class="icon" data-go="postJob"><svg><use href="#i-back"></use></svg></button><span class="tag">Visibility</span></div>
       <h1 class="title">Review Job Post</h1>
       <div class="panel review-card">
         <div class="review-row"><span>Job title</span><b id="reviewTitle">Clerk</b></div>
@@ -1293,49 +1294,49 @@
     </section>
 
     <section id="published" class="screen success">
-      <div class="success-icon">âœ“</div><h1 class="title" id="publishedTitle">Job is live</h1><p class="sub center" id="publishedSub">Workers can now apply. Applicants will appear in your dashboard.</p><button class="btn primary mt" data-go="employerDash">Dashboard</button>
+      <div class="success-icon">Done</div><h1 class="title" id="publishedTitle">Job is live</h1><p class="sub center" id="publishedSub">Workers can now apply. Applicants will appear in your dashboard.</p><button class="btn primary mt" data-go="employerDash">Dashboard</button>
     </section>
 
     <section id="applicants" class="screen">
-      <div class="header"><button class="icon" data-go="employerDash">â†</button><h3>Talent</h3><span class="tag" id="talentCount">0</span></div>
+      <div class="header"><button class="icon" data-go="employerDash"><svg><use href="#i-back"></use></svg></button><h3>Talent</h3><span class="tag" id="talentCount">0</span></div>
       <div id="allApplicants" class="list"></div>
     </section>
 
     <section id="employerJobs" class="screen">
-      <div class="header"><button class="icon" data-go="employerDash">â†</button><h3>My Jobs</h3><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
+      <div class="header"><button class="icon" data-go="employerDash"><svg><use href="#i-back"></use></svg></button><h3>My Jobs</h3><button class="icon" data-go="postJob"><svg><use href="#i-plus"></use></svg></button></div>
       <div id="employerJobsList" class="list"></div>
     </section>
 
     <section id="profile" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
       <div class="panel profile-hero"><span class="avatar" id="workerAvatar">AL</span><span class="grow"><h2 id="profileName">Aman Lalh</h2><p id="profileMeta">Delhi</p></span></div>
       <div class="panel profile-strength"><div class="review-row"><span>Profile Strength</span><b id="profileStrengthText">0%</b></div><div class="bar"><span id="profileStrengthBar" style="width:0%"></span></div><div id="photoBadgeSlot" class="mt"></div></div>
       <div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div>
       <div class="section-label">Work Profile</div>
-      <button class="profile-card" data-edit-profile="workerLocation"><span><span>Location</span><b id="workerProfileLocationText">Based in Brisbane, available for nearby opportunities</b></span><i class="arrow">â€º</i></button>
-      <button class="profile-card" data-edit-profile="workerExperience"><span><span>Experience</span><b id="workerProfileExperienceText">2+ years experience in retail and customer-facing roles</b></span><i class="arrow">â€º</i></button>
-      <button class="profile-card" data-edit-profile="workerWork"><span><span>Work Preferences</span><b id="workerProfileWorkText">Open to full-time and part-time roles</b></span><i class="arrow">â€º</i></button>
-      <button class="profile-card" data-edit-profile="workerAvailability"><span><span>Availability</span><b id="workerProfileAvailabilityText">Available weekdays and weekend shifts</b></span><i class="arrow">â€º</i></button>
-      <button class="profile-card" data-edit-profile="workerSkills"><span><span>Skills</span><b id="workerProfileSkillsText">Cash handling, Data entry</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="workerLocation"><span><span>Location</span><b id="workerProfileLocationText">Based in Brisbane, available for nearby opportunities</b></span><i class="arrow">></i></button>
+      <button class="profile-card" data-edit-profile="workerExperience"><span><span>Experience</span><b id="workerProfileExperienceText">2+ years experience in retail and customer-facing roles</b></span><i class="arrow">></i></button>
+      <button class="profile-card" data-edit-profile="workerWork"><span><span>Work Preferences</span><b id="workerProfileWorkText">Open to full-time and part-time roles</b></span><i class="arrow">></i></button>
+      <button class="profile-card" data-edit-profile="workerAvailability"><span><span>Availability</span><b id="workerProfileAvailabilityText">Available weekdays and weekend shifts</b></span><i class="arrow">></i></button>
+      <button class="profile-card" data-edit-profile="workerSkills"><span><span>Skills</span><b id="workerProfileSkillsText">Cash handling, Data entry</b></span><i class="arrow">></i></button>
       <button class="switch-cta mt" data-switch-mode="employer"><svg><use href="#i-briefcase"></use></svg> Switch to Hiring</button>
       <div class="section-label">Settings</div>
       <div class="settings-list">
-        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">â€º</i></button>
-        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">â€º</i></button>
-        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">â€º</i></button>
-        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">></i></button>
+        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">></i></button>
+        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">></i></button>
+        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">></i></button>
       </div>
     </section>
 
     <section id="employerProfile" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><h3>Employer Profile</h3><span class="tag">Hiring</span></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><h3>Employer Profile</h3><span class="tag">Hiring</span></div>
       <div class="panel profile-hero"><span class="avatar" id="employerAvatar">RS</span><span class="grow"><h2 id="employerProfileName">Rick Retail Store</h2><p id="employerProfileMeta">Brisbane</p></span></div>
       <div class="toolbar" id="employerProfileBadges"><span class="badge blue">New Employer</span><span class="badge">Phone Verified</span></div>
       <div class="section-label">Business Profile</div>
-      <button class="profile-card" data-edit-profile="businessName"><span><span>Business Name</span><b id="employerBusinessText">Rick Retail Store</b></span><i class="arrow">â€º</i></button>
-      <button class="profile-card" data-edit-profile="contactPerson"><span><span>Contact Person</span><b id="employerContactText">Rick Sharma</b></span><i class="arrow">â€º</i></button>
-      <button class="profile-card" data-edit-profile="employerLocation"><span><span>Location</span><b id="employerLocationText">Based in Brisbane</b></span><i class="arrow">â€º</i></button>
-      <button class="profile-card" data-edit-profile="businessType"><span><span>Business Type</span><b id="employerTypeText">Retail Shop</b></span><i class="arrow">â€º</i></button>
+      <button class="profile-card" data-edit-profile="businessName"><span><span>Business Name</span><b id="employerBusinessText">Rick Retail Store</b></span><i class="arrow">></i></button>
+      <button class="profile-card" data-edit-profile="contactPerson"><span><span>Contact Person</span><b id="employerContactText">Rick Sharma</b></span><i class="arrow">></i></button>
+      <button class="profile-card" data-edit-profile="employerLocation"><span><span>Location</span><b id="employerLocationText">Based in Brisbane</b></span><i class="arrow">></i></button>
+      <button class="profile-card" data-edit-profile="businessType"><span><span>Business Type</span><b id="employerTypeText">Retail Shop</b></span><i class="arrow">></i></button>
       <div class="metric-grid profile-metrics">
         <div class="metric-card"><span>Active Jobs</span><b id="employerOpenJobsView">1</b></div>
         <div class="metric-card"><span>Total Applicants</span><b id="employerApplicantStatsView">0</b></div>
@@ -1343,20 +1344,20 @@
       <button class="switch-cta mt" data-switch-mode="worker"><svg><use href="#i-user"></use></svg> Switch to Job Search</button>
       <div class="section-label">Settings</div>
       <div class="settings-list">
-        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">â€º</i></button>
-        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">â€º</i></button>
-        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">â€º</i></button>
-        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">></i></button>
+        <button class="settings-card" data-report="profile"><span><span>Support</span><b>Report a Problem</b></span><i class="arrow">></i></button>
+        <button class="settings-card" data-legal="guidelines"><span><span>Safety</span><b>Community Guidelines</b></span><i class="arrow">></i></button>
+        <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">></i></button>
       </div>
     </section>
 
     <section id="notifications" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><h3>Notifications</h3><button class="icon">âœ“</button></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><h3>Notifications</h3><button class="icon">OK</button></div>
       <div class="list" id="notificationList"></div>
     </section>
 
     <section id="menu" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><span class="tag">Account</span></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><span class="tag">Account</span></div>
       <div class="menu-head"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"><h1 id="drawerName">Welcome back</h1><p id="drawerPhone">Secure phone login</p><div class="menu-status"><span>Verified</span><span>Safe</span><span>Support</span></div></div>
       <div class="section-label">Support</div>
       <div class="list">
@@ -1371,20 +1372,20 @@
     </section>
 
     <section id="accountSettings" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><div><b>Account Settings</b><p class="small">Identity and role profiles</p></div><span class="tag">Global</span></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><div><b>Account Settings</b><p class="small">Identity and role profiles</p></div><span class="tag">Global</span></div>
       <div class="section-label">Account</div>
-      <button class="settings-card" data-edit-profile="accountName"><span><span>Name</span><b id="accountNameView">Aman Lalh</b></span><i class="arrow">â€º</i></button>
-      <button class="settings-card" data-edit-profile="accountLocation"><span><span>Location</span><b id="accountLocationView">Brisbane</b></span><i class="arrow">â€º</i></button>
-      <button class="settings-card" data-settings-modal="phone"><span><span>Change Phone Number</span><b id="accountPhone">0000000000</b></span><i class="arrow">â€º</i></button>
-      <button class="settings-card" data-settings-modal="notifications"><span><span>Notifications</span><b>Job matches, chat and updates</b></span><i class="arrow">â€º</i></button>
-      <button class="settings-card" data-settings-modal="privacy"><span><span>Privacy</span><b>Location, selfie and profile visibility</b></span><i class="arrow">â€º</i></button>
-      <button class="settings-card" data-settings-modal="faq"><span><span>Help & FAQ</span><b>Common questions</b></span><i class="arrow">â€º</i></button>
-      <button class="settings-card" data-settings-modal="refer"><span><span>Refer & Earn</span><b>Share Kaam Karo</b></span><i class="arrow">â€º</i></button>
-      <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">â€º</i></button>
+      <button class="settings-card" data-edit-profile="accountName"><span><span>Name</span><b id="accountNameView">Aman Lalh</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-edit-profile="accountLocation"><span><span>Location</span><b id="accountLocationView">Brisbane</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="phone"><span><span>Change Phone Number</span><b id="accountPhone">0000000000</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="notifications"><span><span>Notifications</span><b>Job matches, chat and updates</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="privacy"><span><span>Privacy</span><b>Location, selfie and profile visibility</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="faq"><span><span>Help & FAQ</span><b>Common questions</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="refer"><span><span>Refer & Earn</span><b>Share Kaam Karo</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">></i></button>
       <div class="section-label">Profiles</div>
       <div class="settings-list">
-        <button class="settings-card" data-account-profile="worker"><span><span>Worker Profile</span><b id="workerAccountStatus">Not set up</b></span><i class="arrow">â€º</i></button>
-        <button class="settings-card" data-account-profile="employer"><span><span>Employer Profile</span><b id="employerAccountStatus">Not set up</b></span><i class="arrow">â€º</i></button>
+        <button class="settings-card" data-account-profile="worker"><span><span>Worker Profile</span><b id="workerAccountStatus">Not set up</b></span><i class="arrow">></i></button>
+        <button class="settings-card" data-account-profile="employer"><span><span>Employer Profile</span><b id="employerAccountStatus">Not set up</b></span><i class="arrow">></i></button>
       </div>
       <p class="small center">Using as: <span id="accountModeLine">Worker</span></p>
       <div class="section-label">Danger</div>
@@ -1400,25 +1401,25 @@
     </section>
 
     <section id="profileEdit" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><div><b id="profileEditTitle">Edit profile</b><p class="small" id="profileEditHint">Keep this clear and professional.</p></div><button id="profileEditSaveTop" class="top-save" data-save-profile-edit disabled>Save</button></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><div><b id="profileEditTitle">Edit profile</b><p class="small" id="profileEditHint">Keep this clear and professional.</p></div><button id="profileEditSaveTop" class="top-save" data-save-profile-edit disabled>Save</button></div>
       <div id="profileEditBody" class="edit-stack"></div>
     </section>
 
     <section id="adminModeration" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><div><b>Admin Review</b><p class="small">Pending jobs sorted by risk score</p></div><span class="tag" id="adminPendingCount">0</span></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><div><b>Admin Review</b><p class="small">Pending jobs sorted by risk score</p></div><span class="tag" id="adminPendingCount">0</span></div>
       <div id="adminQueue" class="list"></div>
       <h3>Audit logs</h3>
       <div id="auditLogs" class="list"></div>
     </section>
 
     <section id="legal" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><span class="tag">Legal</span></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><span class="tag">Legal</span></div>
       <h1 class="title" id="legalTitle">Terms & Conditions</h1>
       <div class="panel small" id="legalBody"></div>
     </section>
 
     <section id="report" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true">â†</button><span class="tag">Safety</span></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><span class="tag">Safety</span></div>
       <h1 class="title">Report a problem</h1>
       <p class="sub">Tell us what happened. Reports help keep Kaam Karo safe.</p>
       <div class="list">
@@ -1438,10 +1439,10 @@
     <nav id="bottomNav" class="nav bottom-nav"></nav>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <div id="undoBar" class="undo-bar"><span id="undoText">Skipped job</span><button data-undo-swipe>â†© Undo</button></div>
+  <div id="undoBar" class="undo-bar"><span id="undoText">Skipped job</span><button data-undo-swipe>Undo</button></div>
   <div id="appModal" class="modal-backdrop" role="dialog" aria-modal="true">
     <div class="modal-card">
-      <div class="review-row"><h3 id="modalTitle">Details</h3><button class="icon" data-close-modal>Ã—</button></div>
+      <div class="review-row"><h3 id="modalTitle">Details</h3><button class="icon" data-close-modal>x</button></div>
       <div id="modalBody" class="mt"></div>
     </div>
   </div>
@@ -1591,7 +1592,7 @@
 
       var copy = {
         en: { heroTitle: "Jobs near you.", heroSub: "Apply in one swipe. Chat after employer accepts.", heroVisual: "Swipe. Match. Start work.", continue: "Continue" },
-        hi: { heroTitle: "à¤†à¤ªà¤•à¥‡ à¤ªà¤¾à¤¸ à¤¨à¥Œà¤•à¤°à¤¿à¤¯à¤¾à¤‚.", heroSub: "à¤à¤• à¤¸à¥à¤µà¤¾à¤‡à¤ª à¤®à¥‡à¤‚ à¤†à¤µà¥‡à¤¦à¤¨ à¤•à¤°à¥‡à¤‚. à¤¨à¤¿à¤¯à¥‹à¤•à¥à¤¤à¤¾ à¤¸à¥à¤µà¥€à¤•à¤¾à¤° à¤•à¤°à¥‡, à¤«à¤¿à¤° à¤šà¥ˆà¤Ÿ à¤¶à¥à¤°à¥‚ à¤•à¤°à¥‡à¤‚.", heroVisual: "à¤¸à¥à¤µà¤¾à¤‡à¤ª à¤•à¤°à¥‡à¤‚. à¤®à¥ˆà¤š à¤•à¤°à¥‡à¤‚. à¤•à¤¾à¤® à¤¶à¥à¤°à¥‚ à¤•à¤°à¥‡à¤‚.", continue: "à¤†à¤—à¥‡ à¤¬à¤¢à¤¼à¥‡à¤‚" }
+        hi: { heroTitle: "Jobs near you.", heroSub: "Apply in one swipe. Chat after employer accepts.", heroVisual: "Swipe. Match. Start work.", continue: "Continue" }
       };
       var legal = {
         terms: ["Terms & Conditions", "Kaam Karo connects workers and employers. Use truthful information, do not post illegal jobs, and do not ask workers to pay for employment."],
@@ -1819,7 +1820,7 @@
       }
       function renderPhotoStatus() {
         if (byId("photoStatus")) {
-          byId("photoStatus").textContent = state.worker.photoVerified ? "✔ Photo uploaded successfully" : "Verified accounts may appear more prominently to employers.";
+          byId("photoStatus").textContent = state.worker.photoVerified ? "Photo uploaded successfully" : "Verified accounts may appear more prominently to employers.";
         }
       }
       function profileStrength() {
@@ -1833,13 +1834,13 @@
         var slot = byId("photoBadgeSlot");
         if (!slot) return;
         if (state.user.photoVerificationStatus === "verified" || state.worker.photoVerified) {
-          slot.innerHTML = '<span class="badge">âœ“ Photo Verified</span>';
+          slot.innerHTML = '<span class="badge">Photo Verified</span>';
         } else {
           slot.innerHTML = '<button class="badge muted" data-go="verifyId">Verify Photo</button>';
         }
       }
       function workerPhotoBadgeHtml() {
-        return (state.user.photoVerificationStatus === "verified" || state.worker.photoVerified) ? '<span class="badge">âœ“ Photo Verified</span>' : '<span class="small">No photo</span>';
+        return (state.user.photoVerificationStatus === "verified" || state.worker.photoVerified) ? '<span class="badge">Photo Verified</span>' : '<span class="small">No photo</span>';
       }
       function descriptionWordCount(text) {
         return String(text || "").trim().split(/\s+/).filter(Boolean).length;
@@ -1848,7 +1849,7 @@
         var desc = byId("postDesc");
         if (!desc) return;
         var words = descriptionWordCount(desc.value);
-        if (byId("postDescCounter")) byId("postDescCounter").textContent = desc.value.length + " / 700 characters · 25 words minimum";
+        if (byId("postDescCounter")) byId("postDescCounter").textContent = desc.value.length + " / 700 characters - 25 words minimum";
         if (byId("postDescError")) byId("postDescError").style.display = words > 0 && words < 25 ? "block" : "none";
       }
       function addDescriptionSentence(kind) {
@@ -1925,7 +1926,7 @@
         var allSelected = days.every(function (day) { return selectedDays.indexOf(day) >= 0; });
         byId("onboardDays").innerHTML = days.map(function (day) {
           var selected = selectedDays.indexOf(day) >= 0;
-          return '<button class="choice ' + (selected ? "selected" : "") + '" data-onboard-day="' + day + '"><span class="ci">' + (selected ? "âœ“" : "") + '</span>' + day + '</button>';
+          return '<button class="choice ' + (selected ? "selected" : "") + '" data-onboard-day="' + day + '"><span class="ci">' + (selected ? "OK" : "") + '</span>' + day + '</button>';
         }).join("");
         document.querySelectorAll("[data-onboard-start]").forEach(function (button) {
           button.classList.toggle("selected", button.dataset.onboardStart === state.worker.startAvailability);
@@ -2051,10 +2052,10 @@
         state.worker.active = true;
         save();
         track("application_created");
-        lastSwipe = { type: "apply", jobId: selectedJobId };
+        lastSwipe = null;
         flashJobCard("like");
-        toast("Applied \u2713");
-        showUndo("Applied");
+        toast("Applied");
+        if (byId("undoBar")) byId("undoBar").classList.remove("show");
         recordSwipe(true);
         setTimeout(function () { toast("Employer will review your profile"); }, 500);
         setTimeout(function () {
@@ -2084,7 +2085,7 @@
           return;
         }
         byId("searchResults").innerHTML = list.map(function (job) {
-          return '<button class="list-row" data-select-job="' + job.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.pay + ' Â· ' + job.city + ' Â· ' + job.distance + '</span></span><span class="status-text">Apply</span></button>';
+          return '<button class="list-row" data-select-job="' + job.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.pay + ' - ' + job.city + ' - ' + job.distance + '</span></span><span class="status-text">Apply</span></button>';
         }).join("");
       }
       function renderWorkerApplications() {
@@ -2101,7 +2102,7 @@
       function renderApplicantCard(app) {
         var job = state.jobs.find(function (j) { return j.id === app.jobId; });
         var w = state.worker;
-        return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' · ' + w.city + ' · ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span><div class="mt">' + workerPhotoBadgeHtml() + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span><button class="icon" data-reject-app="' + app.id + '">x</button><button class="icon" data-accept-app="' + app.id + '">✓</button></div>';
+        return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' - ' + w.city + ' - ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span><div class="mt">' + workerPhotoBadgeHtml() + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span><button class="icon" data-reject-app="' + app.id + '">x</button><button class="icon" data-accept-app="' + app.id + '">Accept</button></div>';
       }
       function renderEmployer() {
         if (!hasEmployerProfile()) return;
@@ -2119,12 +2120,12 @@
         var job = state.jobs.find(function (j) { return j.id === selectedJobId; }) || state.jobs[0];
         byId("jobDetailTitle").textContent = job.title;
         byId("jobDetailPay").textContent = job.pay;
-        byId("jobDetailMeta").textContent = job.city + " Â· " + job.type + " Â· " + job.employer;
+        byId("jobDetailMeta").textContent = job.city + " - " + job.type + " - " + job.employer;
         var jobApps = apps.filter(function (a) { return a.jobId === job.id; });
         byId("applicantList").innerHTML = jobApps.length ? jobApps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants yet. The feed will keep showing this job to relevant workers.</div>';
         byId("allApplicants").innerHTML = apps.length ? apps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants yet.</div>';
         byId("talentCount").textContent = apps.length + " applicants";
-        byId("employerJobsList").innerHTML = state.jobs.map(function (j) { return '<button class="list-row" data-job-detail="' + j.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' Â· ' + j.city + '</span></span><span class="status-text">Open</span></button>'; }).join("");
+        byId("employerJobsList").innerHTML = state.jobs.map(function (j) { return '<button class="list-row" data-job-detail="' + j.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' - ' + j.city + '</span></span><span class="status-text">Open</span></button>'; }).join("");
       }
       function renderFullWorkerProfile() {
         var w = state.worker;
@@ -2248,12 +2249,12 @@
         }
         if (cfg.type === "experience") {
           var exp = ["No experience","Less than 1 year","1-2 years","2-5 years","5+ years"];
-          body.innerHTML = '<div class="edit-card">' + exp.map(function (item) { var selected = editDraft.value === item || (!editDraft.value && item === "No experience"); return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-option="' + item + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
+          body.innerHTML = '<div class="edit-card">' + exp.map(function (item) { var selected = editDraft.value === item || (!editDraft.value && item === "No experience"); return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-option="' + item + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
           return;
         }
         if (cfg.type === "work") {
           var types = ["Full-time","Part-time","Contract","Temporary","Internship"];
-          body.innerHTML = '<div class="edit-card">' + types.map(function (item) { var selected = (editDraft.workTypes || []).indexOf(item) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-work="' + item + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
+          body.innerHTML = '<div class="edit-card">' + types.map(function (item) { var selected = (editDraft.workTypes || []).indexOf(item) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-work="' + item + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
           return;
         }
         if (cfg.type === "availability") {
@@ -2262,16 +2263,16 @@
           var starts = ["Immediate","On Demand","Specific Date"];
           var allSelected = days.every(function (day) { return (editDraft.days || []).indexOf(day) >= 0; });
           body.innerHTML =
-            '<div class="edit-card"><div class="section-label">Start Availability</div>' + starts.map(function (start) { var selected = editDraft.start === start; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-start="' + start + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + start + '</button>'; }).join("") + '</div>' +
-            '<div class="edit-card"><div class="section-label">Days</div><button class="option-row ' + (allSelected ? "selected" : "") + '" data-edit-all-days><span class="option-dot">' + (allSelected ? "âœ“" : "") + '</span>Select All Days</button><div class="grid mt">' + days.map(function (day) { var selected = (editDraft.days || []).indexOf(day) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-day="' + day + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + day + '</button>'; }).join("") + '</div></div>' +
-            '<div class="edit-card"><div class="section-label">Shift preference</div>' + shifts.map(function (shift) { var selected = editDraft.shift === shift; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-shift="' + shift + '"><span class="option-dot">' + (selected ? "âœ“" : "") + '</span>' + shift + '</button>'; }).join("") + '</div>';
+            '<div class="edit-card"><div class="section-label">Start Availability</div>' + starts.map(function (start) { var selected = editDraft.start === start; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-start="' + start + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span>' + start + '</button>'; }).join("") + '</div>' +
+            '<div class="edit-card"><div class="section-label">Days</div><button class="option-row ' + (allSelected ? "selected" : "") + '" data-edit-all-days><span class="option-dot">' + (allSelected ? "OK" : "") + '</span>Select All Days</button><div class="grid mt">' + days.map(function (day) { var selected = (editDraft.days || []).indexOf(day) >= 0; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-day="' + day + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span>' + day + '</button>'; }).join("") + '</div></div>' +
+            '<div class="edit-card"><div class="section-label">Shift preference</div>' + shifts.map(function (shift) { var selected = editDraft.shift === shift; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-shift="' + shift + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span>' + shift + '</button>'; }).join("") + '</div>';
           return;
         }
         if (cfg.type === "location") {
           var suggestions = ["Brisbane","Sydney","Melbourne","Jaipur","Delhi NCR","Chandigarh"];
           body.innerHTML =
             '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Search city or area" value="' + (editDraft.value || "") + '"></div></div>' +
-            '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (city) { return '<button class="option-row ' + (editDraft.value === city ? "selected" : "") + '" data-edit-location="' + city + '"><span class="option-dot">' + (editDraft.value === city ? "âœ“" : "") + '</span>' + city + '</button>'; }).join("") + '</div>';
+            '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (city) { return '<button class="option-row ' + (editDraft.value === city ? "selected" : "") + '" data-edit-location="' + city + '"><span class="option-dot">' + (editDraft.value === city ? "OK" : "") + '</span>' + city + '</button>'; }).join("") + '</div>';
           return;
         }
         body.innerHTML = '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Type here" value="' + (editDraft.value || "") + '"></div></div>';
@@ -2339,7 +2340,7 @@
         if (existing) return existing;
         var job = state.jobs.find(function (j) { return j.id === app.jobId; }) || state.jobs[0];
         var now = Date.now();
-        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: "ðŸŽ‰ Employer accepted your interest! You can now chat directly.", unreadWorker: 1, unreadEmployer: 0 };
+        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: "Employer accepted your interest! You can now chat directly.", unreadWorker: 1, unreadEmployer: 0 };
         state.conversations.unshift(convo);
         state.messages.push({ id: "msg-" + now + "-system", conversationId: convo.id, senderId: "system", text: convo.lastMessage, createdAt: now, status: "delivered", flaggedRisk: false });
         app.status = "Matched";
@@ -2801,19 +2802,18 @@
         }
         if (event.target.closest("[data-change-phone-flow]")) { phoneUpdatePending = true; closeModal(); show("otp"); toast("Enter new phone number"); return; }
         var saveModal = event.target.closest("[data-save-modal]");
-        if (saveModal) { closeModal(); toast(saveModal.dataset.saveModal + " âœ…"); return; }
+        if (saveModal) { closeModal(); toast(saveModal.dataset.saveModal + " OK"); return; }
         var openJob = event.target.closest("[data-open-job-modal]");
         if (openJob && !event.target.closest("button")) {
           var detailJob = state.jobs.find(function (job) { return job.id === openJob.dataset.openJobModal; });
-          if (detailJob) openModal(detailJob.title, '<div class="panel"><h2>' + detailJob.pay + '</h2><p class="small">' + detailJob.city + ' Â· ' + detailJob.type + ' Â· Posted 3h ago</p><span class="badge amber">Hiring today</span></div><p class="small mt">' + detailJob.desc + '</p><button class="btn primary mt" data-apply-job="' + detailJob.id + '">Apply</button>');
+          if (detailJob) openModal(detailJob.title, '<div class="panel"><h2>' + detailJob.pay + '</h2><p class="small">' + detailJob.city + ' - ' + detailJob.type + ' - Posted 3h ago</p><span class="badge amber">Hiring today</span></div><p class="small mt">' + detailJob.desc + '</p><button class="btn primary mt" data-apply-job="' + detailJob.id + '">Apply</button>');
           return;
         }
         if (event.target.closest("[data-undo-swipe]")) {
           if (lastSwipe && lastSwipe.type === "skip") { jobIndex = lastSwipe.index; renderFeed(); }
-          if (lastSwipe && lastSwipe.type === "apply") { state.applications = state.applications.filter(function (app) { return !(app.jobId === lastSwipe.jobId && app.workerId === state.worker.id); }); save(); show("jobs"); renderFeed(); }
           byId("undoBar").classList.remove("show");
           lastSwipe = null;
-          toast("Undone");
+          toast("Swipe undone");
           return;
         }
         if (event.target.closest("[data-refresh-jobs]")) { jobIndex = 0; renderFeed(); toast("Jobs refreshed"); return; }
@@ -2967,7 +2967,7 @@
           state.user.phone = state.user.phone || state.employer.phone;
           save();
           track("otp_verified");
-          if (phoneUpdatePending) { phoneUpdatePending = false; toast("Phone number updated âœ…"); show("accountSettings"); return; }
+          if (phoneUpdatePending) { phoneUpdatePending = false; toast("Phone number updated OK"); show("accountSettings"); return; }
           routeAfterOtp();
           return;
         }
