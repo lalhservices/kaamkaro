@@ -912,6 +912,49 @@
       box-shadow: var(--shadow);
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 140;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(6, 20, 47, .28);
+      padding: 18px;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal-card {
+      width: min(390px, 100%);
+      max-height: 78vh;
+      overflow-y: auto;
+      border-radius: 26px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .profile-strength { margin: 12px 0; }
+    .profile-strength .bar { margin-top: 8px; }
+    .undo-bar {
+      position: fixed;
+      left: 50%;
+      bottom: calc(84px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 120;
+      display: none;
+      gap: 10px;
+      align-items: center;
+      width: min(386px, calc(100vw - 44px));
+      padding: 11px 14px;
+      border-radius: 18px;
+      background: #06142f;
+      color: #fff;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .undo-bar.show { display: flex; }
+    .undo-bar button { margin-left: auto; border: 0; border-radius: 999px; padding: 8px 12px; background: #fff; color: var(--ink); font-weight: 950; }
 
     @media (max-width: 360px) {
       .app-header { padding-left: 16px; padding-right: 16px; }
@@ -1040,11 +1083,11 @@
       <h1 class="title">Job type</h1>
       <div class="search mt"><svg><use href="#i-search"></use></svg><input id="workSearch" placeholder="Search job title, e.g. clerk, driver, cashier, helper..."></div>
       <button class="btn outline mt" data-add-job-type>+ Add Role</button>
-      <button class="choice mt selected" data-any-job><span class="ci">All</span><span><b>Show All Jobs</b><br><span class="small">On by default. You can still choose preferred roles below.</span></span></button>
       <div class="panel mt">
         <div class="review-row"><span>Selected Job Type</span><b id="jobTypeCounter">Show all on</b></div>
         <div class="toolbar selected-skills" id="selectedJobTypes"></div>
       </div>
+      <button class="choice mt selected" data-any-job><span class="ci">All</span><span><b>Show All Jobs</b><br><span class="small">On by default. Selecting a role turns this off.</span></span></button>
       <div class="grid mt" id="workCategories"></div>
       <button class="btn primary mt" data-go="workerSkills">Continue</button>
     </section>
@@ -1099,7 +1142,7 @@
       <h1 class="title">Build Trust and Get Hired</h1>
       <p class="sub">Increase your chances of getting hired.</p>
       <div class="panel"><span class="badge">Phone Verified</span><h3 class="mt">Verified</h3><p class="small">Your number is confirmed.</p></div>
-      <div class="panel"><span class="badge blue">Photo Verification Optional</span><h3 class="mt">Add a profile photo</h3><p class="small">Adding a photo helps employers trust your profile.</p><button class="btn outline mt" data-go="verifyId">Upload Profile Photo</button><p class="small mt" id="photoStatus">Profiles with a photo may appear higher to employers.</p></div>
+      <div class="panel"><span class="badge blue">Photo Verification Optional</span><h3 class="mt">Add a profile photo</h3><p class="small">Profiles with photos are more likely to get noticed.</p><button class="btn outline mt" data-go="verifyId">Upload Profile Photo</button><p class="small mt" id="photoStatus">Verified accounts may appear more prominently to employers.</p></div>
       <div class="btn-row mt"><button class="btn outline" data-finish-worker>Skip for now</button><button class="btn primary" data-finish-worker>Continue</button></div>
     </section>
 
@@ -1239,6 +1282,7 @@
     <section id="profile" class="screen">
       <div class="header"><button class="icon" data-menu-back="true">←</button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
       <div class="panel profile-hero"><span class="avatar" id="workerAvatar">AL</span><span class="grow"><h2 id="profileName">Aman Lalh</h2><p id="profileMeta">Delhi</p></span></div>
+      <div class="panel profile-strength"><div class="review-row"><span>Profile Strength</span><b id="profileStrengthText">0%</b></div><div class="bar"><span id="profileStrengthBar" style="width:0%"></span></div><button class="btn outline mt" data-go="verifyId">Add Selfie Now</button></div>
       <div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div>
       <div class="section-label">Work Profile</div>
       <button class="profile-card" data-edit-profile="workerLocation"><span><span>Location</span><b id="workerProfileLocationText">Based in Brisbane, available for nearby opportunities</b></span><i class="arrow">›</i></button>
@@ -1304,7 +1348,12 @@
       <div class="section-label">Account</div>
       <button class="settings-card" data-edit-profile="accountName"><span><span>Name</span><b id="accountNameView">Aman Lalh</b></span><i class="arrow">›</i></button>
       <button class="settings-card" data-edit-profile="accountLocation"><span><span>Location</span><b id="accountLocationView">Brisbane</b></span><i class="arrow">›</i></button>
-      <div class="panel"><div class="kv"><span>Phone</span><b id="accountPhone">0000000000</b></div></div>
+      <button class="settings-card" data-settings-modal="phone"><span><span>Change Phone Number</span><b id="accountPhone">0000000000</b></span><i class="arrow">›</i></button>
+      <button class="settings-card" data-settings-modal="notifications"><span><span>Notifications</span><b>Job matches, chat and updates</b></span><i class="arrow">›</i></button>
+      <button class="settings-card" data-settings-modal="privacy"><span><span>Privacy</span><b>Location, selfie and profile visibility</b></span><i class="arrow">›</i></button>
+      <button class="settings-card" data-settings-modal="faq"><span><span>Help & FAQ</span><b>Common questions</b></span><i class="arrow">›</i></button>
+      <button class="settings-card" data-settings-modal="refer"><span><span>Refer & Earn</span><b>Share Kaam Karo</b></span><i class="arrow">›</i></button>
+      <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">›</i></button>
       <div class="section-label">Profiles</div>
       <div class="settings-list">
         <button class="settings-card" data-account-profile="worker"><span><span>Worker Profile</span><b id="workerAccountStatus">Not set up</b></span><i class="arrow">›</i></button>
@@ -1315,6 +1364,7 @@
       <div class="panel danger-zone">
         <h3>Delete Account</h3>
         <p class="small">This will permanently delete your account, jobs, applications, and chats.</p>
+        <label class="input mt"><select id="deleteReason"><option value="">Select reason</option><option>Not finding jobs</option><option>Privacy concern</option><option>Created by mistake</option><option>Other</option></select></label>
         <input id="deleteConfirmPhone" placeholder="Type your mobile number to confirm">
         <button id="deleteAccountBtn" class="btn danger mt" data-delete-account disabled>Delete Account</button>
       </div>
@@ -1359,6 +1409,13 @@
     <nav id="bottomNav" class="nav bottom-nav"></nav>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="undoBar" class="undo-bar"><span id="undoText">Skipped job</span><button data-undo-swipe>↩ Undo</button></div>
+  <div id="appModal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="review-row"><h3 id="modalTitle">Details</h3><button class="icon" data-close-modal>×</button></div>
+      <div id="modalBody" class="mt"></div>
+    </div>
+  </div>
 
   <script>
     (function () {
@@ -1386,6 +1443,9 @@
       var editDirty = false;
       var pointerCard = null;
       var pointerDeltaX = 0;
+      var lastSwipe = null;
+      var undoTimer = null;
+      var phoneUpdatePending = false;
       var pendingEmployerRoute = localStorage.getItem("kkPendingEmployerRoute") || "";
       var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
 
@@ -1726,8 +1786,33 @@
       }
       function renderPhotoStatus() {
         if (byId("photoStatus")) {
-          byId("photoStatus").textContent = state.worker.photoVerified ? "Photo uploaded successfully" : "Profiles with a photo may appear higher to employers.";
+          byId("photoStatus").textContent = state.worker.photoVerified ? "Photo uploaded successfully" : "Verified accounts may appear more prominently to employers.";
         }
+      }
+      function profileStrength() {
+        var score = 0;
+        if (state.worker.name) score += 20;
+        if (state.worker.city) score += 20;
+        if ((state.worker.skills || []).length) score += 20;
+        if (state.worker.experience) score += 15;
+        if (state.worker.photoVerified) score += 25;
+        return Math.min(100, score);
+      }
+      function openModal(title, body) {
+        if (!byId("appModal")) return;
+        byId("modalTitle").textContent = title;
+        byId("modalBody").innerHTML = body;
+        byId("appModal").classList.add("show");
+      }
+      function closeModal() {
+        if (byId("appModal")) byId("appModal").classList.remove("show");
+      }
+      function showUndo(message) {
+        if (!byId("undoBar")) return;
+        byId("undoText").textContent = message || "Action done";
+        byId("undoBar").classList.add("show");
+        clearTimeout(undoTimer);
+        undoTimer = setTimeout(function () { byId("undoBar").classList.remove("show"); lastSwipe = null; }, 5000);
       }
       function addWorkerJobType(type) {
         var value = String(type || "").trim();
@@ -1870,9 +1955,9 @@
       }
       function jobCard(job) {
         var applied = state.applications.find(function (a) { return a.jobId === job.id && a.workerId === state.worker.id; });
-        return '<article class="job-card">' +
+        return '<article class="job-card" data-open-job-modal="' + job.id + '">' +
           '<div class="job-hero"><div><div class="pay">' + job.pay + '</div><h2>' + job.title + '</h2><p>Location: ' + job.distance + '</p></div><div><span class="badge">Employer: ' + job.badge + '</span><div class="job-hook mt">Start today - 2 shifts</div></div></div>' +
-          '<div class="job-meta"><div class="trust-line">No fees required</div><div class="meta"><span>' + job.type + '</span><span>' + job.employer + '</span><span>12 people applied</span></div><p class="small">' + job.desc + '</p><button class="report-link" data-report="job">Report job</button></div>' +
+          '<div class="job-meta"><div class="trust-line">No fees required</div><div class="meta"><span>' + job.type + '</span><span>' + job.employer + '</span><span>Posted 3h ago</span><span>Hiring today</span></div><p class="small">' + job.desc + '</p><button class="report-link" data-report="job">Report job</button></div>' +
           '</article><div class="swipe"><button class="circle danger-action" aria-label="Not interested" data-next-job><svg><use href="#i-x"></use></svg></button><button class="circle like-action" aria-label="Interested" data-apply-job="' + job.id + '"><svg><use href="#i-heart"></use></svg></button></div><div class="swipe-labels"><span>Not interested</span><span>Interested</span></div>';
       }
       function renderFeed() {
@@ -1880,7 +1965,7 @@
         var list = filteredJobs("");
         if (jobIndex >= list.length) jobIndex = 0;
         var variation = swipeCount > 0 && swipeCount % 4 === 0 ? '<div class="panel small">Urgent hiring near you - verified employers only.</div>' : "";
-        byId("jobFeed").innerHTML = list.length ? variation + '<div class="swipe-stack"><div class="stack-card third"></div><div class="stack-card second"></div>' + jobCard(list[jobIndex]) + '</div>' : "";
+        byId("jobFeed").innerHTML = list.length ? variation + '<div class="swipe-stack"><div class="stack-card third"></div><div class="stack-card second"></div>' + jobCard(list[jobIndex]) + '</div>' : '<div class="panel center"><h3>No more jobs matching your preferences</h3><p class="small">Try widening your choices.</p><button class="btn outline mt" data-go="workerLocation">Update availability</button><button class="btn outline mt" data-refresh-jobs>Refresh</button><button class="btn primary mt" data-go="workerWork">Browse categories</button></div>';
         var label = activeFilter === "remote" ? "Remote" : (activeFilter === "near" ? "Nearby" : (activeCity || state.worker.city || state.user.city || "your city"));
         if (byId("feedSub")) byId("feedSub").textContent = label;
         if (byId("selectedCityChip")) byId("selectedCityChip").innerHTML = activeCity ? '<button class="chip selected" data-clear-city>' + activeCity + ' <span>x</span></button>' : "";
@@ -1897,8 +1982,10 @@
         state.worker.active = true;
         save();
         track("application_created");
+        lastSwipe = { type: "apply", jobId: selectedJobId };
         flashJobCard("like");
         toast("Applied \u2713");
+        showUndo("Applied");
         recordSwipe(true);
         setTimeout(function () { toast("Employer will review your profile"); }, 500);
         setTimeout(function () {
@@ -1909,14 +1996,15 @@
         show("applied");
       }
       function nextJob() {
-        if (byId("jobSearch") && byId("jobSearch").value.trim()) return;
         var list = filteredJobs(byId("jobSearch") ? byId("jobSearch").value : "");
         if (!list.length) return;
+        lastSwipe = { type: "skip", index: jobIndex };
         flashJobCard("skip");
         recordSwipe(false);
         jobIndex = (jobIndex + 1) % list.length;
         renderFeed();
         toast("Not interested");
+        showUndo("Skipped job");
         track("job_swipe_left");
       }
       function renderSearch() {
@@ -2181,10 +2269,9 @@
         if (existing) return existing;
         var job = state.jobs.find(function (j) { return j.id === app.jobId; }) || state.jobs[0];
         var now = Date.now();
-        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: "Hi, thanks for applying. Are you available today?", unreadWorker: 1, unreadEmployer: 0 };
+        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: "🎉 Employer accepted your interest! You can now chat directly.", unreadWorker: 1, unreadEmployer: 0 };
         state.conversations.unshift(convo);
-        state.messages.push({ id: "msg-" + now + "-w", conversationId: convo.id, senderId: app.workerId, text: "Hi, I applied for this job. I'm available to start.", createdAt: now - 1000, status: "delivered", flaggedRisk: false });
-        state.messages.push({ id: "msg-" + now + "-e", conversationId: convo.id, senderId: "rick", text: convo.lastMessage, createdAt: now, status: "delivered", flaggedRisk: false });
+        state.messages.push({ id: "msg-" + now + "-system", conversationId: convo.id, senderId: "system", text: convo.lastMessage, createdAt: now, status: "delivered", flaggedRisk: false });
         app.status = "Matched";
         notify((state.employer.name || "Employer") + " accepted your application - start chat.", "chat");
         audit("conversation_created", "Employer accepted applicant", job, "system");
@@ -2406,7 +2493,9 @@
             if (byId("profileName")) byId("profileName").textContent = state.worker.name || "Worker Profile";
             if (byId("profileMeta")) byId("profileMeta").textContent = state.worker.city || state.user.city || "Location not set";
             if (byId("workerAvatar")) byId("workerAvatar").textContent = initials(state.worker.name || state.user.displayName);
-            if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
+        if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
+            if (byId("profileStrengthText")) byId("profileStrengthText").textContent = profileStrength() + "%";
+            if (byId("profileStrengthBar")) byId("profileStrengthBar").style.width = profileStrength() + "%";
             if (byId("workerProfileLocationText")) byId("workerProfileLocationText").textContent = workerLocationLine();
             if (byId("workerProfileExperienceText")) byId("workerProfileExperienceText").textContent = workerExperienceLine();
             if (byId("workerProfileWorkText")) byId("workerProfileWorkText").textContent = workerWorkLine();
@@ -2591,12 +2680,46 @@
         }
         var quick = event.target.closest("[data-quick]");
         if (quick) { sendChatMessage(quick.dataset.quick); return; }
-        if (event.target.closest("[data-logout]")) {
+        if (event.target.closest("[data-close-modal]") || event.target.id === "appModal") { closeModal(); return; }
+        var settingsModal = event.target.closest("[data-settings-modal]");
+        if (settingsModal) {
+          var kind = settingsModal.dataset.settingsModal;
+          if (kind === "phone") openModal("Change Phone Number", '<p class="small">We will verify your new number with OTP.</p><button class="btn primary mt" data-change-phone-flow>Start OTP</button>');
+          if (kind === "notifications") openModal("Notifications", '<div class="list"><label class="settings-card"><span><span>Job matches</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Chat messages</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Application updates</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Marketing</span><b>Off</b></span><input type="checkbox"></label></div><button class="btn primary mt" data-save-modal="Notifications saved">Save</button>');
+          if (kind === "privacy") openModal("Privacy", '<div class="list"><label class="settings-card"><span><span>Show location</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Show selfie</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Pause profile</span><b>Off</b></span><input type="checkbox"></label></div><button class="btn primary mt" data-save-modal="Privacy saved">Save</button>');
+          if (kind === "faq") openModal("Help & FAQ", '<div class="list"><div class="panel small"><b>How do I apply?</b><br>Swipe right on a job.</div><div class="panel small"><b>When can I chat?</b><br>Chat unlocks after employer accepts.</div><div class="panel small"><b>Is photo required?</b><br>No, it is optional.</div></div>');
+          if (kind === "refer") openModal("Refer & Earn", '<p class="small">Share Kaam Karo with friends looking for work.</p><label class="input mt"><input value="https://kaamkaro.app/ref/demo" readonly></label><button class="btn primary mt" data-save-modal="Referral link copied">Copy link</button>');
+          return;
+        }
+        if (event.target.closest("[data-change-phone-flow]")) { phoneUpdatePending = true; closeModal(); show("otp"); toast("Enter new phone number"); return; }
+        var saveModal = event.target.closest("[data-save-modal]");
+        if (saveModal) { closeModal(); toast(saveModal.dataset.saveModal + " ✅"); return; }
+        var openJob = event.target.closest("[data-open-job-modal]");
+        if (openJob && !event.target.closest("button")) {
+          var detailJob = state.jobs.find(function (job) { return job.id === openJob.dataset.openJobModal; });
+          if (detailJob) openModal(detailJob.title, '<div class="panel"><h2>' + detailJob.pay + '</h2><p class="small">' + detailJob.city + ' · ' + detailJob.type + ' · Posted 3h ago</p><span class="badge amber">Hiring today</span></div><p class="small mt">' + detailJob.desc + '</p><button class="btn primary mt" data-apply-job="' + detailJob.id + '">Apply</button>');
+          return;
+        }
+        if (event.target.closest("[data-undo-swipe]")) {
+          if (lastSwipe && lastSwipe.type === "skip") { jobIndex = lastSwipe.index; renderFeed(); }
+          if (lastSwipe && lastSwipe.type === "apply") { state.applications = state.applications.filter(function (app) { return !(app.jobId === lastSwipe.jobId && app.workerId === state.worker.id); }); save(); show("jobs"); renderFeed(); }
+          byId("undoBar").classList.remove("show");
+          lastSwipe = null;
+          toast("Undone");
+          return;
+        }
+        if (event.target.closest("[data-refresh-jobs]")) { jobIndex = 0; renderFeed(); toast("Jobs refreshed"); return; }
+        if (event.target.closest("[data-confirm-logout]")) {
+          closeModal();
           byId("phoneInput").value = "";
           if (byId("otpInput")) byId("otpInput").value = "";
           track("logout");
           show("landing");
           toast("Logged out.");
+          return;
+        }
+        if (event.target.closest("[data-logout]")) {
+          openModal("Logout", '<p class="small">Are you sure you want to logout?</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn danger" data-confirm-logout>Logout</button></div>');
           return;
         }
         var editProfile = event.target.closest("[data-edit-profile]");
@@ -2673,6 +2796,8 @@
         if (event.target.closest("[data-delete-account]")) {
           var phoneToConfirm = (state.user.phone || state.employer.phone || "").replace(/\D/g, "");
           if (byId("deleteConfirmPhone").value.replace(/\D/g, "") !== phoneToConfirm) return toast("Type your mobile number to confirm.");
+          if (!byId("deleteReason").value) return toast("Select a reason first.");
+          if (!confirm("Final warning: permanently delete your account and data?")) return;
           var keepJobs = state.jobs.filter(function (job) { return !job.employerId && !job.businessId; });
           state.workerComplete = false;
           state.employerComplete = false;
@@ -2756,6 +2881,7 @@
           state.user.phone = state.user.phone || state.employer.phone;
           save();
           track("otp_verified");
+          if (phoneUpdatePending) { phoneUpdatePending = false; toast("Phone number updated ✅"); show("accountSettings"); return; }
           routeAfterOtp();
           return;
         }
@@ -2782,6 +2908,7 @@
         var removeJobType = event.target.closest("[data-remove-job-type]");
         if (removeJobType) {
           state.worker.jobTypes = (state.worker.jobTypes || []).filter(function (type) { return type !== removeJobType.dataset.removeJobType; });
+          if (!state.worker.jobTypes.length) state.worker.preferredJob = "Any Job";
           save(); renderCategories(); return;
         }
         var skill = event.target.closest("[data-skill]");
@@ -2973,7 +3100,6 @@
         }
       });
       document.addEventListener("pointerdown", function (event) {
-        if (byId("jobSearch") && byId("jobSearch").value.trim()) return;
         pointerCard = event.target.closest("#jobFeed .job-card");
         if (!pointerCard) return;
         pointerStartX = event.clientX;
@@ -3008,7 +3134,6 @@
         }
         if (delta > threshold) {
           card.style.transform = "translateX(118vw) rotate(10deg) scale(.98)";
-          if (byId("jobSearch") && byId("jobSearch").value.trim()) return;
           var list = filteredJobs("");
           if (list.length) setTimeout(function () { track("job_swipe_right"); applyToJob(list[jobIndex].id); card.style.transform = ""; }, 210);
           return;
