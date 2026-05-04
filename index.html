@@ -101,6 +101,24 @@
       width: 100%;
       margin: 0;
     }
+    .app-header .profile-edit-header > div {
+      min-width: 0;
+      flex: 1;
+      text-align: center;
+    }
+    .app-header .profile-edit-header > div b,
+    .app-header .profile-edit-header > div p {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .app-header .profile-edit-header .top-save {
+      margin-right: 0;
+      min-width: 48px;
+      text-align: right;
+      flex: none;
+    }
     .app-scroll {
       position: absolute;
       top: 0;
@@ -1443,7 +1461,7 @@
     </section>
 
     <section id="profileEdit" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><div><b id="profileEditTitle">Edit profile</b><p class="small" id="profileEditHint">Keep this clear and professional.</p></div><button id="profileEditSaveTop" class="top-save" data-save-profile-edit disabled>Save</button></div>
+      <div class="header profile-edit-header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><div><b id="profileEditTitle">Edit profile</b><p class="small" id="profileEditHint">Keep this clear and professional.</p></div><button id="profileEditSaveTop" class="top-save" data-save-profile-edit disabled>Save</button></div>
       <div id="profileEditBody" class="edit-stack"></div>
     </section>
 
@@ -2238,7 +2256,7 @@
         var configs = {
           accountName: { title: "Edit Name", label: "Name", value: state.user.displayName || state.worker.name || "", hint: "Used across profile, chat and employer contact.", type: "text" },
           accountLocation: { title: "Location", label: "Search city or area", value: state.user.city || state.worker.city || "", hint: "Choose the area used across Kaam Karo.", type: "location" },
-          workerLocation: { title: "Location", label: "Search city or area", value: state.worker.city || state.user.city || "", hint: "Choose where you want work opportunities.", type: "location" },
+          workerLocation: { title: "Location", label: "Search city or area", value: state.worker.city || state.user.city || "", hint: "Choose your work city", type: "location", suggestions: ["Delhi","Amritsar","Pune","Kochi","Surat","Tiruchirappalli","Karimnagar","Mumbai","Bengaluru","Hyderabad","Chandigarh","Jaipur"] },
           workerSkills: { title: "Edit Skills", label: "Type a skill", value: "", hint: "Keep selected skills visible and controlled.", type: "skills" },
           workerExperience: { title: "Experience", label: "Experience", value: state.worker.experience || "", hint: "Select one option.", type: "experience" },
           workerWork: { title: "Work Preferences", label: "Work preferences", value: "", hint: "Select the work types that fit you.", type: "work" },
@@ -2307,7 +2325,7 @@
           return;
         }
         if (cfg.type === "location") {
-          var suggestions = ["Brisbane","Sydney","Melbourne","Jaipur","Delhi NCR","Chandigarh"];
+          var suggestions = cfg.suggestions || ["Delhi","Mumbai","Bengaluru","Hyderabad","Chandigarh","Jaipur"];
           body.innerHTML =
             '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Search city or area" value="' + (editDraft.value || "") + '"></div></div>' +
             '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (city) { return '<button class="option-row ' + (editDraft.value === city ? "selected" : "") + '" data-edit-location="' + city + '"><span class="option-dot">' + (editDraft.value === city ? "OK" : "") + '</span>' + city + '</button>'; }).join("") + '</div>';
@@ -2338,7 +2356,16 @@
           }
           if (business) business.city = value;
         }
-        if (editingProfileField === "workerLocation") { state.worker.city = value; state.user.city = value; state.user.location = value; }
+        if (editingProfileField === "workerLocation") {
+          state.worker.city = value;
+          state.user.city = value;
+          state.user.location = value;
+          if (state.defaultWorkerId && state.workerProfiles[state.defaultWorkerId]) {
+            state.workerProfiles[state.defaultWorkerId].city = value;
+            state.workerProfiles[state.defaultWorkerId].location = value;
+            state.workerProfiles[state.defaultWorkerId].updatedAt = Date.now();
+          }
+        }
         if (editingProfileField === "workerSkills") state.worker.skills = (editDraft.skills || []).slice();
         if (editingProfileField === "workerExperience") state.worker.experience = value;
         if (editingProfileField === "workerWork") {
