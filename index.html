@@ -20,21 +20,20 @@
       --amber: #f59e0b;
       --red: #e5484d;
       --shadow: 0 16px 42px rgba(6, 20, 47, .12);
-      font-family: Inter, system-ui, "Noto Sans Devanagari", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      --app-bg: linear-gradient(180deg, #f8fbff 0%, #ffffff 45%, #f4f8ff 100%);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Devanagari", Arial, sans-serif;
     }
 
     * { box-sizing: border-box; }
-    html { width: 100%; height: 100%; background: #e8eef7; overflow: hidden; }
+    html { width: 100%; height: 100%; background: #f8fbff; overflow: hidden; overflow-x: hidden; }
     body {
       margin: 0;
       width: 100%;
       height: 100%;
       color: var(--text);
       overflow: hidden;
-      background:
-        radial-gradient(circle at 12% 0%, rgba(20, 87, 200, .22), transparent 28%),
-        radial-gradient(circle at 92% 10%, rgba(8, 166, 63, .18), transparent 30%),
-        linear-gradient(180deg, #fff, #edf4fb);
+      overflow-x: hidden;
+      background: var(--app-bg);
     }
     button, input, textarea, select { font: inherit; }
     button { cursor: pointer; }
@@ -44,9 +43,12 @@
       height: 100vh;
       height: 100dvh;
       margin: 0 auto;
+      margin-left: auto;
+      margin-right: auto;
       position: relative;
       overflow: hidden;
-      background: #f8fbff;
+      overflow-x: hidden;
+      background: var(--app-bg);
       box-shadow: 0 30px 90px rgba(6, 20, 47, .24);
     }
     .app {
@@ -54,9 +56,23 @@
       height: 100vh;
       height: 100dvh;
       margin: 0 auto;
+      margin-left: auto;
+      margin-right: auto;
       position: relative;
       overflow: hidden;
-      background: #f8fbff;
+      overflow-x: hidden;
+      background: var(--app-bg);
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: env(safe-area-inset-top);
+      background: inherit;
+      z-index: 1;
+      pointer-events: none;
     }
     .app-header {
       position: absolute;
@@ -92,11 +108,13 @@
     .screen {
       position: absolute;
       inset: 0;
+      width: 100%;
       height: 100%;
       min-height: 0;
       padding: 0;
       overflow: hidden;
-      background: linear-gradient(180deg, #fff, #f8fbff);
+      overflow-x: hidden;
+      background: var(--app-bg);
       opacity: 0;
       pointer-events: none;
       transform: translateX(100%);
@@ -115,6 +133,7 @@
       height: auto;
       overflow-y: auto;
       overflow-x: hidden;
+      width: 100%;
       padding: 22px 22px calc(110px + env(safe-area-inset-bottom));
       -webkit-overflow-scrolling: touch;
       touch-action: pan-y;
@@ -194,14 +213,14 @@
     .green { color: var(--green); }
 
     .lang-switch {
-      width: 88px;
+      width: 142px;
       min-height: 40px;
       padding: 3px;
       border: 1px solid var(--line);
       border-radius: 999px;
       background: #fff;
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 3px;
       box-shadow: 0 8px 22px rgba(6, 20, 47, .06);
       flex: none;
@@ -976,7 +995,7 @@
       .topbar { gap: 8px; padding-bottom: 14px; }
       .brand-logo { width: 124px; }
       .hero .brand-logo { width: 146px; }
-      .lang-switch { width: 102px; }
+      .lang-switch { width: 132px; }
       .lang-switch button { font-size: 11px; }
       .title { font-size: 31px; }
       .sub { font-size: 15px; }
@@ -1022,7 +1041,7 @@
         <div class="brand"><img class="brand-logo" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div>
         <div class="lang-switch" aria-label="Language">
           <button type="button" class="active" data-lang="en">English</button>
-          
+          <button type="button" data-lang="hi">हिंदी</button>
         </div>
       </div>
       <div class="hero-copy">
@@ -1449,7 +1468,7 @@
 
   <script>
     (function () {
-      var currentLang = localStorage.getItem("kkLang") || "en";
+      var currentLang = localStorage.getItem("kaamkaroLang") || localStorage.getItem("kkLang") || "en";
       var currentScreen = "landing";
       var currentRole = localStorage.getItem("kkRole") || "worker";
       var menuReturn = "jobs";
@@ -1592,7 +1611,7 @@
 
       var copy = {
         en: { heroTitle: "Jobs near you.", heroSub: "Apply in one swipe. Chat after employer accepts.", heroVisual: "Swipe. Match. Start work.", continue: "Continue" },
-        hi: { heroTitle: "Jobs near you.", heroSub: "Apply in one swipe. Chat after employer accepts.", heroVisual: "Swipe. Match. Start work.", continue: "Continue" }
+        hi: { heroTitle: "आपके पास नौकरियां।", heroSub: "एक स्वाइप में आवेदन करें। नियोक्ता स्वीकार करे तो चैट करें।", heroVisual: "स्वाइप करें। मैच करें। काम शुरू करें।", continue: "जारी रखें" }
       };
       var legal = {
         terms: ["Terms & Conditions", "Kaam Karo connects workers and employers. Use truthful information, do not post illegal jobs, and do not ask workers to pay for employment."],
@@ -1785,6 +1804,7 @@
       }
       function setLang(lang) {
         currentLang = lang;
+        localStorage.setItem("kaamkaroLang", lang);
         localStorage.setItem("kkLang", lang);
         render();
       }
