@@ -545,7 +545,11 @@
       line-height: 1.35;
       font-weight: 850;
     }
-    .safe-note b { width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; color: #fff; background: var(--green); flex: none; }
+    .safe-note b { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; background: var(--green); flex: none; font-size: 11px; font-weight: 950; line-height: 1; overflow: hidden; }
+    .applicant-actions { display: flex; gap: 12px; align-items: center; flex: none; }
+    .applicant-actions .reject-btn, .applicant-actions .accept-btn { height: 50px; border-radius: 18px; font-size: 14px; font-weight: 950; }
+    .applicant-actions .reject-btn { min-width: 54px; border: 1px solid var(--line); background: #fff; color: var(--ink); }
+    .applicant-actions .accept-btn { min-width: 96px; border: 0; background: var(--green); color: #fff; }
 
     .progress { display: flex; gap: 7px; margin: 2px 0 22px; }
     .progress span { height: 5px; flex: 1; border-radius: 999px; background: #dce6f2; }
@@ -1216,7 +1220,7 @@
     <section id="applied" class="screen success">
       <div class="success-icon">Done</div>
       <h1 class="title">Application sent</h1>
-      <p class="sub center">Status: Interested. Employer can accept to start chat.</p>
+      <p class="sub center">We'll notify you when the employer views your profile.</p>
       <div class="steps"><div class="step"><b>1</b>Your application appears in the employer dashboard.</div><div class="step"><b>2</b>Employer accepts or rejects.</div><div class="step"><b>3</b>Accepted = match + chat.</div></div>
       <button class="btn primary" data-go="jobs">Back to jobs</button>
       <button class="btn outline mt" data-go="applications">View applications</button>
@@ -2086,11 +2090,6 @@
         if (byId("undoBar")) byId("undoBar").classList.remove("show");
         recordSwipe(true);
         setTimeout(function () { toast("Employer will review your profile"); }, 500);
-        setTimeout(function () {
-          var app = state.applications.find(function (a) { return a.jobId === selectedJobId && a.workerId === state.worker.id; });
-          if (app && app.status === "Interested") { app.status = "Viewed"; notify("Employer viewed your profile.", "applications"); save(); }
-          toast("Employer viewed your profile");
-        }, 1500);
         show("applied");
       }
       function nextJob() {
@@ -2130,7 +2129,7 @@
       function renderApplicantCard(app) {
         var job = state.jobs.find(function (j) { return j.id === app.jobId; });
         var w = state.worker;
-        return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' - ' + w.city + ' - ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span><div class="mt">' + workerPhotoBadgeHtml() + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span><button class="icon" data-reject-app="' + app.id + '">x</button><button class="icon" data-accept-app="' + app.id + '">Accept</button></div>';
+        return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' - ' + w.city + ' - ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span><div class="mt">' + workerPhotoBadgeHtml() + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span><div class="applicant-actions"><button class="reject-btn" data-reject-app="' + app.id + '">X</button><button class="accept-btn" data-accept-app="' + app.id + '">Accept</button></div></div>';
       }
       function renderEmployer() {
         if (!hasEmployerProfile()) return;
@@ -2452,7 +2451,6 @@
       }
       function workerBadges() {
         var badges = [];
-        if (state.worker.phoneVerified) badges.push({ label: "Phone Verified", className: "" });
         if (profileComplete()) badges.push({ label: "Profile Complete", className: "blue" });
         if (state.applications.some(function (a) { return a.workerId === state.worker.id; }) || state.worker.active) badges.push({ label: "Active", className: "amber" });
         return badges.slice(0, 3);
