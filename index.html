@@ -464,6 +464,24 @@
     }
     .settings-list { display: grid; gap: 12px; margin-top: 8px; }
     .settings-card { margin: 0; min-height: 62px; }
+    .settings-icon {
+      width: 18px;
+      height: 18px;
+      flex: none;
+      color: var(--muted);
+      margin-right: -2px;
+    }
+    .settings-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .settings-icon.danger { color: var(--red); background: transparent; border: 0; }
     .top-save {
       border: 0;
       background: transparent;
@@ -936,7 +954,7 @@
     .desc-helper { margin: 14px 0 0; font-size: 13px; color: var(--muted); font-weight: 750; }
     .desc-counter { font-size: 12px; color: var(--muted); font-weight: 800; }
     .desc-error { display: none; color: var(--red); font-size: 12px; font-weight: 850; }
-    .danger-title { margin: 0; }
+    .danger-title { margin: 0; display: flex; align-items: center; gap: 12px; }
 
     #chat .screen-body { overflow: hidden; padding: 0 22px; }
     .chat-safety { padding: 12px 14px; border-radius: 14px; background: #fff7e8; border: 1px solid rgba(245,158,11,.28); color: #8a5600; font-size: 13px; font-weight: 850; margin: 0; }
@@ -1070,6 +1088,12 @@
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
     <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 22V4"/><path d="M5 4h13l-2 5 2 5H5"/></symbol>
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6 9 12l6 6"/><path d="M10 12h10"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.7.6 2.5a2 2 0 0 1-.5 2.1L8 9.5a16 16 0 0 0 6.5 6.5l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.6.5 2.5.6a2 2 0 0 1 1.7 2z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 15H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 0 1 4.3 1.7c0 1.7-1.8 2.2-1.8 3.3"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.7 6.8-4.4"/><path d="m8.6 13.3 6.8 4.4"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 3v18h-8"/></symbol>
   </svg>
   <main class="phone app">
     <header id="appHeader" class="app-header"></header>
@@ -1108,12 +1132,12 @@
 
     <section id="otp" class="screen">
       <div class="header"><button class="icon" data-go="landing"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
-      <h1 class="title">Enter your phone number</h1>
+      <h1 class="title" data-i18n="enter_phone">Enter your phone number</h1>
       <p class="sub">We will send a one-time password by SMS. This keeps your account safe and helps employers trust real people.</p>
       <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="0000000000"></label>
       <p class="small center mt">We'll never share your number.</p>
       <div class="safe-note"><b>Safe</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
-      <button class="btn primary mt" data-send-otp>Send OTP</button>
+      <button class="btn primary mt" data-send-otp data-i18n="send_otp">Send OTP</button>
       <div class="legal-line">By continuing, you agree to <button data-legal="terms">Terms</button> and <button data-legal="privacy">Privacy Policy</button>.</div>
     </section>
 
@@ -1122,7 +1146,7 @@
       <h1 class="title">Enter OTP</h1>
       <p class="sub">We sent a 6 digit code to <b id="otpPhoneText">+91 98765 43210</b>.</p>
       <label class="input mt"><input id="otpInput" inputmode="numeric" maxlength="6" placeholder="Enter 6 digit OTP"></label>
-      <button class="btn primary mt" data-verify-otp>Verify & continue</button>
+      <button class="btn primary mt" data-verify-otp data-i18n="verify_otp">Verify & continue</button>
       <div class="btn-row mt">
         <button class="btn outline" data-change-number>Change number</button>
         <button class="btn soft" data-resend-otp>Resend code</button>
@@ -1134,14 +1158,14 @@
       <div class="header"><button class="icon" data-go="otpCode"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="tag">Choose path</span></div>
       <h1 class="title">What do you want to do?</h1>
       <p class="sub">Choose one. You can switch anytime from Menu.</p>
-      <button class="choice mt selected" data-go="workerBasic"><span class="ci"><svg><use href="#i-user"></use></svg></span><span><b>Looking for work</b><br><span class="small">Swipe jobs. Get hired faster.</span></span></button>
-      <button class="choice mt" data-go="employerSetup"><span class="ci"><svg><use href="#i-briefcase"></use></svg></span><span><b>Hiring workers</b><br><span class="small">Post a job. Get workers in minutes.</span></span></button>
+      <button class="choice mt selected" data-go="workerBasic"><span class="ci"><svg><use href="#i-user"></use></svg></span><span><b data-i18n="find_work">Looking for work</b><br><span class="small">Swipe jobs. Get hired faster.</span></span></button>
+      <button class="choice mt" data-go="employerSetup"><span class="ci"><svg><use href="#i-briefcase"></use></svg></span><span><b data-i18n="hire_workers">Hiring workers</b><br><span class="small">Post a job. Get workers in minutes.</span></span></button>
     </section>
 
     <section id="workerBasic" class="screen">
       <div class="header"><button class="icon" data-go="role"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">1/5</span></div>
       <div class="progress"><span class="on"></span><span></span><span></span><span></span><span></span></div>
-      <h1 class="title">Basic details</h1>
+      <h1 class="title" data-i18n="basic_details">Basic details</h1>
       <p class="sub">This helps employers find you faster.</p>
       <label class="input"><input id="workerName" placeholder="Aman Lalh"></label>
       <label class="input mt"><select id="workerGender"><option value="">Gender</option><option>Male</option><option>Female</option><option>Other</option></select></label>
@@ -1154,7 +1178,7 @@
     <section id="workerWork" class="screen">
       <div class="header"><button class="icon" data-go="workerBasic"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">2/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
-      <h1 class="title">Job type</h1>
+      <h1 class="title" data-i18n="job_type">Job type</h1>
       <p class="sub">Choose ONE type of job you're looking for.</p>
       <div class="search mt"><svg><use href="#i-search"></use></svg><input id="workSearch" placeholder="Search job title, e.g. clerk, driver, cashier, helper..."></div>
       <button class="btn outline mt" data-add-job-type>+ Add Role</button>
@@ -1170,7 +1194,7 @@
     <section id="workerSkills" class="screen">
       <div class="header"><button class="icon" data-go="workerWork"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">3/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
-      <h1 class="title">Skills & experience</h1>
+      <h1 class="title" data-i18n="skills_experience">Skills & experience</h1>
       <p class="sub">Add 2-3 skills to get better matches.</p>
       <h3 class="mt">Suggested Skills</h3>
       <div class="toolbar" id="skillChips"></div>
@@ -1194,7 +1218,7 @@
     <section id="workerLocation" class="screen">
       <div class="header"><button class="icon" data-go="workerSkills"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">4/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
-      <h1 class="title">Availability</h1>
+      <h1 class="title" data-i18n="availability">Availability</h1>
       <p class="sub">Clear availability helps employers select you faster.</p>
       <div class="section-label">Flexible Option</div>
       <button class="choice" data-flexible-availability><span class="ci">Flex</span><span><b>I'm open to any day and any time</b><br><span class="small">Flexible for all days and shifts.</span></span></button>
@@ -1237,11 +1261,11 @@
     </section>
 
     <section id="jobs" class="screen">
-      <div class="header"><button class="icon" data-go="menu"><svg><use href="#i-menu"></use></svg></button><div><b>Job Feed</b><p class="small" id="feedSub">Showing nearby options</p></div><button class="icon" data-go="notifications"><svg><use href="#i-bell"></use></svg></button></div>
-      <div class="search"><svg><use href="#i-search"></use></svg><input id="jobSearch" placeholder="Search city"></div>
+      <div class="header"><button class="icon" data-go="menu"><svg><use href="#i-menu"></use></svg></button><div><b data-i18n="job_feed">Job Feed</b><p class="small" id="feedSub">Showing nearby options</p></div><button class="icon" data-go="notifications"><svg><use href="#i-bell"></use></svg></button></div>
+      <div class="search"><svg><use href="#i-search"></use></svg><input id="jobSearch" placeholder="Search city" data-i18n-placeholder="search_city"></div>
       <button class="btn outline mt" data-add-city>Use City</button>
       <div class="toolbar mt" id="selectedCityChip"></div>
-      <div class="toolbar" data-filter-group><button class="chip selected" data-filter="all">All</button><button class="chip" data-filter="near">Near Me</button><button class="chip" data-filter="remote">Remote</button></div>
+      <div class="toolbar" data-filter-group><button class="chip selected" data-filter="all" data-i18n="all">All</button><button class="chip" data-filter="near" data-i18n="near_me">Near Me</button><button class="chip" data-filter="remote" data-i18n="remote">Remote</button></div>
       <div id="feedNotice" class="panel small">Showing nearby options.</div>
       <div id="jobFeed"></div>
     </section>
@@ -1378,7 +1402,7 @@
       <button class="profile-card" data-edit-profile="workerWork"><span><span>Work Preferences</span><b id="workerProfileWorkText">Open to full-time and part-time roles</b></span><i class="arrow">></i></button>
       <button class="profile-card" data-edit-profile="workerAvailability"><span><span>Availability</span><b id="workerProfileAvailabilityText">Available weekdays and weekend shifts</b></span><i class="arrow">></i></button>
       <button class="profile-card" data-edit-profile="workerSkills"><span><span>Skills</span><b id="workerProfileSkillsText">Cash handling, Data entry</b></span><i class="arrow">></i></button>
-      <button class="switch-cta mt" data-switch-mode="employer"><svg><use href="#i-briefcase"></use></svg> Switch to Hiring</button>
+      <button class="switch-cta mt" data-switch-mode="employer"><svg><use href="#i-briefcase"></use></svg> <span id="workerSwitchCta">Switch to Hiring</span></button>
       <div class="section-label">Settings</div>
       <div class="settings-list">
         <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">></i></button>
@@ -1401,7 +1425,7 @@
         <div class="metric-card"><span>Active Jobs</span><b id="employerOpenJobsView">1</b></div>
         <div class="metric-card"><span>Total Applicants</span><b id="employerApplicantStatsView">0</b></div>
       </div>
-      <button class="switch-cta mt" data-switch-mode="worker"><svg><use href="#i-user"></use></svg> Switch to Job Search</button>
+      <button class="switch-cta mt" data-switch-mode="worker"><svg><use href="#i-user"></use></svg> <span id="employerSwitchCta">Switch to Job Search</span></button>
       <div class="section-label">Settings</div>
       <div class="settings-list">
         <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">></i></button>
@@ -1432,16 +1456,16 @@
     </section>
 
     <section id="accountSettings" class="screen">
-      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><div><b>Account Settings</b><p class="small">Identity and role profiles</p></div><span class="tag">Global</span></div>
+      <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><div><b data-i18n="settings">Account Settings</b><p class="small">Identity and role profiles</p></div><span class="tag">Global</span></div>
       <div class="section-label">Account</div>
       <button class="settings-card" data-edit-profile="accountName"><span><span>Name</span><b id="accountNameView">Aman Lalh</b></span><i class="arrow">></i></button>
       <button class="settings-card" data-edit-profile="accountLocation"><span><span>Location</span><b id="accountLocationView">Brisbane</b></span><i class="arrow">></i></button>
-      <button class="settings-card" data-settings-modal="phone"><span><span>Change Phone Number</span><b id="accountPhone">0000000000</b></span><i class="arrow">></i></button>
-      <button class="settings-card" data-settings-modal="notifications"><span><span>Notifications</span><b>Job matches, chat and updates</b></span><i class="arrow">></i></button>
-      <button class="settings-card" data-settings-modal="privacy"><span><span>Privacy</span><b>Location, selfie and profile visibility</b></span><i class="arrow">></i></button>
-      <button class="settings-card" data-settings-modal="faq"><span><span>Help & FAQ</span><b>Common questions</b></span><i class="arrow">></i></button>
-      <button class="settings-card" data-settings-modal="refer"><span><span>Refer & Earn</span><b>Share Kaam Karo</b></span><i class="arrow">></i></button>
-      <button class="settings-card" data-logout><span><span>Session</span><b>Logout</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="phone"><span class="settings-icon"><svg><use href="#i-phone"></use></svg></span><span class="grow"><span data-i18n="change_phone">Change Phone Number</span><b id="accountPhone">0000000000</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="notifications"><span class="settings-icon"><svg><use href="#i-bell"></use></svg></span><span class="grow"><span data-i18n="notifications">Notifications</span><b>Job matches, chat and updates</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="privacy"><span class="settings-icon"><svg><use href="#i-lock"></use></svg></span><span class="grow"><span data-i18n="privacy">Privacy</span><b>Location, selfie and profile visibility</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="faq"><span class="settings-icon"><svg><use href="#i-help"></use></svg></span><span class="grow"><span data-i18n="help">Help & FAQ</span><b>Common questions</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-settings-modal="refer"><span class="settings-icon"><svg><use href="#i-share"></use></svg></span><span class="grow"><span data-i18n="refer">Refer & Earn</span><b>Share Kaam Karo</b></span><i class="arrow">></i></button>
+      <button class="settings-card" data-logout><span class="settings-icon"><svg><use href="#i-logout"></use></svg></span><span class="grow"><span>Session</span><b data-i18n="logout">Logout</b></span><i class="arrow">></i></button>
       <div class="section-label">Profiles</div>
       <div class="settings-list">
         <button class="settings-card" data-account-profile="worker"><span><span>Worker Profile</span><b id="workerAccountStatus">Not set up</b></span><i class="arrow">></i></button>
@@ -1451,7 +1475,7 @@
       <div class="section-label">Danger</div>
       <div class="panel danger-zone">
         <span class="section-label">DANGER ZONE</span>
-        <h3 class="danger-title">Delete Account</h3>
+        <h3 class="danger-title"><span class="settings-icon danger"><svg><use href="#i-trash"></use></svg></span><span data-i18n="delete_account">Delete Account</span></h3>
         <p class="small">This will permanently delete your account, jobs, applications, and chats.</p>
         <label><span class="small"><b>Why are you deleting your account? (optional)</b></span><select id="deleteReason"><option value="">Select reason</option><option>Found a job elsewhere</option><option>Not enough jobs in my area</option><option>Too many notifications</option><option>Other</option></select></label>
         <label><span class="small"><b>Confirm your mobile number</b><br>Enter the same 10-digit number used for this account.</span><input id="deleteConfirmPhone" inputmode="numeric" maxlength="10" placeholder="0000000000"></label>
@@ -1538,6 +1562,7 @@
       var phoneUpdatePending = false;
       var pendingEmployerRoute = localStorage.getItem("kkPendingEmployerRoute") || "";
       var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
+      var setupReturnRoute = localStorage.getItem("kkSetupReturnRoute") || "";
 
       var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","profileEdit","adminModeration","legal","report"];
       var workCategories = ["Delivery","Retail","Office Work","Helper","Driver","Cleaner","Waiter","Data Entry"];
@@ -1651,8 +1676,8 @@
       };
 
       var copy = {
-        en: { heroTitle: "Jobs near you.", heroSub: "Apply in one swipe. Chat after employer accepts.", heroVisual: "Swipe. Match. Start work.", continue: "Continue" },
-        hi: { heroTitle: "???? ??? ?????????", heroSub: "?? ?????? ??? ????? ????? ???????? ??????? ??? ?? ??? ?????", heroVisual: "?????? ????? ??? ????? ??? ???? ?????", continue: "???? ????" }
+        en: { heroTitle: "Jobs near you.", heroSub: "Apply in one swipe. Chat after employer accepts.", heroVisual: "Swipe. Match. Start work.", continue: "Continue", enter_phone: "Enter your phone number", send_otp: "Send OTP", verify_otp: "Verify & continue", find_work: "Looking for work", hire_workers: "Hiring workers", basic_details: "Basic details", job_type: "Job type", skills_experience: "Skills & experience", availability: "Availability", job_feed: "Job Feed", search_city: "Search city", all: "All", near_me: "Near Me", remote: "Remote", profile: "Profile", settings: "Settings", change_phone: "Change Phone Number", notifications: "Notifications", privacy: "Privacy", delete_account: "Delete Account", help: "Help & FAQ", refer: "Refer & Earn", logout: "Logout" },
+        hi: { heroTitle: "आपके पास नौकरियां।", heroSub: "एक स्वाइप में आवेदन करें। नियोक्ता स्वीकार करे तो चैट करें।", heroVisual: "स्वाइप करें। मैच करें। काम शुरू करें।", continue: "आगे बढ़ें", enter_phone: "अपना मोबाइल नंबर दर्ज करें", send_otp: "ओटीपी भेजें", verify_otp: "ओटीपी सत्यापित करें", find_work: "काम ढूंढें", hire_workers: "काम पर रखें", basic_details: "बुनियादी जानकारी", job_type: "काम का प्रकार", skills_experience: "कौशल और अनुभव", availability: "उपलब्धता", job_feed: "नौकरियां", search_city: "शहर खोजें", all: "सभी", near_me: "मेरे पास", remote: "घर से काम", profile: "प्रोफाइल", settings: "सेटिंग्स", change_phone: "फोन नंबर बदलें", notifications: "नोटिफिकेशन", privacy: "प्राइवेसी", delete_account: "अकाउंट हटाएं", help: "मदद", refer: "दोस्तों को आमंत्रित करें", logout: "लॉगआउट" }
       };
       var legal = {
         terms: ["Terms & Conditions", "Kaam Karo connects workers and employers. Use truthful information, do not post illegal jobs, and do not ask workers to pay for employment."],
@@ -1678,7 +1703,7 @@
         state.auditLogs = state.auditLogs.slice(0, 50);
         save();
       }
-      function t(key) { return copy[currentLang] && copy[currentLang][key] ? copy[currentLang][key] : key; }
+      function t(key) { return copy[currentLang] && copy[currentLang][key] ? copy[currentLang][key] : (copy.en && copy.en[key] ? copy.en[key] : key); }
       function byId(id) { return document.getElementById(id); }
       function toast(message) {
         var node = byId("toast");
@@ -1713,6 +1738,10 @@
         if (!hasEmployerProfile()) {
           pendingEmployerRoute = targetRoute || "employerDash";
           localStorage.setItem("kkPendingEmployerRoute", pendingEmployerRoute);
+          if (!setupReturnRoute && ["landing","otp","otpCode","role"].indexOf(currentScreen) < 0) {
+            setupReturnRoute = currentScreen || "jobs";
+            localStorage.setItem("kkSetupReturnRoute", setupReturnRoute);
+          }
           toast("Set up your business first.");
           return show("employerSetup");
         }
@@ -1731,6 +1760,10 @@
         if (!hasWorkerProfile()) {
           pendingWorkerRoute = targetRoute || "jobs";
           localStorage.setItem("kkPendingWorkerRoute", pendingWorkerRoute);
+          if (!setupReturnRoute && ["landing","otp","otpCode","role"].indexOf(currentScreen) < 0) {
+            setupReturnRoute = currentScreen || "employerDash";
+            localStorage.setItem("kkSetupReturnRoute", setupReturnRoute);
+          }
           toast("Create your worker profile first.");
           return show("workerBasic");
         }
@@ -1797,8 +1830,8 @@
         if (!target) return toast("Please try again.");
         var employerScreens = ["employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","employerProfile"];
         var workerScreens = ["workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress","jobs","applied","search","applications"];
-        if (employerScreens.indexOf(id) >= 0) currentRole = "employer";
-        if (workerScreens.indexOf(id) >= 0) currentRole = "worker";
+        if (employerScreens.indexOf(id) >= 0 && !(id === "employerSetup" && setupReturnRoute)) currentRole = "employer";
+        if (workerScreens.indexOf(id) >= 0 && !(id === "workerBasic" && setupReturnRoute)) currentRole = "worker";
         localStorage.setItem("kkRole", currentRole);
         localStorage.setItem("kkLastMode", currentRole);
         if (id === "menu" && currentScreen !== "menu") menuReturn = currentScreen;
@@ -1839,7 +1872,20 @@
       function renderAppHeader() {
         if (!byId("appHeader")) return;
         var source = byId(currentScreen) ? byId(currentScreen).querySelector(":scope > .header") : null;
-        byId("appHeader").innerHTML = source ? '<div class="header">' + source.innerHTML + '</div>' : "";
+        if (source) {
+          var clone = source.cloneNode(true);
+          if ((currentScreen === "employerSetup" || currentScreen === "workerBasic") && setupReturnRoute) {
+            var homeButton = clone.querySelector("[data-go]");
+            if (homeButton) {
+              homeButton.removeAttribute("data-go");
+              homeButton.setAttribute("data-setup-home", "true");
+              homeButton.textContent = "Home";
+            }
+          }
+          byId("appHeader").innerHTML = '<div class="header">' + clone.innerHTML + '</div>';
+        } else {
+          byId("appHeader").innerHTML = "";
+        }
         var app = document.querySelector(".app");
         if (app) app.classList.toggle("has-header", !!source);
       }
@@ -1853,6 +1899,7 @@
         document.documentElement.lang = currentLang === "hi" ? "hi" : "en";
         document.querySelectorAll("[data-lang]").forEach(function (button) { button.classList.toggle("active", button.dataset.lang === currentLang); });
         document.querySelectorAll("[data-i18n]").forEach(function (node) { node.textContent = t(node.dataset.i18n); });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach(function (node) { node.setAttribute("placeholder", t(node.dataset.i18nPlaceholder)); });
       }
       function fillBasicDefaults() {
         if (byId("locationSearch")) byId("locationSearch").value = state.worker.city || "";
@@ -2708,6 +2755,8 @@
         if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
             if (byId("profileStrengthText")) byId("profileStrengthText").textContent = profileStrength() + "%";
             if (byId("profileStrengthBar")) byId("profileStrengthBar").style.width = profileStrength() + "%";
+            if (byId("workerSwitchCta")) byId("workerSwitchCta").textContent = hasEmployerProfile() ? "Switch to Hiring" : "Set up Hiring";
+            if (byId("employerSwitchCta")) byId("employerSwitchCta").textContent = hasWorkerProfile() ? "Switch to Job Search" : "Set up Job Search";
             if (byId("workerProfileLocationText")) byId("workerProfileLocationText").textContent = workerLocationLine();
             if (byId("workerProfileExperienceText")) byId("workerProfileExperienceText").textContent = workerExperienceLine();
             if (byId("workerProfileWorkText")) byId("workerProfileWorkText").textContent = workerWorkLine();
@@ -2760,7 +2809,9 @@
         };
         var nextWorkerRoute = pendingWorkerRoute || "jobs";
         pendingWorkerRoute = "";
+        setupReturnRoute = "";
         localStorage.removeItem("kkPendingWorkerRoute");
+        localStorage.removeItem("kkSetupReturnRoute");
         save();
         track("worker_onboarding_complete");
         show(nextWorkerRoute);
@@ -3055,10 +3106,49 @@
         }
         var switchMode = event.target.closest("[data-switch-mode]");
         if (switchMode) {
-          currentRole = switchMode.dataset.switchMode;
-          localStorage.setItem("kkRole", currentRole);
-          toast(currentRole === "employer" ? "Hire Workers mode." : "Find Work mode.");
-          if (currentRole === "employer") goToEmployerRoute("employerDash"); else goToWorkerRoute("jobs");
+          var targetMode = switchMode.dataset.switchMode;
+          setupReturnRoute = currentScreen;
+          localStorage.setItem("kkSetupReturnRoute", setupReturnRoute);
+          if (targetMode === "employer") {
+            if (hasEmployerProfile()) {
+              setupReturnRoute = "";
+              localStorage.removeItem("kkSetupReturnRoute");
+              currentRole = "employer";
+              localStorage.setItem("kkRole", currentRole);
+              toast("Hire Workers mode.");
+              show("employerDash");
+            } else {
+              pendingEmployerRoute = "employerDash";
+              localStorage.setItem("kkPendingEmployerRoute", pendingEmployerRoute);
+              toast("Set up your business first.");
+              show("employerSetup");
+            }
+          } else {
+            if (hasWorkerProfile()) {
+              setupReturnRoute = "";
+              localStorage.removeItem("kkSetupReturnRoute");
+              currentRole = "worker";
+              localStorage.setItem("kkRole", currentRole);
+              toast("Find Work mode.");
+              show("jobs");
+            } else {
+              pendingWorkerRoute = "jobs";
+              localStorage.setItem("kkPendingWorkerRoute", pendingWorkerRoute);
+              toast("Create your worker profile first.");
+              show("workerBasic");
+            }
+          }
+          return;
+        }
+        if (event.target.closest("[data-setup-home]")) {
+          var homeRoute = setupReturnRoute || (currentRole === "employer" ? "employerDash" : "jobs");
+          setupReturnRoute = "";
+          pendingEmployerRoute = "";
+          pendingWorkerRoute = "";
+          localStorage.removeItem("kkSetupReturnRoute");
+          localStorage.removeItem("kkPendingEmployerRoute");
+          localStorage.removeItem("kkPendingWorkerRoute");
+          show(homeRoute);
           return;
         }
         var go = event.target.closest("[data-go]");
@@ -3257,7 +3347,9 @@
           state.businessProfiles[businessId] = { businessId: businessId, ownerId: state.worker.id, businessName: state.employer.business, contactPersonName: state.employer.name, city: state.employer.city, phone: state.employer.phone, type: state.employer.type, createdAt: Date.now() };
           var nextEmployerRoute = pendingEmployerRoute || "employerDash";
           pendingEmployerRoute = "";
+          setupReturnRoute = "";
           localStorage.removeItem("kkPendingEmployerRoute");
+          localStorage.removeItem("kkSetupReturnRoute");
           save(); track("employer_setup_complete"); show(nextEmployerRoute); return;
         }
         var filter = event.target.closest("[data-filter]");
