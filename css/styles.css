@@ -175,6 +175,29 @@ button { cursor: pointer; }
   gap: 12px;
   margin-bottom: 14px;
 }
+.app-header .chat-detail-header {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 12px;
+}
+.app-header .chat-title-block {
+  min-width: 0;
+  text-align: center;
+}
+.app-header .chat-title-block b,
+.app-header .chat-title-block p {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+.app-header .chat-detail-header .icon {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+}
 .screen > .header { display: none; }
 .app-header .brand-logo.compact { width: clamp(88px, 28vw, 116px); }
 .app-header .small { white-space: nowrap; font-weight: 900; }
