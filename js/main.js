@@ -1597,7 +1597,7 @@
     show("landing");
     toast("Account deleted");
   }
-  document.addEventListener("click", function (event) {
+  document.addEventListener("click", async function (event) {
     var lang = event.target.closest("[data-lang]");
     if (lang) return setLang(lang.dataset.lang);
     var descChip = event.target.closest("[data-desc-chip]");
@@ -1839,6 +1839,11 @@
     if (event.target.closest("[data-refresh-jobs]")) { jobIndex = 0; renderFeed(); toast("Jobs refreshed"); return; }
     if (event.target.closest("[data-confirm-logout]")) {
       closeModal();
+      try {
+        if (window.KaamKaroAuth) await window.KaamKaroAuth.logout();
+      } catch (error) {
+        console.warn("Logout skipped:", error);
+      }
       byId("phoneInput").value = "";
       if (byId("otpInput")) byId("otpInput").value = "";
       track("logout");
@@ -2015,24 +2020,38 @@
     if (event.target.closest("[data-send-otp]")) {
       var phone = byId("phoneInput").value.replace(/\D/g, "");
       if (phone.length !== 10) return toast("Enter a valid 10 digit phone number.");
-      state.employer.phone = phone;
-      state.user.phone = phone;
-      save();
-      track("otp_requested");
-      show("otpCode");
+      try {
+        var otpRequest = window.KaamKaroAuth ? await window.KaamKaroAuth.sendOtp(phone) : { phone: phone, mode: "demo" };
+        state.employer.phone = otpRequest.phone;
+        state.user.phone = otpRequest.phone;
+        save();
+        track("otp_requested");
+        show("otpCode");
+      } catch (error) {
+        console.warn("OTP request failed:", error);
+        toast(error.message || "Something went wrong. Please try again.");
+      }
       return;
     }
     if (event.target.closest("[data-verify-otp]")) {
       var otp = byId("otpInput").value.replace(/\D/g, "");
-    if (otp.length !== 4) return toast("Enter the 4 digit OTP code.");
-      state.worker.phoneVerified = true;
-      state.user.phoneVerified = true;
-      state.worker.active = true;
-      state.user.phone = state.user.phone || state.employer.phone;
-      save();
-      track("otp_verified");
-      if (phoneUpdatePending) { phoneUpdatePending = false; toast("Phone number updated OK"); show("accountSettings"); return; }
-      routeAfterOtp();
+      if (otp.length !== 4 && !(window.KaamKaroAuth && window.KaamKaroAuth.isSupabaseConfigured())) return toast("Enter the 4 digit OTP code.");
+      try {
+        var authResult = window.KaamKaroAuth ? await window.KaamKaroAuth.verifyOtp(state.user.phone || state.employer.phone || byId("phoneInput").value, otp) : { phone: state.user.phone || state.employer.phone, user: null };
+        state.user.id = authResult.user && authResult.user.id ? authResult.user.id : state.user.id;
+        state.user.phone = authResult.phone || state.user.phone || state.employer.phone;
+        state.employer.phone = state.user.phone;
+        state.worker.phoneVerified = true;
+        state.user.phoneVerified = true;
+        state.worker.active = true;
+        save();
+        track("otp_verified");
+        if (phoneUpdatePending) { phoneUpdatePending = false; toast("Phone number updated OK"); show("accountSettings"); return; }
+        routeAfterOtp();
+      } catch (error) {
+        console.warn("OTP verification failed:", error);
+        toast(error.message || "Something went wrong. Please try again.");
+      }
       return;
     }
     if (event.target.closest("[data-change-number]")) { show("otp"); return; }
