@@ -922,7 +922,9 @@
     .pipeline { display: grid; gap: 9px; margin-top: 14px; }
     .pipeline-row { display: grid; grid-template-columns: 92px 1fr 44px; gap: 10px; align-items: center; color: var(--muted); font-size: 12px; font-weight: 900; }
     .pipeline-row em { font-style: normal; }
-    .bar { height: 9px; border-radius: 999px; background: #e8eef6; overflow: hidden; }
+    .bar { height: 9px; border-radius: 999px; background: #e8eef6; overflow: visible; position: relative; }
+    .bar span { display: block; height: 100%; border-radius: inherit; background: var(--green); transition: width .22s ease; }
+    .bar-star { position: absolute; top: 50%; transform: translate(-50%, -50%); font-size: 14px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(6,20,47,.16)); }
     .bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--green), var(--blue)); }
     .investor-note { border: 1px solid rgba(20, 87, 200, .13); background: linear-gradient(180deg, #fff, #f8fbff); border-radius: 20px; padding: 15px; margin-top: 14px; box-shadow: 0 10px 28px rgba(6, 20, 47, .06); }
     .investor-note b { display: block; color: var(--ink); margin-bottom: 6px; }
@@ -972,6 +974,8 @@
     .typing { align-self: flex-start; color: var(--muted); font-size: 13px; font-weight: 850; padding: 4px 8px; }
     .new-msg-indicator { align-self: center; border: 1px solid var(--line); background: #fff; color: var(--green-dark); border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 950; }
     .msg a { color: inherit; font-weight: 950; }
+    #chat .header [data-report="chat"] { color: var(--red); }
+    #chat .header [data-report="chat"] svg { stroke: currentColor; }
     @keyframes msgIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     .conversation-row .unread { min-width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; background: var(--green); color: #fff; font-size: 11px; font-weight: 950; }
     .quick { position: absolute; left: 22px; right: 22px; bottom: 66px; display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding: 2px 0 8px; scrollbar-width: none; }
@@ -1113,8 +1117,8 @@
       <div class="hero-visual" aria-hidden="true">
         <div class="work-scene">
           <div class="scene-panel">
-            <b>Clerk job matched</b>
-            <small>Delhi - 2 km away</small>
+            <b id="heroJobTitle">Clerk job matched</b>
+            <small id="heroJobMeta">Delhi - 2 km away</small>
             <div class="scene-list mt"><span class="scene-line"></span><span class="scene-line short"></span></div>
           </div>
           <div class="scene-panel scene-map"></div>
@@ -1133,7 +1137,7 @@
     <section id="otp" class="screen">
       <div class="header"><button class="icon" data-go="landing"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title" data-i18n="enter_phone">Enter your phone number</h1>
-      <p class="sub">We will send a one-time password by SMS. This keeps your account safe and helps employers trust real people.</p>
+      <p class="sub">We will send a one-time password by SMS. This keeps your account safe and helps build trust for everyone on Kaam Karo.</p>
       <label class="input mt"><span class="prefix">+91</span><input id="phoneInput" inputmode="tel" maxlength="10" placeholder="0000000000"></label>
       <p class="small center mt">We'll never share your number.</p>
       <div class="safe-note"><b>Safe</b><span>No spam. No public sharing. Your number is only used for login and trusted job updates.</span></div>
@@ -1144,8 +1148,8 @@
     <section id="otpCode" class="screen">
       <div class="header"><button class="icon" data-go="otp"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div></div>
       <h1 class="title">Enter OTP</h1>
-      <p class="sub">We sent a 6 digit code to <b id="otpPhoneText">+91 98765 43210</b>.</p>
-      <label class="input mt"><input id="otpInput" inputmode="numeric" maxlength="6" placeholder="Enter 6 digit OTP"></label>
+      <p class="sub">We sent a 4 digit code to <b id="otpPhoneText">+91 98765 43210</b>.</p>
+      <label class="input mt"><input id="otpInput" inputmode="numeric" maxlength="4" placeholder="Enter 4 digit OTP"></label>
       <button class="btn primary mt" data-verify-otp data-i18n="verify_otp">Verify & continue</button>
       <div class="btn-row mt">
         <button class="btn outline" data-change-number>Change number</button>
@@ -1179,7 +1183,7 @@
       <div class="header"><button class="icon" data-go="workerBasic"><svg><use href="#i-back"></use></svg></button><div class="brand"><img class="brand-logo compact" src="assets/kaam-karo-logo.jpg" alt="Kaam Karo"></div><span class="small">2/5</span></div>
       <div class="progress"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
       <h1 class="title" data-i18n="job_type">Job type</h1>
-      <p class="sub">Choose ONE type of job you're looking for.</p>
+      <p class="sub">Choose up to TWO types of job you're looking for.</p>
       <div class="search mt"><svg><use href="#i-search"></use></svg><input id="workSearch" placeholder="Search job title, e.g. clerk, driver, cashier, helper..."></div>
       <button class="btn outline mt" data-add-job-type>+ Add Role</button>
       <div class="panel mt">
@@ -1275,8 +1279,6 @@
       <h1 class="title">Application sent</h1>
       <p class="sub center">We'll notify you when the employer views your profile.</p>
       <div class="steps"><div class="step"><b>1</b>Your application appears in the employer dashboard.</div><div class="step"><b>2</b>Employer accepts or rejects.</div><div class="step"><b>3</b>Accepted = match + chat.</div></div>
-      <button class="btn primary" data-go="jobs">Back to jobs</button>
-      <button class="btn outline mt" data-go="applications">View applications</button>
     </section>
 
     <section id="chat" class="screen">
@@ -1302,7 +1304,7 @@
       <div class="header"><button class="icon" data-go="role"><svg><use href="#i-back"></use></svg></button><span class="tag">Business</span></div>
       <h1 class="title">Set up your business</h1>
       <p class="sub">This helps workers trust your job posts.</p>
-      <label class="input mt"><input id="businessName" placeholder="e.g. Sharma Retail Store"></label>
+      <label class="input mt"><input id="businessName" placeholder="Business Name"></label>
       <label class="input mt"><input id="contactName" placeholder="Your Name, e.g. Ramesh Sharma"></label>
       <label class="input mt"><span class="prefix">+91</span><input id="businessPhone" placeholder="Auto-filled phone"></label>
       <label class="input mt"><select id="businessType"><option value="">Business type optional</option><option>Retail Shop</option><option>Office</option><option>Restaurant</option><option>Warehouse</option><option>Construction</option><option>Other</option></select></label>
@@ -1313,7 +1315,7 @@
     <section id="employerDash" class="screen">
       <div class="header"><button class="icon" data-go="menu"><svg><use href="#i-menu"></use></svg></button><div><b>Hiring Command Center</b><p class="small">Applications, jobs and matches</p></div><button class="icon" data-go="notifications"><svg><use href="#i-bell"></use></svg></button></div>
       <div class="dash"><div class="dash-top"><div><div class="dash-eyebrow">Rick's active hiring</div><h2 class="dash-title" id="dashTitle">0 applicants waiting</h2></div><span class="dash-badge">Live</span></div><p>Accept good workers to create a match and open chat.</p><div class="dash-actions"><button class="btn primary" data-go="postJob"><svg><use href="#i-plus"></use></svg> Post job</button><button class="btn outline" data-go="employerJobDetail"><svg><use href="#i-users"></use></svg> View applicants</button></div></div>
-      <div class="metric-grid"><div class="metric-card"><span>Interested</span><b id="metricInterested">0</b><small>new applications</small></div><div class="metric-card"><span>Accepted</span><b id="metricAccepted">0</b><small>matched workers</small></div><div class="metric-card"><span>Open Jobs</span><b id="metricJobs">1</b><small>ready to hire</small></div><div class="metric-card"><span>Trust</span><b>New</b><small>employer badge</small></div></div>
+      <div class="metric-grid"><div class="metric-card" data-dashboard-target="new"><span>Interested</span><b id="metricInterested">0</b><small>new applications</small></div><div class="metric-card" data-dashboard-target="accepted"><span>Accepted</span><b id="metricAccepted">0</b><small>matched workers</small></div><div class="metric-card" data-go="employerJobs"><span>Open Jobs</span><b id="metricJobs">1</b><small>ready to hire</small></div><div class="metric-card" data-go="employerProfile"><span>Trust</span><b>New</b><small>employer badge</small></div></div>
       <div class="list" id="dashJobs"></div>
     </section>
 
@@ -1333,7 +1335,7 @@
     <section id="postJob" class="screen">
       <div class="header"><button class="icon" data-go="employerDash"><svg><use href="#i-back"></use></svg></button><span class="tag">Post Job</span></div>
       <h1 class="title">Post a job</h1>
-      <label class="input"><input id="postTitle" placeholder="e.g. Shop Assistant, Delivery Driver, Office Clerk"></label>
+      <label class="input"><input id="postTitle" placeholder="Chef, Nurse, Accountant, Driver"></label>
       <div class="amount-row mt">
         <label class="input"><span class="prefix">Rs</span><input id="postPayAmount" inputmode="numeric" placeholder="12000"></label>
         <label class="input"><select id="postPayPeriod"><option>Per Month</option><option>Per Day</option><option>Per Week</option><option>Per Year</option></select></label>
@@ -1351,8 +1353,8 @@
           <button class="chip" data-desc-chip="location">Workplace location details</button>
           <button class="chip" data-desc-chip="tools">Any tools or uniform required</button>
         </div>
-        <span id="postDescCounter" class="desc-counter">0 / 700 characters - 25 words minimum</span>
-        <span id="postDescError" class="desc-error">Please add at least 25 words so workers understand the job clearly.</span>
+        <span id="postDescCounter" class="desc-counter">0 / 15 words minimum</span>
+        <span id="postDescError" class="desc-error">Please add at least 15 words so workers understand the job clearly.</span>
       </div>
       <button class="btn primary mt" data-review-job>Continue</button>
     </section>
@@ -1394,7 +1396,8 @@
     <section id="profile" class="screen">
       <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><h3>Worker Profile</h3><span class="tag">Find Work</span></div>
       <div class="panel profile-hero"><span class="avatar" id="workerAvatar">AL</span><span class="grow"><h2 id="profileName">Aman Lalh</h2><p id="profileMeta">Delhi</p><p class="small">Available for work - Last active today</p></span></div>
-      <div class="panel profile-strength"><div class="review-row"><span>Profile Strength</span><b id="profileStrengthText">0%</b></div><div class="bar"><span id="profileStrengthBar" style="width:0%"></span></div><div id="photoBadgeSlot" class="mt"></div></div>
+      <div class="panel profile-strength"><div class="review-row"><span>Profile Strength</span><b id="profileStrengthText">0%</b></div><div class="bar"><span id="profileStrengthBar" style="width:0%"></span><em id="profileStrengthStar" class="bar-star" style="left:0%">★</em></div><div id="photoBadgeSlot" class="mt"></div></div>
+      <button class="switch-cta mt" data-switch-mode="employer"><svg><use href="#i-briefcase"></use></svg> <span id="workerSwitchCta">Switch to Hiring</span></button>
       <div class="toolbar" id="profileBadges"><span class="badge">Phone Verified</span><span class="badge blue">Profile Complete</span></div>
       <div class="section-label">Work Profile</div>
       <button class="profile-card" data-edit-profile="workerLocation"><span><span>Location</span><b id="workerProfileLocationText">Based in Brisbane, available for nearby opportunities</b></span><i class="arrow">></i></button>
@@ -1402,7 +1405,6 @@
       <button class="profile-card" data-edit-profile="workerWork"><span><span>Work Preferences</span><b id="workerProfileWorkText">Open to full-time and part-time roles</b></span><i class="arrow">></i></button>
       <button class="profile-card" data-edit-profile="workerAvailability"><span><span>Availability</span><b id="workerProfileAvailabilityText">Available weekdays and weekend shifts</b></span><i class="arrow">></i></button>
       <button class="profile-card" data-edit-profile="workerSkills"><span><span>Skills</span><b id="workerProfileSkillsText">Cash handling, Data entry</b></span><i class="arrow">></i></button>
-      <button class="switch-cta mt" data-switch-mode="employer"><svg><use href="#i-briefcase"></use></svg> <span id="workerSwitchCta">Switch to Hiring</span></button>
       <div class="section-label">Settings</div>
       <div class="settings-list">
         <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">></i></button>
@@ -1416,6 +1418,7 @@
       <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><h3>Employer Profile</h3><span class="tag">Hiring</span></div>
       <div class="panel profile-hero"><span class="avatar" id="employerAvatar">RS</span><span class="grow"><h2 id="employerProfileName">Rick Retail Store</h2><p id="employerProfileMeta">Brisbane</p></span></div>
       <div class="toolbar" id="employerProfileBadges"><span class="badge blue">New Employer</span><span class="badge">Phone Verified</span></div>
+      <button class="switch-cta mt" data-switch-mode="worker"><svg><use href="#i-user"></use></svg> <span id="employerSwitchCta">Switch to Job Search</span></button>
       <div class="section-label">Business Profile</div>
       <button class="profile-card" data-edit-profile="businessName"><span><span>Business Name</span><b id="employerBusinessText">Rick Retail Store</b></span><i class="arrow">></i></button>
       <button class="profile-card" data-edit-profile="contactPerson"><span><span>Contact Person</span><b id="employerContactText">Rick Sharma</b></span><i class="arrow">></i></button>
@@ -1425,7 +1428,6 @@
         <div class="metric-card"><span>Active Jobs</span><b id="employerOpenJobsView">1</b></div>
         <div class="metric-card"><span>Total Applicants</span><b id="employerApplicantStatsView">0</b></div>
       </div>
-      <button class="switch-cta mt" data-switch-mode="worker"><svg><use href="#i-user"></use></svg> <span id="employerSwitchCta">Switch to Job Search</span></button>
       <div class="section-label">Settings</div>
       <div class="settings-list">
         <button class="settings-card" data-go="accountSettings"><span><span>Account</span><b>Account Settings</b></span><i class="arrow">></i></button>
@@ -1511,10 +1513,12 @@
         <button class="list-row" data-report-reason="Asking for money"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Asking for money</span></button>
         <button class="list-row" data-report-reason="Wrong salary"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Wrong salary</span></button>
         <button class="list-row" data-report-reason="Unsafe work"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Unsafe work</span></button>
+        <button class="list-row" data-report-reason="Sexual content"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Sexual content</span></button>
         <button class="list-row" data-report-reason="Adult service"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Adult service</span></button>
         <button class="list-row" data-report-reason="Drugs"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Drugs</span></button>
         <button class="list-row" data-report-reason="Weapons"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Weapons</span></button>
         <button class="list-row" data-report-reason="Harassment"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Harassment</span></button>
+        <button class="list-row" data-report-reason="Abusive language"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Abusive language</span></button>
         <button class="list-row" data-report-reason="Illegal work"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Illegal work</span></button>
         <button class="list-row" data-report-reason="Other"><span class="tiny"><svg><use href="#i-flag"></use></svg></span><span class="grow">Other</span></button>
       </div>
@@ -1552,6 +1556,10 @@
       var reportContext = "general";
       var selectedReportJobId = null;
       var selectedConversationId = null;
+      var applicationsTab = "applied";
+      var applicantsTab = "new";
+      var chatListTab = "all";
+      var selectedReportReason = "";
       var editingProfileField = "";
       var editDraft = {};
       var editDirty = false;
@@ -1596,6 +1604,9 @@
       if (!Array.isArray(state.jobs) || !state.jobs.length) state.jobs = cloneJobs();
       state.applications = Array.isArray(state.applications) ? state.applications : [];
       state.auditLogs = state.auditLogs || [];
+      state.moderationLogs = state.moderationLogs || [];
+      state.ratings = state.ratings || [];
+      state.blockedPairs = state.blockedPairs || [];
       state.conversations = state.conversations || [];
       state.messages = state.messages || [];
       state.notifications = state.notifications || [];
@@ -1653,7 +1664,11 @@
         job.reportCount = job.reportCount || 0;
         job.flagReasons = job.flagReasons || [];
         job.riskScore = job.riskScore || 0;
+        job.createdAt = job.createdAt || (Date.now() - 86400000);
+        job.expiresAt = job.expiresAt || (job.visibility === "boost" ? job.createdAt + 29 * 86400000 : job.createdAt + 15 * 86400000);
+        if ((job.status || "approved") === "approved" && Date.now() > job.expiresAt) job.status = "Expired";
       });
+      state.jobs = state.jobs.filter(function (job) { return !job.expiresAt || Date.now() < job.expiresAt + 60 * 86400000; });
       if (!state.jobs.some(function (job) { return (job.status || "approved") === "approved"; })) {
         state.jobs = cloneJobs().concat(state.jobs);
       }
@@ -1701,6 +1716,73 @@
       function audit(action, reason, job, userId) {
         state.auditLogs.unshift({ userId: userId || "admin-001", action: action, reason: reason, jobSnapshot: job ? snapshotJob(job) : null, timestamp: new Date().toISOString() });
         state.auditLogs = state.auditLogs.slice(0, 50);
+        save();
+      }
+      function renderHeroDynamicCard() {
+        if (!byId("heroJobTitle") || !byId("heroJobMeta")) return;
+        var titles = ["Chef","Driver","Electrician","Accountant","Nurse","Office Clerk","Retail Helper","Delivery Partner","Cleaner","Welder"];
+        var cities = ["Delhi","Punjab","Kerala","Hyderabad","Pune","Surat","Chandigarh","Kochi","Amritsar","Jaipur"];
+        var seed = Math.floor(Date.now() / 1000);
+        byId("heroJobTitle").textContent = titles[seed % titles.length] + " job matched";
+        byId("heroJobMeta").textContent = cities[(seed + 3) % cities.length] + " - " + ((seed % 10) + 1) + " km away";
+      }
+      function parseLocationParts(value) {
+        var text = String(value || "").trim();
+        var city = displayCity(text);
+        var map = {
+          chandigarh: { city: "Chandigarh", district: "Chandigarh", state: "Chandigarh", formatted_location: "Chandigarh" },
+          balachaur: { city: "Balachaur", district: "Nawanshahr", state: "Punjab", formatted_location: "Balachaur, Punjab" },
+          delhi: { city: "Delhi", district: "Delhi", state: "Delhi", formatted_location: "Delhi" },
+          pune: { city: "Pune", district: "Pune", state: "Maharashtra", formatted_location: "Pune, Maharashtra" },
+          kochi: { city: "Kochi", district: "Ernakulam", state: "Kerala", formatted_location: "Kochi, Kerala" },
+          hyderabad: { city: "Hyderabad", district: "Hyderabad", state: "Telangana", formatted_location: "Hyderabad, Telangana" },
+          amritsar: { city: "Amritsar", district: "Amritsar", state: "Punjab", formatted_location: "Amritsar, Punjab" },
+          surat: { city: "Surat", district: "Surat", state: "Gujarat", formatted_location: "Surat, Gujarat" }
+        };
+        return map[city.toLowerCase()] || { city: city, district: "", state: "", formatted_location: city };
+      }
+      function disconnectMatch(convo, removeChat) {
+        if (!convo) return;
+        state.applications = state.applications.filter(function (app) { return !(app.jobId === convo.jobId && app.workerId === convo.workerId); });
+        if (removeChat !== false) {
+          state.conversations = state.conversations.filter(function (c) { return c.id !== convo.id; });
+          state.messages = state.messages.filter(function (m) { return m.conversationId !== convo.id; });
+        } else {
+          convo.status = "closed";
+        }
+        selectedConversationId = null;
+        save();
+      }
+      function hideChatForCurrentUser(convo) {
+        if (!convo) return;
+        if (currentRole === "employer") {
+          convo.deletedForEmployer = convo.deletedForEmployer || [];
+          if (convo.deletedForEmployer.indexOf(currentUserId()) < 0) convo.deletedForEmployer.push(currentUserId());
+        } else {
+          convo.deletedForWorker = convo.deletedForWorker || [];
+          if (convo.deletedForWorker.indexOf(currentUserId()) < 0) convo.deletedForWorker.push(currentUserId());
+        }
+        save();
+      }
+      function expireInactiveMatches() {
+        var cutoff = Date.now() - 12 * 86400000;
+        var expired = state.conversations.filter(function (convo) {
+          return convo.status === "active" && (convo.lastActivityAt || convo.updatedAt || convo.createdAt || 0) < cutoff;
+        });
+        expired.forEach(function (convo) { disconnectMatch(convo); });
+      }
+      function markHiredConversation(convo) {
+        if (!convo) return;
+        convo.status = "hired";
+        convo.updatedAt = Date.now();
+        convo.lastActivityAt = Date.now();
+        var hiredApp = state.applications.find(function (a) { return a.jobId === convo.jobId && a.workerId === convo.workerId; });
+        if (hiredApp) hiredApp.status = "Hired";
+        var now = Date.now();
+        var text = "Hired! Employer has marked this job as hired.";
+        state.messages.push({ id: "msg-" + now + "-hired", conversationId: convo.id, senderId: "rick", text: text, createdAt: now, status: "delivered", deliveryStatus: "delivered", flaggedRisk: false });
+        convo.lastMessage = text;
+        state.ratings.push({ id: "rating-pending-" + now, jobId: convo.jobId, workerId: convo.workerId, employerId: convo.employerId, status: "pending", createdAt: now, showAfter: now + 6 * 3600000 });
         save();
       }
       function t(key) { return copy[currentLang] && copy[currentLang][key] ? copy[currentLang][key] : (copy.en && copy.en[key] ? copy.en[key] : key); }
@@ -1917,7 +1999,7 @@
         }).join("");
         var any = document.querySelector("[data-any-job]");
         if (any) any.classList.toggle("selected", state.worker.preferredJob === "Any Job");
-        if (byId("jobTypeCounter")) byId("jobTypeCounter").textContent = (state.worker.jobTypes || []).length ? "1 selected" : "Show all on";
+        if (byId("jobTypeCounter")) byId("jobTypeCounter").textContent = (state.worker.jobTypes || []).length ? state.worker.jobTypes.length + "/2 selected" : "Show all on";
         if (byId("selectedJobTypes")) {
           var base = state.worker.preferredJob === "Any Job" ? '<button class="chip selected" data-any-job>Show All Jobs</button>' : "";
           var selectedTypes = (state.worker.jobTypes || []).map(function (type) {
@@ -1957,18 +2039,18 @@
         var desc = byId("postDesc");
         if (!desc) return;
         var words = descriptionWordCount(desc.value);
-        if (byId("postDescCounter")) byId("postDescCounter").textContent = desc.value.length + " / 700 characters - 25 words minimum";
-        if (byId("postDescError")) byId("postDescError").style.display = words > 0 && words < 25 ? "block" : "none";
+        if (byId("postDescCounter")) byId("postDescCounter").textContent = words + " / 15 words minimum";
+        if (byId("postDescError")) byId("postDescError").style.display = words > 0 && words < 15 ? "block" : "none";
       }
       function addDescriptionSentence(kind) {
         var desc = byId("postDesc");
         if (!desc) return;
         var suggestions = {
-          tasks: "Daily tasks include helping with customer service, stock handling, and supporting the team during busy hours.",
-          shift: "Shift timing can be flexible and will be discussed with the selected worker.",
-          experience: "Previous experience is helpful but not required. Training can be provided.",
-          location: "Workplace location details will be shared clearly before joining, including reporting point and nearby landmarks.",
-          tools: "Any tools, uniform, or required documents will be explained before the worker accepts the job. Must have Degree in Business management."
+          tasks: "Daily tasks include helping customers, handling basic work, keeping the area clean, and supporting the team during busy hours.",
+          shift: "Shift timing and working days will be discussed clearly before the worker starts the job.",
+          experience: "Previous experience is preferred, but training can be provided if the worker is reliable and willing to learn.",
+          location: "Exact workplace location and reporting instructions will be shared after the applicant is accepted.",
+          tools: "Any uniform, tools, or special requirements will be explained before the first working day."
         };
         var sentence = suggestions[kind] || "";
         if (!sentence) return;
@@ -1995,8 +2077,11 @@
       function addWorkerJobType(type) {
         var value = String(type || "").trim();
         if (!value) return;
-        state.worker.jobTypes = [value];
-        state.worker.preferredJob = value;
+        state.worker.jobTypes = state.worker.jobTypes || [];
+        if (state.worker.jobTypes.indexOf(value) >= 0) return;
+        if (state.worker.jobTypes.length >= 2) return toast("Choose up to two job types.");
+        state.worker.jobTypes.push(value);
+        state.worker.preferredJob = state.worker.jobTypes.join(" / ");
         if (byId("workSearch")) byId("workSearch").value = "";
         save();
         renderCategories();
@@ -2167,6 +2252,9 @@
         recordSwipe(true);
         setTimeout(function () { toast("Employer will review your profile"); }, 500);
         show("applied");
+        setTimeout(function () {
+          if (currentScreen === "applied") show("jobs");
+        }, 5000);
       }
       function nextJob() {
         var list = filteredJobs(byId("jobSearch") ? byId("jobSearch").value : "");
@@ -2192,26 +2280,35 @@
         }).join("");
       }
       function renderWorkerApplications() {
-        var apps = state.applications.filter(function (a) { return a.workerId === state.worker.id; });
-        byId("matchedTag").textContent = apps.filter(function (a) { return ["Accepted","Matched","Hired"].indexOf(a.status) >= 0; }).length + " matched";
-        byId("workerApplications").innerHTML = apps.length ? apps.map(function (app) {
-          var job = state.jobs.find(function (j) { return j.id === app.jobId; });
+        var allApps = state.applications.filter(function (a) { return a.workerId === state.worker.id; });
+        var matchedApps = allApps.filter(function (a) { return ["Accepted","Matched"].indexOf(a.status) >= 0; });
+        var appliedApps = allApps.filter(function (a) { return ["Interested","Viewed"].indexOf(a.status) >= 0; });
+        var apps = applicationsTab === "matched" ? matchedApps : appliedApps;
+        byId("matchedTag").textContent = matchedApps.length + " matched";
+        var tabs = '<div class="toolbar"><button class="chip ' + (applicationsTab === "applied" ? "selected" : "") + '" data-applications-tab="applied">Applied</button><button class="chip ' + (applicationsTab === "matched" ? "selected" : "") + '" data-applications-tab="matched">Matched</button></div>';
+        byId("workerApplications").innerHTML = tabs + (apps.length ? apps.map(function (app) {
+          var job = state.jobs.find(function (j) { return j.id === app.jobId; }) || { title: "Job", employer: "Employer", pay: "", city: "" };
           var convo = conversationForApp(app);
-          return '<div class="list-row"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.employer + ' - ' + job.pay + '<br>' + (app.status === "Viewed" ? "Employer viewed your profile" : "Employer will review your profile") + '</span></span><span class="status-pill status-' + app.status.toLowerCase() + '">' + app.status + '</span>' + (chatAllowed(app) && convo ? '<button class="icon" data-open-conversation="' + convo.id + '"><svg><use href="#i-message"></use></svg></button>' : '') + '</div>';
-        }).join("") : '<div class="panel small">No applications yet. Swipe right on a job to apply.</div>';
+          var statusText = applicationsTab === "matched" ? "Matched" : "Waiting for employer";
+          var action = applicationsTab === "matched" ? '<button class="icon" data-remove-match="' + app.id + '"><svg><use href="#i-trash"></use></svg></button>' : '<button class="icon" data-withdraw-app="' + app.id + '"><svg><use href="#i-x"></use></svg></button>';
+          return '<div class="list-row"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.pay + ' - ' + job.city + '<br>Status: ' + statusText + '</span></span><span class="status-pill status-' + app.status.toLowerCase() + '">' + (applicationsTab === "matched" ? "Matched" : "Waiting") + '</span>' + (applicationsTab === "matched" && convo ? '<button class="icon" data-open-conversation="' + convo.id + '"><svg><use href="#i-message"></use></svg></button>' : '') + action + '</div>';
+        }).join("") : '<div class="panel small">' + (applicationsTab === "matched" ? "No matched jobs yet." : "No applications yet. Swipe right on a job to apply.") + '</div>');
       }
       function appForSelected() { return state.applications.find(function (a) { return a.jobId === selectedJobId && a.workerId === selectedWorkerId; }); }
       function statusClass(status) { return "status-" + String(status || "Interested").toLowerCase(); }
       function renderApplicantCard(app) {
-        var job = state.jobs.find(function (j) { return j.id === app.jobId; });
+        var job = state.jobs.find(function (j) { return j.id === app.jobId; }) || { id: app.jobId, title: "Job" };
         var w = state.worker;
-        return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' - ' + w.city + ' - ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span><div class="mt">' + workerPhotoBadgeHtml() + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span><div class="applicant-actions"><button class="reject-btn" data-reject-app="' + app.id + '">X</button><button class="accept-btn" data-accept-app="' + app.id + '">Accept</button></div></div>';
+        var convo = conversationForApp(app);
+        var pending = ["Interested","Viewed"].indexOf(app.status) >= 0;
+        var actions = pending ? '<div class="applicant-actions"><button class="reject-btn" data-reject-app="' + app.id + '">X</button><button class="accept-btn" data-accept-app="' + app.id + '">Accept</button></div>' : '<div class="applicant-actions">' + (convo ? '<button class="accept-btn" data-open-conversation="' + convo.id + '">Chat</button>' : '') + '<button class="reject-btn" data-remove-accepted-app="' + app.id + '"><svg><use href="#i-trash"></use></svg></button></div>';
+        return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' - ' + w.city + ' - ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span><div class="mt">' + workerPhotoBadgeHtml() + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span>' + actions + '</div>';
       }
       function renderEmployer() {
         if (!hasEmployerProfile()) return;
         var apps = state.applications;
-        var interested = apps.filter(function (a) { return a.status === "Interested"; }).length;
-        var accepted = apps.filter(function (a) { return ["Accepted","Matched","Hired"].indexOf(a.status) >= 0; }).length;
+        var interested = apps.filter(function (a) { return ["Interested","Viewed"].indexOf(a.status) >= 0; }).length;
+        var accepted = apps.filter(function (a) { return ["Accepted","Matched"].indexOf(a.status) >= 0; }).length;
         byId("dashTitle").textContent = interested ? interested + " applicants waiting" : "No applicants yet";
         byId("metricInterested").textContent = interested;
         byId("metricAccepted").textContent = accepted;
@@ -2224,11 +2321,13 @@
         byId("jobDetailTitle").textContent = job.title;
         byId("jobDetailPay").textContent = job.pay;
         byId("jobDetailMeta").textContent = job.city + " - " + job.type + " - " + job.employer;
-        var jobApps = apps.filter(function (a) { return a.jobId === job.id; });
-        byId("applicantList").innerHTML = jobApps.length ? jobApps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants yet. The feed will keep showing this job to relevant workers.</div>';
-        byId("allApplicants").innerHTML = apps.length ? apps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants yet.</div>';
+        var jobApps = apps.filter(function (a) { return a.jobId === job.id && (applicantsTab === "accepted" ? ["Accepted","Matched"].indexOf(a.status) >= 0 : ["Interested","Viewed"].indexOf(a.status) >= 0); });
+        var applicantTabs = '<div class="toolbar"><button class="chip ' + (applicantsTab === "new" ? "selected" : "") + '" data-applicants-tab="new">New</button><button class="chip ' + (applicantsTab === "accepted" ? "selected" : "") + '" data-applicants-tab="accepted">Accepted</button></div>';
+        byId("applicantList").innerHTML = applicantTabs + (jobApps.length ? jobApps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants in this tab yet.</div>');
+        var tabApps = apps.filter(function (a) { return applicantsTab === "accepted" ? ["Accepted","Matched"].indexOf(a.status) >= 0 : ["Interested","Viewed"].indexOf(a.status) >= 0; });
+        byId("allApplicants").innerHTML = applicantTabs + (tabApps.length ? tabApps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants in this tab yet.</div>');
         byId("talentCount").textContent = apps.length + " applicants";
-        byId("employerJobsList").innerHTML = state.jobs.map(function (j) { return '<button class="list-row" data-job-detail="' + j.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' - ' + j.city + '</span></span><span class="status-text">Open</span></button>'; }).join("");
+        byId("employerJobsList").innerHTML = state.jobs.map(function (j) { return '<div class="list-row"><button class="grow" data-job-detail="' + j.id + '" style="border:0;background:transparent;text-align:left;color:inherit;padding:0"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' - ' + j.city + '</span></button><span class="status-text">' + ((j.status || "approved") === "Expired" ? "Expired" : "Open") + '</span><button class="icon" data-repost-job="' + j.id + '"><svg><use href="#i-plus"></use></svg></button><button class="icon" data-delete-job="' + j.id + '"><svg><use href="#i-trash"></use></svg></button></div>'; }).join("");
       }
       function renderFullWorkerProfile() {
         var w = state.worker;
@@ -2251,6 +2350,12 @@
         if (byId("employerContactText")) byId("employerContactText").textContent = business ? business.contactPersonName : (state.user.displayName || "Contact person");
         if (byId("employerLocationText")) byId("employerLocationText").textContent = "Based in " + (business ? (business.city || state.user.city || "your city") : (state.user.city || "your city"));
         if (byId("employerTypeText")) byId("employerTypeText").textContent = business ? (business.type || "Business") : "Not set";
+        if (byId("employerProfileBadges")) {
+          var createdAt = business ? (business.createdAt || Date.now()) : Date.now();
+          var ageDays = (Date.now() - createdAt) / 86400000;
+          var badge = ageDays > 180 ? "Verified Employer" : (ageDays > 90 ? "Trusted" : (ageDays > 30 ? "Active" : "New Employer"));
+          byId("employerProfileBadges").innerHTML = '<span class="badge blue">' + badge + '</span><span class="badge">Phone Verified</span>';
+        }
         byId("employerOpenJobsView").textContent = state.jobs.length;
         if (byId("employerApplicantStatsView")) byId("employerApplicantStatsView").textContent = state.applications.length;
       }
@@ -2447,13 +2552,17 @@
       }
       function chatAllowed(app) { return app && ["Accepted","Matched","Hired"].indexOf(app.status) >= 0; }
       function conversationForApp(app) { return app ? state.conversations.find(function (c) { return c.jobId === app.jobId && c.workerId === app.workerId; }) : null; }
+      function isChatHidden(convo) {
+        var list = currentRole === "employer" ? (convo.deletedForEmployer || []) : (convo.deletedForWorker || []);
+        return list.indexOf(currentUserId()) >= 0;
+      }
       function createConversation(app) {
         var existing = conversationForApp(app);
         if (existing) return existing;
         var job = state.jobs.find(function (j) { return j.id === app.jobId; }) || state.jobs[0];
         var now = Date.now();
         var starter = "Employer accepted your interest. You can now chat directly.";
-        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastMessage: starter, unreadWorker: 1, unreadEmployer: 0 };
+        var convo = { id: "conv-" + now, jobId: app.jobId, workerId: app.workerId, employerId: "rick", status: "active", createdAt: now, updatedAt: now, lastActivityAt: now, lastMessage: starter, unreadWorker: 1, unreadEmployer: 0, favouriteWorker: false, favouriteEmployer: false, deletedForWorker: [], deletedForEmployer: [] };
         state.conversations.unshift(convo);
         state.messages.push({ id: "msg-" + now + "-system", conversationId: convo.id, senderId: "rick", text: starter, createdAt: now, status: "delivered", deliveryStatus: "delivered", flaggedRisk: false });
         app.status = "Matched";
@@ -2469,6 +2578,21 @@
       }
       function riskText(text) {
         return ["registration fee","deposit","pay first","joining fee","send money","documents charge"].some(function (term) { return text.toLowerCase().indexOf(term) >= 0; });
+      }
+      function blockedSafetyReason(text) {
+        var value = String(text || "").toLowerCase();
+        var rules = [
+          { reason: "weapons", words: ["weapon","gun","pistol","knife","bomb","explosive"] },
+          { reason: "drugs", words: ["drug","cocaine","heroin","ganja","narcotic"] },
+          { reason: "sexual content", words: ["sex","sexual","prostitution","escort","adult service"] },
+          { reason: "harassment", words: ["harass","threat","kill","abuse","hate"] },
+          { reason: "scam or payment request", words: ["registration fee","deposit","pay first","joining fee","send money"] },
+          { reason: "illegal work", words: ["illegal","fake document","money laundering","betting"] }
+        ];
+        for (var i = 0; i < rules.length; i += 1) {
+          if (rules[i].words.some(function (word) { return value.indexOf(word) >= 0; })) return rules[i].reason;
+        }
+        return "";
       }
       function currentUserId() {
         return currentRole === "employer" ? "rick" : state.worker.id;
@@ -2546,16 +2670,20 @@
         document.querySelector("#chat .chat-input").style.display = "none";
         byId("chatTitle").textContent = "Chat";
         byId("chatSub").textContent = convos.length ? convos.length + " matched conversations" : "No conversations yet";
+        convos = convos.filter(function (convo) { return !isChatHidden(convo); });
+        if (chatListTab === "favourite") convos = convos.filter(function (convo) { return currentRole === "employer" ? convo.favouriteEmployer : convo.favouriteWorker; });
+        var tabs = '<div class="toolbar"><button class="chip ' + (chatListTab === "all" ? "selected" : "") + '" data-chat-tab="all">All</button><button class="chip ' + (chatListTab === "favourite" ? "selected" : "") + '" data-chat-tab="favourite">Favourite</button></div>';
         if (!convos.length) {
           var cta = currentRole === "employer" ? '<button class="btn primary" data-go="applicants">View applicants</button><button class="btn outline mt" data-go="postJob">Post job</button>' : '<button class="btn primary" data-go="jobs">Find jobs</button>';
-          byId("chatArea").innerHTML = '<div class="panel center"><h2>No conversations yet</h2><p class="small">Apply to jobs or accept applicants to start chatting.</p>' + cta + '</div>';
+          byId("chatArea").innerHTML = tabs + '<div class="panel center"><h2>No conversations yet</h2><p class="small">Apply to jobs or accept applicants to start chatting.</p>' + cta + '</div>';
           return;
         }
-        byId("chatArea").innerHTML = convos.map(function (convo) {
+        byId("chatArea").innerHTML = tabs + convos.map(function (convo) {
           var job = state.jobs.find(function (j) { return j.id === convo.jobId; }) || state.jobs[0];
           var unread = currentRole === "employer" ? convo.unreadEmployer : convo.unreadWorker;
           var status = convo.status === "hired" ? "Hired" : convo.status === "blocked" ? "Closed" : "Matched";
-          return '<button class="list-row conversation-row" data-open-conversation="' + convo.id + '"><span class="tiny"><svg><use href="#i-message"></use></svg></span><span class="grow"><b>' + conversationTitle(convo) + '</b><br><span class="small">' + job.title + ' - ' + job.city + '<br>' + (convo.lastMessage || "Start chat") + '</span></span><span><span class="badge blue">' + status + '</span>' + (unread ? '<span class="unread">' + unread + '</span>' : '') + '</span></button>';
+          var fav = chatListTab === "all" ? '<button class="icon" data-favourite-chat="' + convo.id + '">★</button>' : "";
+          return '<div class="list-row conversation-row"><button class="grow" data-open-conversation="' + convo.id + '" style="border:0;background:transparent;text-align:left;color:inherit;padding:0"><b>' + conversationTitle(convo) + '</b><br><span class="small">' + job.title + ' - ' + job.city + '<br>' + (convo.lastMessage || "Start chat") + '</span></button><span><span class="badge blue">' + status + '</span>' + (unread ? '<span class="unread">' + unread + '</span>' : '') + '</span>' + fav + '<button class="icon" data-delete-chat="' + convo.id + '"><svg><use href="#i-trash"></use></svg></button></div>';
         }).join("");
       }
       function renderActiveChat(convo) {
@@ -2564,12 +2692,13 @@
         var status = convo.status === "hired" ? "Hired" : convo.status === "blocked" ? "Closed" : "Matched";
         byId("chatTitle").textContent = conversationTitle(convo);
         byId("chatSub").textContent = job.title + " - " + status;
+        convo.lastActivityAt = Date.now();
         if (currentRole === "employer") convo.unreadEmployer = 0; else convo.unreadWorker = 0;
         save();
         var msgs = state.messages.filter(function (m) { return m.conversationId === convo.id; });
         var area = byId("chatArea");
         var wasAtBottom = !area || area.scrollHeight - area.scrollTop - area.clientHeight < 48;
-        area.innerHTML = renderChatMessages(convo, msgs) + (currentRole === "employer" && convo.status !== "hired" && convo.status !== "blocked" ? '<button class="btn outline" data-mark-hired>Mark as Hired</button>' : '') + (convo.status === "blocked" ? '<div class="panel small">This chat is blocked/closed. Messages are disabled.</div>' : '');
+        area.innerHTML = renderChatMessages(convo, msgs) + (currentRole === "employer" && convo.status !== "hired" && convo.status !== "blocked" ? '<button class="btn outline" data-mark-hired>Mark as Hired</button>' : '') + (convo.status === "hired" ? '<button class="btn outline" data-hire-again>Hire Again</button>' : '') + (convo.status === "blocked" ? '<div class="panel small">This chat is blocked/closed. Messages are disabled.</div>' : '');
         var quicks = currentRole === "employer" ? ["Can you join tomorrow?","Please share experience","Come for interview","Share availability"] : ["I am available","Available today","Can start immediately","What are the timings?","Please share location","What is the salary?"];
         document.querySelector("#chat .quick").style.display = convo.status === "blocked" ? "none" : "flex";
         document.querySelector("#chat .quick").innerHTML = quicks.map(function (q) { return '<button data-quick="' + q + '">' + q + '</button>'; }).join("");
@@ -2587,11 +2716,21 @@
         var convo = currentConversation();
         if (!convo) return toast("Chat unlocks after employer accepts.");
         if (convo.status === "blocked") return toast("This chat is blocked.");
+        if ((state.blockedPairs || []).some(function (pair) { return pair.conversationId === convo.id; })) return toast("This match is disconnected.");
+        var blockedReason = blockedSafetyReason(text);
+        if (blockedReason) {
+          state.moderationLogs.unshift({ senderId: currentUserId(), receiverId: currentRole === "employer" ? convo.workerId : convo.employerId, chatId: convo.id, messageText: text, reason: blockedReason, createdAt: new Date().toISOString() });
+          var count = state.moderationLogs.filter(function (log) { return log.senderId === currentUserId(); }).length;
+          save();
+          openModal("Message blocked for safety", '<p class="small">This message may break Kaam Karo safety rules. Please edit it before sending.</p>' + (count >= 3 ? '<p class="small"><b>Repeated unsafe messages may lead to account restriction.</b></p>' : '') + '<button class="btn primary mt" data-close-modal>Edit Message</button>');
+          return;
+        }
         var flagged = riskText(text);
         var msg = { id: "msg-" + Date.now(), conversationId: convo.id, senderId: currentRole === "employer" ? "rick" : state.worker.id, text: text, createdAt: Date.now(), status: "sent", deliveryStatus: "sent", flaggedRisk: flagged };
         state.messages.push(msg);
         convo.lastMessage = text;
         convo.updatedAt = Date.now();
+        convo.lastActivityAt = Date.now();
         if (currentRole === "employer") convo.unreadWorker += 1; else convo.unreadEmployer += 1;
         if (flagged) {
           notify("Suspicious message detected - review safety warning.", "chat");
@@ -2746,6 +2885,8 @@
           renderNotifications,
           renderJobReview,
           renderPostDescCounter,
+          expireInactiveMatches,
+          renderHeroDynamicCard,
           renderPublished,
           function () {
             var profileBadges = workerBadges();
@@ -2753,10 +2894,12 @@
             if (byId("profileMeta")) byId("profileMeta").textContent = state.worker.city || state.user.city || "Location not set";
             if (byId("workerAvatar")) byId("workerAvatar").textContent = initials(state.worker.name || state.user.displayName);
         if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
-            if (byId("profileStrengthText")) byId("profileStrengthText").textContent = profileStrength() + "%";
-            if (byId("profileStrengthBar")) byId("profileStrengthBar").style.width = profileStrength() + "%";
-            if (byId("workerSwitchCta")) byId("workerSwitchCta").textContent = hasEmployerProfile() ? "Switch to Hiring" : "Set up Hiring";
-            if (byId("employerSwitchCta")) byId("employerSwitchCta").textContent = hasWorkerProfile() ? "Switch to Job Search" : "Set up Job Search";
+            var strength = profileStrength();
+            if (byId("profileStrengthText")) byId("profileStrengthText").textContent = strength + "%";
+            if (byId("profileStrengthBar")) byId("profileStrengthBar").style.width = strength + "%";
+            if (byId("profileStrengthStar")) byId("profileStrengthStar").style.left = strength + "%";
+            if (byId("workerSwitchCta")) byId("workerSwitchCta").textContent = hasEmployerProfile() ? "Switch to Hiring" : "SETUP HIRING";
+            if (byId("employerSwitchCta")) byId("employerSwitchCta").textContent = hasWorkerProfile() ? "Switch to Job Search" : "SETUP JOB SEARCH";
             if (byId("workerProfileLocationText")) byId("workerProfileLocationText").textContent = workerLocationLine();
             if (byId("workerProfileExperienceText")) byId("workerProfileExperienceText").textContent = workerExperienceLine();
             if (byId("workerProfileWorkText")) byId("workerProfileWorkText").textContent = workerWorkLine();
@@ -2828,9 +2971,9 @@
         if (!period) return toast("Salary type required.");
         if (!city) return toast("Location required.");
         if (desc.length > 700) return toast("Job description must be 700 characters or less.");
-        if (descriptionWordCount(desc) < 25) {
+        if (descriptionWordCount(desc) < 15) {
           if (byId("postDescError")) byId("postDescError").style.display = "block";
-          return toast("Please add at least 25 words so workers understand the job clearly.");
+          return toast("Please add at least 15 words so workers understand the job clearly.");
         }
         if (byId("postDescError")) byId("postDescError").style.display = "none";
         return { title: title, pay: pay, city: city, desc: desc, type: byId("postType").value };
@@ -2857,7 +3000,9 @@
         }
         var status = moderation.reasons.length ? "pending_review" : "approved";
         var business = currentBusinessProfile();
-        var job = { id: "job-" + Date.now(), businessId: state.defaultBusinessId, employerId: state.worker.id, companyName: business.businessName, title: draft.title, pay: draft.pay, city: draft.city, distance: "Nearby", type: draft.type, employer: business.businessName, badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount() };
+        var postLocation = parseLocationParts(draft.city);
+        var created = Date.now();
+        var job = { id: "job-" + created, businessId: state.defaultBusinessId, employerId: state.worker.id, companyName: business.businessName, title: draft.title, pay: draft.pay, city: postLocation.city, district: postLocation.district, state: postLocation.state, formatted_location: postLocation.formatted_location, distance: "Nearby", type: draft.type, employer: business.businessName, badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount(), createdAt: created, expiresAt: created + (postVisibility === "boost" ? 29 : 15) * 86400000 };
         state.jobs.unshift(job);
         save();
         audit(status === "approved" ? "approved" : "pending_review", status === "approved" ? "Auto-approved" : moderation.reasons.join(", "), job, "system");
@@ -2918,6 +3063,11 @@
         var reportReason = event.target.closest("[data-report-reason]");
         if (reportReason) {
           var reason = reportReason.dataset.reportReason;
+          if (reportContext === "chat") {
+            selectedReportReason = reason;
+            openModal("Tell us what happened", '<label class="input"><textarea id="reportDetails" placeholder="Tell us what happened"></textarea></label><p class="small mt">Reporting this chat will disconnect this match and remove the conversation for both sides.</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn danger" data-confirm-report-disconnect>Report and Disconnect</button></div>');
+            return;
+          }
           if (reportContext === "job" && selectedReportJobId) {
             var reportedJob = state.jobs.find(function (job) { return job.id === selectedReportJobId; });
             if (reportedJob) {
@@ -2952,6 +3102,102 @@
         }
         var openConversation = event.target.closest("[data-open-conversation]");
         if (openConversation) { selectedConversationId = openConversation.dataset.openConversation; show("chat"); return; }
+        var dashboardTarget = event.target.closest("[data-dashboard-target]");
+        if (dashboardTarget) { applicantsTab = dashboardTarget.dataset.dashboardTarget; show("applicants"); return; }
+        var repostJob = event.target.closest("[data-repost-job]");
+        if (repostJob) {
+          var repost = state.jobs.find(function (job) { return job.id === repostJob.dataset.repostJob; });
+          if (repost) {
+            byId("postTitle").value = repost.title || "";
+            byId("postPayAmount").value = String(repost.pay || "").replace(/[^\d]/g, "");
+            byId("postLocation").value = repost.formatted_location || repost.city || "";
+            byId("postType").value = repost.type || "Full Time";
+            byId("postDesc").value = repost.desc || "";
+            renderPostDescCounter();
+            show("postJob");
+          }
+          return;
+        }
+        var deleteJob = event.target.closest("[data-delete-job]");
+        if (deleteJob) {
+          openModal("Delete this job?", '<p class="small">This job will be removed from the employer job list.</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn danger" data-confirm-delete-job="' + deleteJob.dataset.deleteJob + '">Delete</button></div>');
+          return;
+        }
+        var confirmDeleteJob = event.target.closest("[data-confirm-delete-job]");
+        if (confirmDeleteJob) {
+          state.jobs = state.jobs.filter(function (job) { return job.id !== confirmDeleteJob.dataset.confirmDeleteJob; });
+          state.applications = state.applications.filter(function (app) { return app.jobId !== confirmDeleteJob.dataset.confirmDeleteJob; });
+          save(); closeModal(); render(); return;
+        }
+        var appTab = event.target.closest("[data-applications-tab]");
+        if (appTab) { applicationsTab = appTab.dataset.applicationsTab; renderWorkerApplications(); return; }
+        var applicantTab = event.target.closest("[data-applicants-tab]");
+        if (applicantTab) { applicantsTab = applicantTab.dataset.applicantsTab; renderEmployer(); return; }
+        var chatTab = event.target.closest("[data-chat-tab]");
+        if (chatTab) { chatListTab = chatTab.dataset.chatTab; renderChat(); return; }
+        var favChat = event.target.closest("[data-favourite-chat]");
+        if (favChat) {
+          var favConvo = state.conversations.find(function (c) { return c.id === favChat.dataset.favouriteChat; });
+          if (favConvo) {
+            if (currentRole === "employer") favConvo.favouriteEmployer = true; else favConvo.favouriteWorker = true;
+            save(); renderChat(); toast("Added to favourites.");
+          }
+          return;
+        }
+        var deleteChat = event.target.closest("[data-delete-chat]");
+        if (deleteChat) {
+          openModal("Delete this chat?", '<p class="small">You will lose this conversation from your chat list.</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn danger" data-confirm-delete-chat="' + deleteChat.dataset.deleteChat + '">Delete Chat</button></div>');
+          return;
+        }
+        var confirmDeleteChat = event.target.closest("[data-confirm-delete-chat]");
+        if (confirmDeleteChat) {
+          var delConvo = state.conversations.find(function (c) { return c.id === confirmDeleteChat.dataset.confirmDeleteChat; });
+          hideChatForCurrentUser(delConvo);
+          closeModal();
+          renderChat();
+          return;
+        }
+        var withdrawApp = event.target.closest("[data-withdraw-app]");
+        if (withdrawApp) {
+          openModal("Withdraw this application?", '<p class="small">You will not be considered for this job anymore.</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn danger" data-confirm-withdraw-app="' + withdrawApp.dataset.withdrawApp + '">Withdraw</button></div>');
+          return;
+        }
+        var confirmWithdraw = event.target.closest("[data-confirm-withdraw-app]");
+        if (confirmWithdraw) {
+          state.applications = state.applications.filter(function (app) { return app.id !== confirmWithdraw.dataset.confirmWithdrawApp; });
+          save(); closeModal(); render(); return;
+        }
+        var removeMatch = event.target.closest("[data-remove-match]");
+        if (removeMatch) {
+          openModal("Leave this job?", '<p class="small">This will remove the match and delete the chat.</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn danger" data-confirm-remove-match="' + removeMatch.dataset.removeMatch + '">Remove Match</button></div>');
+          return;
+        }
+        var confirmRemoveMatch = event.target.closest("[data-confirm-remove-match]");
+        if (confirmRemoveMatch) {
+          var matchApp = state.applications.find(function (app) { return app.id === confirmRemoveMatch.dataset.confirmRemoveMatch; });
+          disconnectMatch(conversationForApp(matchApp));
+          closeModal(); render(); return;
+        }
+        var removeAccepted = event.target.closest("[data-remove-accepted-app]");
+        if (removeAccepted) {
+          openModal("Remove this applicant?", '<p class="small">This will disconnect the match and delete the chat for both sides.</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn danger" data-confirm-remove-accepted="' + removeAccepted.dataset.removeAcceptedApp + '">Remove Applicant</button></div>');
+          return;
+        }
+        var confirmRemoveAccepted = event.target.closest("[data-confirm-remove-accepted]");
+        if (confirmRemoveAccepted) {
+          var acceptedApp = state.applications.find(function (app) { return app.id === confirmRemoveAccepted.dataset.confirmRemoveAccepted; });
+          disconnectMatch(conversationForApp(acceptedApp));
+          closeModal(); render(); return;
+        }
+        if (event.target.closest("[data-confirm-report-disconnect]")) {
+          var reportConvo = currentConversation();
+          state.auditLogs.unshift({ userId: currentUserId(), action: "chat_reported", reason: selectedReportReason + ": " + ((byId("reportDetails") && byId("reportDetails").value) || ""), jobSnapshot: null, timestamp: new Date().toISOString() });
+          if (reportConvo) {
+            state.blockedPairs.push({ conversationId: reportConvo.id, workerId: reportConvo.workerId, employerId: reportConvo.employerId, reason: selectedReportReason, createdAt: Date.now() });
+            disconnectMatch(reportConvo);
+          }
+          closeModal(); toast("Report submitted."); show(currentRole === "employer" ? "employerDash" : "jobs"); return;
+        }
         if (event.target.closest("[data-scroll-chat-bottom]")) {
           var chatArea = byId("chatArea");
           if (chatArea) chatArea.scrollTop = chatArea.scrollHeight;
@@ -2970,16 +3216,17 @@
           return;
         }
         if (event.target.closest("[data-mark-hired]")) {
-          var hired = currentConversation();
-          if (hired) {
-            hired.status = "hired";
-            var hiredApp = state.applications.find(function (a) { return a.jobId === hired.jobId && a.workerId === hired.workerId; });
-            if (hiredApp) hiredApp.status = "Hired";
-            sendChatMessage("Worker marked as hired.");
-            toast("Worker marked as hired.");
-          }
+          openModal("Confirm hire?", '<p class="small">Are you satisfied with this hire?</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn primary" data-confirm-hired>Yes, Mark as Hired</button></div>');
           return;
         }
+        if (event.target.closest("[data-confirm-hired]")) {
+          markHiredConversation(currentConversation());
+          closeModal();
+          toast("Worker marked as hired.");
+          render();
+          return;
+        }
+        if (event.target.closest("[data-hire-again]")) { toast("Hire Again ready for backend."); return; }
         var quick = event.target.closest("[data-quick]");
         if (quick) { sendChatMessage(quick.dataset.quick); return; }
         if (event.target.closest("[data-close-modal]") || event.target.id === "appModal") { closeModal(); return; }
@@ -3192,7 +3439,7 @@
         }
         if (event.target.closest("[data-verify-otp]")) {
           var otp = byId("otpInput").value.replace(/\D/g, "");
-          if (otp.length < 4) return toast("Enter the OTP code.");
+        if (otp.length !== 4) return toast("Enter the 4 digit OTP code.");
           state.worker.phoneVerified = true;
           state.user.phoneVerified = true;
           state.worker.active = true;
@@ -3210,9 +3457,15 @@
           state.worker.name = byId("workerName").value.trim();
           state.worker.gender = byId("workerGender").value;
           state.worker.age = byId("workerAge").value.trim();
-          state.worker.city = displayCity(byId("workerCity").value.trim());
+          var workerLocation = parseLocationParts(byId("workerCity").value.trim());
+          state.worker.city = workerLocation.city;
+          state.worker.district = workerLocation.district;
+          state.worker.state = workerLocation.state;
+          state.worker.formatted_location = workerLocation.formatted_location;
           state.user.city = state.worker.city;
-          state.user.location = state.worker.city;
+          state.user.district = workerLocation.district;
+          state.user.state = workerLocation.state;
+          state.user.location = workerLocation.formatted_location;
           save();
           show("workerWork");
           return;
@@ -3250,9 +3503,9 @@
         var exp = event.target.closest("[data-exp]");
         if (exp) { state.worker.experience = exp.dataset.exp; exp.parentElement.querySelectorAll(".choice").forEach(function (c) { c.classList.remove("selected"); }); exp.classList.add("selected"); save(); return; }
         var onboardStart = event.target.closest("[data-onboard-start]");
-        if (onboardStart) { state.worker.startAvailability = onboardStart.dataset.onboardStart; save(); renderOnboardingAvailability(); return; }
+        if (onboardStart) { state.worker.flexibleAvailability = false; state.worker.startAvailability = onboardStart.dataset.onboardStart; save(); renderOnboardingAvailability(); return; }
         if (event.target.closest("[data-onboard-all-days]")) {
-          if (state.worker.flexibleAvailability) return;
+          state.worker.flexibleAvailability = false;
           var allDays = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
           var hasAllDays = allDays.every(function (day) { return (state.worker.availableDays || []).indexOf(day) >= 0; });
           state.worker.availableDays = hasAllDays ? [] : allDays.slice();
@@ -3260,14 +3513,14 @@
         }
         var onboardDay = event.target.closest("[data-onboard-day]");
         if (onboardDay) {
-          if (state.worker.flexibleAvailability) return;
+          state.worker.flexibleAvailability = false;
           state.worker.availableDays = state.worker.availableDays || [];
           var onboardDayIndex = state.worker.availableDays.indexOf(onboardDay.dataset.onboardDay);
           if (onboardDayIndex >= 0) state.worker.availableDays.splice(onboardDayIndex, 1); else state.worker.availableDays.push(onboardDay.dataset.onboardDay);
           save(); renderOnboardingAvailability(); return;
         }
         var onboardShift = event.target.closest("[data-onboard-shift]");
-        if (onboardShift) { if (state.worker.flexibleAvailability) return; state.worker.shiftPreference = onboardShift.dataset.onboardShift; save(); renderOnboardingAvailability(); return; }
+        if (onboardShift) { state.worker.flexibleAvailability = false; state.worker.shiftPreference = onboardShift.dataset.onboardShift; save(); renderOnboardingAvailability(); return; }
         if (event.target.closest("[data-flexible-availability]")) {
           state.worker.flexibleAvailability = !state.worker.flexibleAvailability;
           if (state.worker.flexibleAvailability) {
@@ -3282,6 +3535,12 @@
           state.user.photoVerificationStatus = "verified";
           state.user.photoVerified = true;
           state.worker.photoVerified = true;
+          state.worker.photo_url = "local-photo-verified";
+          if (state.defaultWorkerId && state.workerProfiles[state.defaultWorkerId]) {
+            state.workerProfiles[state.defaultWorkerId].photo_url = state.worker.photo_url;
+            state.workerProfiles[state.defaultWorkerId].photoVerificationStatus = "verified";
+            state.workerProfiles[state.defaultWorkerId].photo_verified = true;
+          }
           stopPhotoCamera();
           save();
           toast("Photo uploaded successfully");
@@ -3340,11 +3599,15 @@
           state.employer.name = byId("contactName").value.trim();
           state.employer.phone = byId("businessPhone").value.trim() || state.employer.phone;
           state.employer.type = byId("businessType").value || byId("businessTypeOther").value || state.employer.type;
-          state.employer.city = state.worker.city || "";
+          var businessLocation = parseLocationParts(state.worker.city || state.user.city || "");
+          state.employer.city = businessLocation.city || "";
+          state.employer.district = businessLocation.district;
+          state.employer.state = businessLocation.state;
+          state.employer.formatted_location = businessLocation.formatted_location;
           state.user.displayName = state.employer.name || state.user.displayName;
           state.user.city = state.employer.city || state.user.city;
           state.user.location = state.user.city;
-          state.businessProfiles[businessId] = { businessId: businessId, ownerId: state.worker.id, businessName: state.employer.business, contactPersonName: state.employer.name, city: state.employer.city, phone: state.employer.phone, type: state.employer.type, createdAt: Date.now() };
+          state.businessProfiles[businessId] = { businessId: businessId, ownerId: state.worker.id, businessName: state.employer.business, contactPersonName: state.employer.name, city: state.employer.city, district: state.employer.district, state: state.employer.state, formatted_location: state.employer.formatted_location, phone: state.employer.phone, type: state.employer.type, createdAt: Date.now() };
           var nextEmployerRoute = pendingEmployerRoute || "employerDash";
           pendingEmployerRoute = "";
           setupReturnRoute = "";
