@@ -18,6 +18,8 @@ This repo currently contains the static investor prototype. Before real users, S
 - Phone OTP should map one phone number to one user account.
 - On login, check existing `users.phone_number`; create only when missing.
 - One user can have worker and employer profiles.
+- `localStorage` is only acceptable for temporary UI preferences such as selected language. Do not use it as the production database for profiles, jobs, applications, chats, payments, reports, moderation logs, favourites, hired status, or ratings.
+- Profile photos must upload to Supabase Storage, then save `photo_url` and `photo_verified` on `worker_profiles`.
 
 Minimum tables:
 
@@ -26,7 +28,7 @@ Minimum tables:
 - `employer_profiles`: `user_id`, `business_name`, `city`
 - `jobs`: `id`, `employer_id`, `title`, `description`, `salary`, `location`, `is_remote`, `created_at`
 - `applications`: `id`, `job_id`, `worker_id`, `status`, `created_at`
-- `conversations`, `messages`, `payments`, `notifications`
+- `conversations`, `messages`, `payments`, `notifications`, `reports`, `moderation_logs`, `ratings`
 
 ## RLS Rules
 
@@ -75,7 +77,7 @@ Validate on both frontend and backend:
 
 - Phone number: 10 digits
 - Required fields: non-empty
-- Job description: 25+ words
+- Job description: 15+ words
 - Payment/session user: must match server-side auth
 
 Frontend should show safe messages like:
