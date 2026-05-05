@@ -506,7 +506,8 @@
           homeButton.textContent = "Home";
         }
       }
-      byId("appHeader").innerHTML = '<div class="header">' + clone.innerHTML + '</div>';
+      var headerClass = "header" + (source.classList.contains("chat-detail-header") ? " chat-detail-header" : "");
+      byId("appHeader").innerHTML = '<div class="' + headerClass + '">' + clone.innerHTML + '</div>';
     } else {
       byId("appHeader").innerHTML = "";
     }
@@ -1245,7 +1246,7 @@
     var area = byId("chatArea");
     var wasAtBottom = !area || area.scrollHeight - area.scrollTop - area.clientHeight < 48;
     var ratingPrompt = convo.status === "hired" && !hasSubmittedRating(convo) ? '<button class="btn outline" data-open-rating>Leave a rating and feedback</button>' : '';
-    area.innerHTML = renderChatMessages(convo, msgs) + (currentRole === "employer" && convo.status !== "hired" && convo.status !== "blocked" ? '<button class="btn outline" data-mark-hired>Mark as Hired</button>' : '') + (convo.status === "hired" ? '<button class="btn outline" data-hire-again>Hire Again</button>' + ratingPrompt : '') + (convo.status === "blocked" ? '<div class="panel small">This chat is blocked/closed. Messages are disabled.</div>' : '');
+    area.innerHTML = renderChatMessages(convo, msgs) + (currentRole === "employer" && convo.status !== "hired" && convo.status !== "blocked" ? '<button class="btn outline" data-mark-hired>Mark as Hired</button>' : '') + (convo.status === "hired" ? ratingPrompt : '') + (convo.status === "blocked" ? '<div class="panel small">This chat is blocked/closed. Messages are disabled.</div>' : '');
     var quicks = currentRole === "employer" ? ["Can you join tomorrow?","Please share experience","Come for interview","Share availability"] : ["I am available","Available today","Can start immediately","What are the timings?","Please share location","What is the salary?"];
     document.querySelector("#chat .quick").style.display = convo.status === "blocked" ? "none" : "flex";
     document.querySelector("#chat .quick").innerHTML = quicks.map(function (q) { return '<button data-quick="' + q + '">' + q + '</button>'; }).join("");
@@ -1791,7 +1792,6 @@
       render();
       return;
     }
-    if (event.target.closest("[data-hire-again]")) { toast("Hire Again ready for backend."); return; }
     if (event.target.closest("[data-open-rating]")) {
       pendingRating = { score: 0, quick: "" };
       openModal("How was your experience?", '<div class="toolbar">' + [1,2,3,4,5].map(function (n) { return '<button class="chip rating-star" data-rating-star="' + n + '">&#9733;</button>'; }).join("") + '</div><div class="toolbar mt">' + ["Not good","Okay","Good","Great","Excellent"].map(function (q) { return '<button class="chip" data-rating-quick="' + q + '">' + q + '</button>'; }).join("") + '</div><label class="input mt"><textarea id="ratingComment" placeholder="Write a short feedback..."></textarea></label><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn primary" data-submit-rating>Submit Feedback</button></div>');
