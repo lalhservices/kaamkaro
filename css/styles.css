@@ -1026,7 +1026,7 @@ button.badge { cursor: pointer; font: inherit; }
 .quick button { white-space: nowrap; flex: 0 0 auto; }
 .chat-input { position: absolute; left: 22px; right: 22px; bottom: 8px; transform: none; width: auto; display: flex; gap: 10px; z-index: 50; }
 .chat-input input { flex: 1; height: 50px; border: 1px solid var(--line); border-radius: 999px; padding: 0 16px; outline: 0; box-shadow: 0 8px 22px rgba(6, 20, 47, .06); }
-.chat-input button { width: 50px; height: 50px; border: 0; border-radius: 50%; color: #fff; background: var(--green); font-weight: 950; }
+.chat-input button { width: 50px; height: 50px; border: 0; border-radius: 50%; color: #fff; background: var(--green); font-weight: 950; display: grid; place-items: center; padding: 0; font-size: 24px; line-height: 1; }
 
 .toast {
   position: fixed;
