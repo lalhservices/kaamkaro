@@ -4,16 +4,6 @@
   var DEMO_USERS_KEY = "kkAuthUsers";
   var PENDING_PHONE_KEY = "kkPendingOtpPhone";
 
-  function config() {
-    var fromWindow = window.KAAM_KARO_SUPABASE || {};
-    var urlMeta = document.querySelector('meta[name="supabase-url"]');
-    var keyMeta = document.querySelector('meta[name="supabase-anon-key"]');
-    return {
-      url: fromWindow.url || (urlMeta ? urlMeta.content : "") || localStorage.getItem("kkSupabaseUrl") || "",
-      anonKey: fromWindow.anonKey || (keyMeta ? keyMeta.content : "") || localStorage.getItem("kkSupabaseAnonKey") || ""
-    };
-  }
-
   function normalizePhone(value) {
     return String(value || "").replace(/\D/g, "").slice(-10);
   }
@@ -23,12 +13,7 @@
   }
 
   function getClient() {
-    var cfg = config();
-    if (!cfg.url || !cfg.anonKey || !window.supabase || !window.supabase.createClient) return null;
-    if (!window.kaamKaroSupabaseClient) {
-      window.kaamKaroSupabaseClient = window.supabase.createClient(cfg.url, cfg.anonKey);
-    }
-    return window.kaamKaroSupabaseClient;
+    return window.KaamKaroSupabase && window.KaamKaroSupabase.client ? window.KaamKaroSupabase.client() : null;
   }
 
   function demoUsers() {
@@ -46,7 +31,11 @@
       users[phone] = {
         id: "demo-user-" + phone,
         phone_number: phone,
-        role: "worker",
+        active_role: "worker",
+        has_worker_profile: false,
+        has_employer_profile: false,
+        language: localStorage.getItem("kaamkaroLang") || "en",
+        is_suspended: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
@@ -57,13 +46,15 @@
 
   async function ensureUserRecord(client, authUser, phone) {
     var now = new Date().toISOString();
+    var columns = "id, phone_number, has_worker_profile, has_employer_profile, active_role, language, is_suspended, created_at, updated_at";
     var existing = await client
       .from("users")
-      .select("id, phone_number, role, created_at, updated_at")
+      .select(columns)
       .eq("phone_number", phone)
       .maybeSingle();
 
     if (existing.error && existing.error.code !== "PGRST116") throw existing.error;
+    if (existing.data && existing.data.is_suspended) throw new Error("This account is temporarily restricted.");
     if (existing.data) {
       await client.from("users").update({ updated_at: now }).eq("id", existing.data.id);
       return existing.data;
@@ -72,11 +63,15 @@
     var row = {
       id: authUser.id,
       phone_number: phone,
-      role: "worker",
+      has_worker_profile: false,
+      has_employer_profile: false,
+      active_role: "worker",
+      language: localStorage.getItem("kaamkaroLang") || "en",
+      is_suspended: false,
       created_at: now,
       updated_at: now
     };
-    var inserted = await client.from("users").insert(row).select("id, phone_number, role, created_at, updated_at").single();
+    var inserted = await client.from("users").insert(row).select(columns).single();
     if (inserted.error) throw inserted.error;
     return inserted.data;
   }
@@ -131,6 +126,7 @@
     verifyOtp: verifyOtp,
     logout: logout,
     normalizePhone: normalizePhone,
+    getClient: getClient,
     isSupabaseConfigured: function () { return !!getClient(); }
   };
 })();

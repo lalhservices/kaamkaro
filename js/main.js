@@ -2038,8 +2038,13 @@
       if (otp.length !== 4 && !(window.KaamKaroAuth && window.KaamKaroAuth.isSupabaseConfigured())) return toast("Enter the 4 digit OTP code.");
       try {
         var authResult = window.KaamKaroAuth ? await window.KaamKaroAuth.verifyOtp(state.user.phone || state.employer.phone || byId("phoneInput").value, otp) : { phone: state.user.phone || state.employer.phone, user: null };
-        state.user.id = authResult.user && authResult.user.id ? authResult.user.id : state.user.id;
+        var authUser = authResult.user || {};
+        state.user.id = authUser.id || state.user.id;
         state.user.phone = authResult.phone || state.user.phone || state.employer.phone;
+        state.user.hasWorkerProfile = !!authUser.has_worker_profile;
+        state.user.hasEmployerProfile = !!authUser.has_employer_profile;
+        state.user.activeRole = authUser.active_role || state.user.activeRole || currentRole;
+        state.user.language = authUser.language || state.user.language || currentLang;
         state.employer.phone = state.user.phone;
         state.worker.phoneVerified = true;
         state.user.phoneVerified = true;
