@@ -3,6 +3,7 @@
 
   var DEMO_USERS_KEY = "kkAuthUsers";
   var PENDING_PHONE_KEY = "kkPendingOtpPhone";
+  var DEV_OTP_KEY = "kkDevOtpFallback";
 
   function normalizePhone(value) {
     return String(value || "").replace(/\D/g, "").slice(-10);
@@ -17,6 +18,11 @@
 
   function getClient() {
     return window.KaamKaroSupabase && window.KaamKaroSupabase.client ? window.KaamKaroSupabase.client() : null;
+  }
+
+  function isLocalPrototype() {
+    return window.location.protocol === "file:" ||
+      (window.location.protocol === "http:" && ["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
   }
 
   function demoUsers() {
@@ -91,7 +97,14 @@
       phone: fullPhone(phone),
       options: { shouldCreateUser: true }
     });
-    if (result.error) throw friendlyAuthError(result.error);
+    if (result.error) {
+      if (isPhoneProviderSetupError(result.error) && isLocalPrototype()) {
+        sessionStorage.setItem(DEV_OTP_KEY, "1");
+        return { mode: "local-dev", phone: phone, devOtp: "123456" };
+      }
+      throw friendlyAuthError(result.error);
+    }
+    sessionStorage.removeItem(DEV_OTP_KEY);
     return { mode: "supabase", phone: phone };
   }
 
@@ -100,9 +113,13 @@
     var otp = String(token || "").replace(/\D/g, "");
     if (phone.length !== 10) throw new Error("Enter a valid 10 digit phone number.");
     if (!getClient() && otp.length !== 4 && otp.length !== 6) throw new Error("Enter the OTP code.");
-    if (getClient() && otp.length !== 6) throw new Error("Enter the 6 digit OTP code from SMS.");
+    if (getClient() && sessionStorage.getItem(DEV_OTP_KEY) !== "1" && otp.length !== 6) throw new Error("Enter the 6 digit OTP code from SMS.");
 
     var client = getClient();
+    if (sessionStorage.getItem(DEV_OTP_KEY) === "1" && isLocalPrototype()) {
+      if (otp !== "123456") throw new Error("For local testing, use OTP 123456.");
+      return { mode: "local-dev", phone: phone, user: ensureDemoUser(phone), session: null };
+    }
     if (!client) {
       return { mode: "demo", phone: phone, user: ensureDemoUser(phone), session: null };
     }
@@ -119,11 +136,17 @@
     return { mode: "supabase", phone: phone, user: dbUser, session: verified.data.session || null };
   }
 
+  function isPhoneProviderSetupError(error) {
+    var message = String((error && error.message) || error || "");
+    var code = String((error && error.code) || "");
+    return /unsupported phone number|sms_send_failed|phone_provider_disabled|provider_disabled/i.test(message + " " + code);
+  }
+
   function friendlyAuthError(error) {
     var message = String((error && error.message) || error || "");
     var code = String((error && error.code) || "");
-    if (/unsupported phone number|sms_send_failed|phone_provider_disabled|provider_disabled/i.test(message + " " + code)) {
-      return new Error("Phone OTP is not ready for this number. Use a real supported phone number, or enable/configure Phone Auth SMS provider in Supabase.");
+    if (isPhoneProviderSetupError(error)) {
+      return new Error("Phone OTP is not ready yet. Enable Phone Auth and configure an SMS provider in Supabase.");
     }
     if (/rate/i.test(message + " " + code)) {
       return new Error("Too many OTP attempts. Please wait a minute and try again.");
@@ -135,6 +158,7 @@
     var client = getClient();
     if (client) await client.auth.signOut();
     localStorage.removeItem(PENDING_PHONE_KEY);
+    sessionStorage.removeItem(DEV_OTP_KEY);
   }
 
   window.KaamKaroAuth = {

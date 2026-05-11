@@ -2054,6 +2054,7 @@
         save();
         track("otp_requested");
         show("otpCode");
+        if (otpRequest.mode === "local-dev") toast("Local test OTP: 123456");
       } catch (error) {
         console.warn("OTP request failed:", error);
         toast(error.message || "Something went wrong. Please try again.");
