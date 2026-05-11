@@ -7,7 +7,8 @@
     var keyMeta = document.querySelector('meta[name="supabase-anon-key"]');
     return {
       url: fromWindow.url || (urlMeta ? urlMeta.content : "") || localStorage.getItem("kkSupabaseUrl") || "",
-      anonKey: fromWindow.anonKey || (keyMeta ? keyMeta.content : "") || localStorage.getItem("kkSupabaseAnonKey") || ""
+      anonKey: fromWindow.anonKey || (keyMeta ? keyMeta.content : "") || localStorage.getItem("kkSupabaseAnonKey") || "",
+      phoneCountryCode: fromWindow.phoneCountryCode || localStorage.getItem("kkPhoneCountryCode") || "+91"
     };
   }
 

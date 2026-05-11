@@ -9,7 +9,10 @@
   }
 
   function fullPhone(phone) {
-    return "+91" + normalizePhone(phone);
+    var cfg = window.KaamKaroSupabase && window.KaamKaroSupabase.config ? window.KaamKaroSupabase.config() : {};
+    var countryCode = String(cfg.phoneCountryCode || "+91").replace(/[^\d+]/g, "");
+    if (countryCode.charAt(0) !== "+") countryCode = "+" + countryCode;
+    return countryCode + normalizePhone(phone);
   }
 
   function getClient() {
@@ -88,7 +91,7 @@
       phone: fullPhone(phone),
       options: { shouldCreateUser: true }
     });
-    if (result.error) throw result.error;
+    if (result.error) throw friendlyAuthError(result.error);
     return { mode: "supabase", phone: phone };
   }
 
@@ -96,7 +99,8 @@
     var phone = normalizePhone(rawPhone || localStorage.getItem(PENDING_PHONE_KEY));
     var otp = String(token || "").replace(/\D/g, "");
     if (phone.length !== 10) throw new Error("Enter a valid 10 digit phone number.");
-    if (otp.length !== 4 && !getClient()) throw new Error("Enter the 4 digit OTP code.");
+    if (!getClient() && otp.length !== 4 && otp.length !== 6) throw new Error("Enter the OTP code.");
+    if (getClient() && otp.length !== 6) throw new Error("Enter the 6 digit OTP code from SMS.");
 
     var client = getClient();
     if (!client) {
@@ -108,11 +112,23 @@
       token: otp,
       type: "sms"
     });
-    if (verified.error) throw verified.error;
+    if (verified.error) throw friendlyAuthError(verified.error);
     var authUser = verified.data && verified.data.user;
     if (!authUser) throw new Error("Could not verify OTP. Please try again.");
     var dbUser = await ensureUserRecord(client, authUser, phone);
     return { mode: "supabase", phone: phone, user: dbUser, session: verified.data.session || null };
+  }
+
+  function friendlyAuthError(error) {
+    var message = String((error && error.message) || error || "");
+    var code = String((error && error.code) || "");
+    if (/unsupported phone number|sms_send_failed|phone_provider_disabled|provider_disabled/i.test(message + " " + code)) {
+      return new Error("Phone OTP is not ready for this number. Use a real supported phone number, or enable/configure Phone Auth SMS provider in Supabase.");
+    }
+    if (/rate/i.test(message + " " + code)) {
+      return new Error("Too many OTP attempts. Please wait a minute and try again.");
+    }
+    return error instanceof Error ? error : new Error(message || "Something went wrong. Please try again.");
   }
 
   async function logout() {

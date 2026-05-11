@@ -2062,7 +2062,11 @@
     }
     if (event.target.closest("[data-verify-otp]")) {
       var otp = byId("otpInput").value.replace(/\D/g, "");
-      if (otp.length !== 4 && !(window.KaamKaroAuth && window.KaamKaroAuth.isSupabaseConfigured())) return toast("Enter the 4 digit OTP code.");
+      if (window.KaamKaroAuth && window.KaamKaroAuth.isSupabaseConfigured()) {
+        if (otp.length !== 6) return toast("Enter the 6 digit OTP code.");
+      } else if (otp.length !== 4 && otp.length !== 6) {
+        return toast("Enter the OTP code.");
+      }
       try {
         var authResult = window.KaamKaroAuth ? await window.KaamKaroAuth.verifyOtp(state.user.phone || state.employer.phone || byId("phoneInput").value, otp) : { phone: state.user.phone || state.employer.phone, user: null };
         var authUser = authResult.user || {};
