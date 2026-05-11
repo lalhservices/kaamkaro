@@ -169,6 +169,29 @@
     localStorage.setItem("kkState", JSON.stringify(state));
     localStorage.setItem("kkActiveCity", activeCity || "");
   }
+  async function hydrateSupabaseSession() {
+    if (!window.KaamKaroProfile || !window.KaamKaroProfile.hydrateSession) return;
+    try {
+      var remote = await window.KaamKaroProfile.hydrateSession(state);
+      if (!remote) return;
+      save();
+      render();
+    } catch (error) {
+      console.warn("Supabase session hydrate skipped:", error);
+    }
+  }
+  async function saveWorkerProfileRemote() {
+    if (!window.KaamKaroProfile || !window.KaamKaroProfile.saveWorkerProfile) return null;
+    try {
+      var savedProfile = await window.KaamKaroProfile.saveWorkerProfile(state);
+      if (savedProfile) save();
+      return savedProfile;
+    } catch (error) {
+      console.warn("Worker profile Supabase save failed:", error);
+      toast("Saved on this device. We will sync when connection is ready.");
+      return null;
+    }
+  }
   function track(name) {
     var events = JSON.parse(localStorage.getItem("kkAnalytics") || "[]");
     events.push({ name: name, at: new Date().toISOString(), screen: currentScreen });
@@ -1042,7 +1065,7 @@
     }
     body.innerHTML = '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Type here" value="' + (editDraft.value || "") + '"></div></div>';
   }
-  function saveProfileEdit() {
+  async function saveProfileEdit() {
     var input = byId("profileEditInput");
     var value = input ? input.value.trim() : (editDraft.value || "");
     var business = currentBusinessProfile();
@@ -1081,6 +1104,9 @@
     if (editingProfileField === "employerLocation") { applyStructuredLocation("user", selectedEditLocation); applyStructuredLocation("employer", selectedEditLocation); }
     if (editingProfileField === "businessType") { state.employer.type = value; if (business) business.type = value; }
     save();
+    if (["accountName","accountLocation","workerLocation","workerSkills","workerExperience","workerWork","workerAvailability"].indexOf(editingProfileField) >= 0) {
+      await saveWorkerProfileRemote();
+    }
     toast("Updated successfully");
     show(menuReturn || (currentRole === "employer" ? "employerProfile" : "profile"));
   }
@@ -1441,7 +1467,7 @@
         if (byId("profileName")) byId("profileName").textContent = state.worker.name || "Worker Profile";
         if (byId("profileMeta")) byId("profileMeta").textContent = state.worker.city || state.user.city || "Location not set";
         if (byId("workerAvatar")) {
-          if (state.worker.photo_url && String(state.worker.photo_url).indexOf("data:image") === 0) byId("workerAvatar").innerHTML = '<img src="' + state.worker.photo_url + '" alt="">';
+          if (state.worker.photo_url) byId("workerAvatar").innerHTML = '<img src="' + state.worker.photo_url + '" alt="">';
           else byId("workerAvatar").textContent = initials(state.worker.name || state.user.displayName);
         }
     if (byId("profileBadges")) byId("profileBadges").innerHTML = profileBadges.map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
@@ -1465,7 +1491,7 @@
       }
     });
   }
-  function finishWorker() {
+  async function finishWorker() {
     state.workerComplete = true;
     var workerId = state.defaultWorkerId || state.worker.id || ("worker-" + Date.now());
     state.defaultWorkerId = workerId;
@@ -1485,7 +1511,7 @@
     state.user.location = state.worker.formatted_location || state.worker.city;
     state.workerProfiles[workerId] = {
       workerId: workerId,
-      userId: "user-demo",
+      userId: state.user.id || "user-demo",
       name: state.worker.name,
       gender: state.worker.gender,
       age: state.worker.age,
@@ -1518,6 +1544,7 @@
     localStorage.removeItem("kkPendingWorkerRoute");
     localStorage.removeItem("kkSetupReturnRoute");
     save();
+    await saveWorkerProfileRemote();
     track("worker_onboarding_complete");
     show(nextWorkerRoute);
   }
@@ -1915,7 +1942,7 @@
       return;
     }
     if (event.target.closest("[data-save-profile-edit]")) {
-      saveProfileEdit();
+      await saveProfileEdit();
       return;
     }
     var accountProfile = event.target.closest("[data-account-profile]");
@@ -2050,6 +2077,7 @@
         state.user.phoneVerified = true;
         state.worker.active = true;
         save();
+        await hydrateSupabaseSession();
         track("otp_verified");
         if (phoneUpdatePending) { phoneUpdatePending = false; toast("Phone number updated OK"); show("accountSettings"); return; }
         routeAfterOtp();
@@ -2183,7 +2211,7 @@
       return;
     }
     var finish = event.target.closest("[data-finish-worker]");
-    if (finish) { finishWorker(); return; }
+    if (finish) { await finishWorker(); return; }
     var finishEmp = event.target.closest("[data-finish-employer]");
     if (finishEmp) {
       state.employerComplete = true;
@@ -2284,11 +2312,27 @@
     }
     if (event.target.id === "payPref") { state.worker.payRange = event.target.value.trim(); state.worker.openAnyPay = false; save(); }
   });
-  document.addEventListener("change", function (event) {
+  document.addEventListener("change", async function (event) {
     if (event.target.id === "photoFile") {
       var file = event.target.files && event.target.files[0];
       if (!file) return;
       if (byId("photoCameraStatus")) byId("photoCameraStatus").textContent = "Checking photo...";
+      if (window.KaamKaroProfile && window.KaamKaroProfile.uploadProfilePhoto) {
+        try {
+          var publicPhotoUrl = await window.KaamKaroProfile.uploadProfilePhoto(file, state);
+          if (publicPhotoUrl) {
+            applyPhotoVerified(publicPhotoUrl);
+            if (byId("photoCameraStatus")) byId("photoCameraStatus").textContent = "Photo uploaded successfully";
+            stopPhotoCamera();
+            toast("Photo uploaded successfully");
+            render();
+            return;
+          }
+        } catch (error) {
+          console.warn("Supabase photo upload failed:", error);
+          if (byId("photoCameraStatus")) byId("photoCameraStatus").textContent = "Upload failed. Saved locally for now.";
+        }
+      }
       var reader = new FileReader();
       reader.onload = function () {
         applyPhotoVerified(String(reader.result || "local-photo-verified"));
@@ -2370,4 +2414,5 @@
   fillBasicDefaults();
   if (byId("payRange")) byId("payRange").style.display = "none";
   render();
+  hydrateSupabaseSession();
 })();
