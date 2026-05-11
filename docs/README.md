@@ -12,6 +12,9 @@ Do not use these files to redesign the current prototype UI. The live prototype 
 - `fraud_scam_protection.md`  
   Safety rules for job posts, chat messages, reports, trust scores, admin review, and auto actions.
 
+- `supabase_rls_fix.sql`  
+  One-time patch for an already-created project if Supabase reports RLS recursion on profile tables.
+
 ## Implementation Order
 
 1. Create Supabase project and run `supabase_schema.sql` in development.
