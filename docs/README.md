@@ -48,6 +48,8 @@ For real Supabase phone login:
 
 If Supabase returns `unsupported phone number`, it is usually an Auth/SMS provider setup issue or a test/placeholder number, not a database schema issue.
 
+For local prototype testing only, the app falls back to a local dev OTP (`123456`) when opened from `file://`, `localhost`, or `127.0.0.1` and Supabase reports that the phone provider is not ready. This does not create a real Supabase Auth session and must not be treated as production login.
+
 ## Important
 
 - Keep secrets out of frontend code.
