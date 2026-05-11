@@ -25,6 +25,11 @@
       (window.location.protocol === "http:" && ["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
   }
 
+  function canBypassOtpForTesting() {
+    var cfg = window.KaamKaroSupabase && window.KaamKaroSupabase.config ? window.KaamKaroSupabase.config() : {};
+    return cfg.devBypassOtp === true || isLocalPrototype();
+  }
+
   function demoUsers() {
     try { return JSON.parse(localStorage.getItem(DEMO_USERS_KEY) || "{}") || {}; }
     catch (error) { return {}; }
@@ -91,16 +96,19 @@
     localStorage.setItem(PENDING_PHONE_KEY, phone);
 
     var client = getClient();
-    if (!client) return { mode: "demo", phone: phone };
+    if (!client) return { mode: "demo", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
+    if (canBypassOtpForTesting()) {
+      return { mode: "test-bypass", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
+    }
 
     var result = await client.auth.signInWithOtp({
       phone: fullPhone(phone),
       options: { shouldCreateUser: true }
     });
     if (result.error) {
-      if (isPhoneProviderSetupError(result.error) && isLocalPrototype()) {
+      if (isPhoneProviderSetupError(result.error) && canBypassOtpForTesting()) {
         sessionStorage.setItem(DEV_OTP_KEY, "1");
-        return { mode: "local-dev", phone: phone, devOtp: "123456" };
+        return { mode: "test-bypass", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
       }
       throw friendlyAuthError(result.error);
     }

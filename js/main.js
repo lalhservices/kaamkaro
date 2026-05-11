@@ -2051,6 +2051,21 @@
         var otpRequest = window.KaamKaroAuth ? await window.KaamKaroAuth.sendOtp(phone) : { phone: phone, mode: "demo" };
         state.employer.phone = otpRequest.phone;
         state.user.phone = otpRequest.phone;
+        if (otpRequest.bypassOtp) {
+          var bypassUser = otpRequest.user || {};
+          state.user.id = bypassUser.id || state.user.id;
+          state.user.hasWorkerProfile = !!bypassUser.has_worker_profile;
+          state.user.hasEmployerProfile = !!bypassUser.has_employer_profile;
+          state.user.activeRole = bypassUser.active_role || state.user.activeRole || currentRole;
+          state.worker.phoneVerified = true;
+          state.user.phoneVerified = true;
+          state.worker.active = true;
+          save();
+          track("otp_bypassed_for_testing");
+          toast("Testing login active. OTP skipped for now.");
+          routeAfterOtp();
+          return;
+        }
         save();
         track("otp_requested");
         show("otpCode");

@@ -6,6 +6,7 @@
   window.KAAM_KARO_SUPABASE = {
     url: "https://nayfeeqpssjmfkvmsorf.supabase.co",
     anonKey: "sb_publishable_75N8Af19fYfdXGMmbb_q3g_fktSyWNf",
-    phoneCountryCode: "+91"
+    phoneCountryCode: "+91",
+    devBypassOtp: true
   };
 })();
