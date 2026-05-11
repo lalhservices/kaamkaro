@@ -37,6 +37,17 @@ The prototype now reads Supabase config from any of these places:
 
 Use `kaam-karo-app/js/supabase.config.example.js` as the shape reference. Only the Supabase anon key belongs in the browser. Never put `SERVICE_ROLE_KEY` in `index.html`, frontend JS, Vercel public env, or localStorage.
 
+## Phone OTP Setup
+
+For real Supabase phone login:
+
+1. Enable Phone Auth in Supabase Authentication providers.
+2. Configure an SMS provider such as Twilio, MessageBird, Vonage, or Textlocal.
+3. Use a real supported phone number for live testing. Placeholder numbers such as `0000000000` will not receive OTP.
+4. Supabase phone OTP uses a 6 digit code by default; the app now accepts 6 digits for real Supabase auth.
+
+If Supabase returns `unsupported phone number`, it is usually an Auth/SMS provider setup issue or a test/placeholder number, not a database schema issue.
+
 ## Important
 
 - Keep secrets out of frontend code.
