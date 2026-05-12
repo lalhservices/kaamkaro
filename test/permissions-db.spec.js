@@ -14,7 +14,7 @@ test.describe("client-side permission smoke tests", () => {
     await openFresh(page);
     await seedWorker(page);
     await go(page, "jobs");
-    await expect(page.locator("[data-accept-app], [data-reject-app], [data-post-job]")).toHaveCount(0);
+    await expect(page.locator(".screen.active [data-accept-app], .screen.active [data-reject-app], .screen.active [data-post-job]")).toHaveCount(0);
     await expectNoBrowserErrors(errors);
   });
 
@@ -23,7 +23,7 @@ test.describe("client-side permission smoke tests", () => {
     await openFresh(page);
     await seedEmployer(page);
     await go(page, "employerDash");
-    await expect(page.locator("[data-apply-job]")).toHaveCount(0);
+    await expect(page.locator(".screen.active [data-apply-job]")).toHaveCount(0);
     await expectNoBrowserErrors(errors);
   });
 

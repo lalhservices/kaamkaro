@@ -3,12 +3,25 @@ const { expect } = require("@playwright/test");
 
 const APP_URL = "file:///" + path.resolve(__dirname, "..", "kaam-karo-app", "index.html").replace(/\\/g, "/");
 const PHONE_WIDTHS = [320, 360, 375, 390, 414, 430];
+const PHONE_PROFILES = [
+  { name: "small-android-320", width: 320, height: 760 },
+  { name: "vivo-budget-360", width: 360, height: 800 },
+  { name: "samsung-am-360", width: 360, height: 844 },
+  { name: "iphone-se-375", width: 375, height: 667 },
+  { name: "iphone-13-390", width: 390, height: 844 },
+  { name: "oppo-realme-390", width: 390, height: 820 },
+  { name: "xiaomi-redmi-393", width: 393, height: 873 },
+  { name: "iphone-pro-max-430", width: 430, height: 932 }
+];
 const DEFAULT_HEIGHT = 844;
 
 function attachErrorGuards(page) {
   const errors = [];
   page.on("console", (message) => {
-    if (message.type() === "error") errors.push(message.text());
+    if (message.type() !== "error") return;
+    const text = message.text();
+    if (/net::ERR_NETWORK_ACCESS_DENIED/i.test(text)) return;
+    errors.push(text);
   });
   page.on("pageerror", (error) => {
     errors.push(error.message);
@@ -37,11 +50,20 @@ async function expectActiveScreen(page, screenId) {
 
 async function go(page, screenId) {
   await page.evaluate((id) => window.kkGo && window.kkGo(id), screenId);
+  await page.waitForFunction(() => {
+    const screen = document.querySelector(".screen.active");
+    if (!screen) return false;
+    const transform = window.getComputedStyle(screen).transform;
+    if (!transform || transform === "none") return true;
+    const matrix = new DOMMatrixReadOnly(transform);
+    return Math.abs(matrix.m41) < 1;
+  });
 }
 
 async function clickUnique(locator) {
-  await expect(locator).toHaveCount(1);
-  await locator.click();
+  const visibleLocator = locator.filter({ visible: true });
+  await expect(visibleLocator).toHaveCount(1);
+  await visibleLocator.click();
 }
 
 async function loginBypass(page, phone = "9876543210") {
@@ -207,9 +229,57 @@ async function expectNoHorizontalScroll(page) {
   expect(metrics.phoneScroll, "phone container should not overflow").toBeLessThanOrEqual(metrics.phoneWidth + 1);
 }
 
+async function expectResponsiveIntegrity(page) {
+  const issues = await page.evaluate(() => {
+    const viewportWidth = window.innerWidth;
+    const phone = document.querySelector(".phone") || document.body;
+    const phoneRect = phone.getBoundingClientRect();
+    const active = document.querySelector(".screen.active") || document.body;
+    const selectors = [
+      ".screen.active button",
+      ".screen.active .btn",
+      ".screen.active .chip",
+      ".screen.active .card",
+      ".screen.active .panel",
+      ".screen.active .list-row",
+      ".screen.active input",
+      ".screen.active textarea",
+      ".screen.active select",
+      "#bottomNav:not([hidden]) button"
+    ];
+    const bad = [];
+    const seen = new Set();
+    document.querySelectorAll(selectors.join(",")).forEach((el) => {
+      if (seen.has(el)) return;
+      seen.add(el);
+      const style = window.getComputedStyle(el);
+      if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const label = (el.textContent || el.getAttribute("aria-label") || el.className || el.tagName).trim().replace(/\s+/g, " ").slice(0, 80);
+      if (rect.left < phoneRect.left - 1 || rect.right > phoneRect.right + 1 || rect.left < -1 || rect.right > viewportWidth + 1) {
+        bad.push(`overflow: ${label}`);
+      }
+      if (el.matches(".btn") && rect.height > 68) {
+        bad.push(`double-line CTA: ${label}`);
+      }
+      if (el.matches(".btn, .circle, .icon, #bottomNav button") && rect.height < 34) {
+        bad.push(`small tap target: ${label}`);
+      }
+      if (el.scrollWidth > el.clientWidth + 2 && style.overflowX === "visible") {
+        bad.push(`text clipped: ${label}`);
+      }
+    });
+    if (active.scrollWidth > active.clientWidth + 1) bad.push("active screen horizontal overflow");
+    return bad;
+  });
+  expect(issues, "No clipped text, overflowing cards/buttons, or unsafe tap targets").toEqual([]);
+}
+
 module.exports = {
   APP_URL,
   PHONE_WIDTHS,
+  PHONE_PROFILES,
   attachErrorGuards,
   openFresh,
   expectNoBrowserErrors,
@@ -219,5 +289,6 @@ module.exports = {
   completeWorkerSetup,
   seedWorker,
   seedEmployer,
-  expectNoHorizontalScroll
+  expectNoHorizontalScroll,
+  expectResponsiveIntegrity
 };

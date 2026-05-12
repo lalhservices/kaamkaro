@@ -16,10 +16,10 @@ test.describe("auth route guards and role permissions", () => {
     await openFresh(page);
 
     await expectActiveScreen(page, "landing");
-    await expect(page.locator("#bottomNav")).toBeEmpty();
+    await expect(page.locator("#bottomNav")).toBeHidden();
     await page.locator('[data-go="otp"]').first().click();
     await expectActiveScreen(page, "otp");
-    await expect(page.locator("#bottomNav")).toBeEmpty();
+    await expect(page.locator("#bottomNav")).toBeHidden();
 
     await expectNoBrowserErrors(errors);
   });
