@@ -25,8 +25,14 @@
       (window.location.protocol === "http:" && ["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
   }
 
+  function forceRealOtp() {
+    var params = new URLSearchParams(window.location.search || "");
+    return localStorage.getItem("kkForceRealOtp") === "true" || params.get("realOtp") === "1";
+  }
+
   function canBypassOtpForTesting() {
     var cfg = window.KaamKaroSupabase && window.KaamKaroSupabase.config ? window.KaamKaroSupabase.config() : {};
+    if (forceRealOtp()) return false;
     return cfg.devBypassOtp === true || isLocalPrototype();
   }
 
@@ -175,6 +181,7 @@
     logout: logout,
     normalizePhone: normalizePhone,
     getClient: getClient,
-    isSupabaseConfigured: function () { return !!getClient(); }
+    isSupabaseConfigured: function () { return !!getClient(); },
+    forceRealOtp: forceRealOtp
   };
 })();
