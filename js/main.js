@@ -414,6 +414,18 @@
     }
     return show(targetRoute || "jobs");
   }
+  function isAuthenticated() {
+    return !!(state.user && state.user.authenticated);
+  }
+  function isPublicScreen(id) {
+    return ["landing", "otp", "otpCode", "legal"].indexOf(id) >= 0;
+  }
+  function isWorkerSetupScreen(id) {
+    return ["workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress"].indexOf(id) >= 0;
+  }
+  function canOpenScreen(id) {
+    return isPublicScreen(id) || isAuthenticated();
+  }
   function currentWorkerProfile() {
     return state.workerProfiles && state.defaultWorkerId ? state.workerProfiles[state.defaultWorkerId] : null;
   }
@@ -473,6 +485,30 @@
     }
   }
   function show(id) {
+    if (!canOpenScreen(id)) {
+      id = "landing";
+    } else if (isAuthenticated()) {
+      if (isEmployerRoute(id) && id !== "employerSetup" && !hasEmployerProfile()) {
+        pendingEmployerRoute = id;
+        localStorage.setItem("kkPendingEmployerRoute", pendingEmployerRoute);
+        id = "employerSetup";
+      }
+      if (isWorkerRoute(id) && !isWorkerSetupScreen(id) && !hasWorkerProfile()) {
+        pendingWorkerRoute = id;
+        localStorage.setItem("kkPendingWorkerRoute", pendingWorkerRoute);
+        id = "workerBasic";
+      }
+      if (id === "chat" && currentRole === "employer" && !hasEmployerProfile()) {
+        pendingEmployerRoute = "chat";
+        localStorage.setItem("kkPendingEmployerRoute", pendingEmployerRoute);
+        id = "employerSetup";
+      }
+      if (id === "chat" && currentRole !== "employer" && !hasWorkerProfile()) {
+        pendingWorkerRoute = "chat";
+        localStorage.setItem("kkPendingWorkerRoute", pendingWorkerRoute);
+        id = "workerBasic";
+      }
+    }
     var target = byId(id);
     if (!target) return toast("Please try again.");
     var employerScreens = ["employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","employerProfile"];
@@ -1613,7 +1649,7 @@
     state.messages = [];
     state.notifications = [];
     state.jobs = keepJobs;
-    state.user = { id: "user-demo", displayName: "", phone: "", city: "", location: "", phoneVerified: false, photoVerificationStatus: "not_uploaded", photoVerified: false };
+    state.user = { id: "user-demo", displayName: "", phone: "", city: "", location: "", phoneVerified: false, photoVerificationStatus: "not_uploaded", photoVerified: false, authenticated: false };
     state.worker = { id: "john", name: "", gender: "", age: "", city: "", experience: "", skills: [], jobTypes: [], availability: "", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: false, photoVerified: false, startAvailability: "", availableDays: [], shiftPreference: "", flexibleAvailability: false };
     state.employer = { id: "", ownerId: "john", name: "", business: "", phone: "", type: "", city: "" };
     localStorage.removeItem("kkPendingWorkerRoute");
@@ -1873,6 +1909,8 @@
       }
       byId("phoneInput").value = "";
       if (byId("otpInput")) byId("otpInput").value = "";
+      state.user.authenticated = false;
+      save();
       track("logout");
       show("landing");
       toast("Logged out.");
@@ -2057,6 +2095,7 @@
           state.user.hasWorkerProfile = !!bypassUser.has_worker_profile;
           state.user.hasEmployerProfile = !!bypassUser.has_employer_profile;
           state.user.activeRole = bypassUser.active_role || state.user.activeRole || currentRole;
+          state.user.authenticated = true;
           state.worker.phoneVerified = true;
           state.user.phoneVerified = true;
           state.worker.active = true;
@@ -2092,6 +2131,7 @@
         state.user.hasEmployerProfile = !!authUser.has_employer_profile;
         state.user.activeRole = authUser.active_role || state.user.activeRole || currentRole;
         state.user.language = authUser.language || state.user.language || currentLang;
+        state.user.authenticated = true;
         state.employer.phone = state.user.phone;
         state.worker.phoneVerified = true;
         state.user.phoneVerified = true;

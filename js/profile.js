@@ -56,6 +56,7 @@
     appState.user.hasEmployerProfile = !!row.has_employer_profile;
     appState.user.activeRole = row.active_role || appState.user.activeRole;
     appState.user.language = row.language || appState.user.language;
+    appState.user.authenticated = true;
   }
 
   function applyWorkerRow(appState, row) {
