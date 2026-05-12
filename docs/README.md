@@ -9,6 +9,12 @@ Do not use these files to redesign the current prototype UI. The live prototype 
 - `supabase_schema.sql`  
   MVP production schema, indexes, unique constraints, storage buckets, and starter RLS policies.
 
+- `server.js`  
+  Railway-ready backend shell with health check and backend-only Razorpay create/verify payment endpoints.
+
+- `.env.example`  
+  Server-only environment variable template. Never copy service role or Razorpay secret into frontend files.
+
 - `fraud_scam_protection.md`  
   Safety rules for job posts, chat messages, reports, trust scores, admin review, and auto actions.
 
@@ -48,7 +54,45 @@ For real Supabase phone login:
 
 If Supabase returns `unsupported phone number`, it is usually an Auth/SMS provider setup issue or a test/placeholder number, not a database schema issue.
 
-For local prototype testing only, the app falls back to a local dev OTP (`123456`) when opened from `file://`, `localhost`, or `127.0.0.1` and Supabase reports that the phone provider is not ready. This does not create a real Supabase Auth session and must not be treated as production login.
+For prototype testing only, `kaam-karo-app/js/supabase.config.js` enables `devBypassOtp` on local `file://`, `localhost`, and `127.0.0.1` runs so UI and flow testing can continue while the SMS provider is not configured. This does not create a real Supabase Auth session and must not be enabled on production domains.
+
+To force real Supabase OTP while testing locally after SMS is configured, use either:
+
+```js
+localStorage.setItem("kkForceRealOtp", "true")
+```
+
+or open the app with:
+
+```text
+?realOtp=1
+```
+
+Remove `kkForceRealOtp` to return to local prototype bypass testing.
+
+## Railway Backend
+
+Deploy the `backend/` folder as the Railway service.
+
+Required Railway variables:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `RAZORPAY_KEY_ID`
+- `RAZORPAY_SECRET`
+- `FRONTEND_ORIGIN`
+
+Start command:
+
+```bash
+npm start
+```
+
+Health check:
+
+```text
+GET /health
+```
 
 ## Important
 
