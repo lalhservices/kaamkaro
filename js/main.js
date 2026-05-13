@@ -431,7 +431,7 @@
     expired.forEach(function (convo) { disconnectMatch(convo, "inactive_12_days"); });
   }
   function markHiredConversation(convo) {
-    if (!convo) return;
+    if (!convo) return null;
     convo.status = "hired";
     convo.updatedAt = Date.now();
     convo.lastActivityAt = Date.now();
@@ -439,10 +439,12 @@
     if (hiredApp) hiredApp.status = "Hired";
     var now = Date.now();
     var text = "Hired! Employer has marked this job as hired.";
-    state.messages.push({ id: "msg-" + now + "-hired", conversationId: convo.id, senderId: "rick", text: text, createdAt: now, status: "delivered", deliveryStatus: "delivered", flaggedRisk: false });
+    var hiredMessage = { id: "msg-" + now + "-hired", conversationId: convo.id, senderId: "rick", text: text, createdAt: now, status: "delivered", deliveryStatus: "delivered", flaggedRisk: false, isSystem: true };
+    state.messages.push(hiredMessage);
     convo.lastMessage = text;
     state.ratings.push({ id: "rating-pending-" + now, conversationId: convo.id, jobId: convo.jobId, workerId: convo.workerId, employerId: convo.employerId, status: "pending", createdAt: now, showAfter: now + 6 * 3600000 });
     save();
+    return { application: hiredApp || null, conversation: convo, message: hiredMessage };
   }
   async function disconnectMatchRemote(result) {
     if (!result) return;
@@ -1090,7 +1092,14 @@
     var w = workerSummaryForApp(app);
     var convo = conversationForApp(app);
     var pending = ["Interested","Viewed"].indexOf(app.status) >= 0;
-    var actions = pending ? '<div class="applicant-actions"><button class="reject-btn" data-reject-app="' + app.id + '">X</button><button class="accept-btn" data-accept-app="' + app.id + '">Accept</button></div>' : '<div class="applicant-actions"><button class="reject-btn" data-open-worker="' + w.id + '" data-job-id="' + job.id + '">View profile</button>' + (convo ? '<button class="accept-btn" data-open-conversation="' + convo.id + '">Chat</button>' : '') + '<button class="reject-btn" data-remove-accepted-app="' + app.id + '">Disconnect</button></div>';
+    if (!pending) {
+      return '<div class="list-row accepted-applicant-card">' +
+        '<div class="accepted-applicant-top"><b>' + w.name + '</b><span class="status-pill ' + statusClass(app.status) + '">Matched</span></div>' +
+        '<div class="accepted-applicant-meta"><span>' + [w.age, w.city, w.experience].filter(Boolean).join(" / ") + '</span><span>' + (w.skills.slice(0,3).join(", ") || "Skills not added") + '</span></div>' +
+        '<div class="accepted-applicant-actions"><button class="reject-btn" data-open-worker="' + w.id + '" data-job-id="' + job.id + '">View Profile</button>' + (convo ? '<button class="accept-btn" data-open-conversation="' + convo.id + '">Chat</button>' : '') + '<button class="reject-btn" data-remove-accepted-app="' + app.id + '">Disconnect</button></div>' +
+      '</div>';
+    }
+    var actions = '<div class="applicant-actions"><button class="reject-btn" data-reject-app="' + app.id + '">X</button><button class="accept-btn" data-accept-app="' + app.id + '">Accept</button></div>';
     return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + [w.age, w.city, w.experience].filter(Boolean).join(" - ") + '<br>' + (w.skills.slice(0,3).join(", ") || "Skills not added") + '</span><div class="mt">' + workerProfileBadgeHtml(w) + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span>' + actions + '</div>';
   }
   function renderEmployer() {
@@ -1493,14 +1502,19 @@
       return html;
     }).join("");
   }
+  function setChatHeader(title, subtitle) {
+    document.querySelectorAll("#chatTitle").forEach(function (node) { node.textContent = title; });
+    document.querySelectorAll("#chatSub").forEach(function (node) { node.textContent = subtitle; });
+  }
   function renderChatList(convos) {
     byId("chat").classList.add("chat-no-composer");
     document.querySelector("#chat .quick").style.display = "none";
     document.querySelector("#chat .chat-input").style.display = "none";
-    byId("chatTitle").textContent = "Chat";
-    byId("chatSub").textContent = convos.length ? convos.length + " matched conversations" : "No conversations yet";
-    var titleBlock = document.querySelector("#chat .chat-title-block");
-    if (titleBlock) titleBlock.removeAttribute("data-open-employer-profile");
+    setChatHeader("Chat", convos.length ? convos.length + " matched conversations" : "No conversations yet");
+    document.querySelectorAll("#chat .chat-title-block, #appHeader .chat-title-block").forEach(function (titleBlock) {
+      titleBlock.removeAttribute("data-open-employer-profile");
+      titleBlock.removeAttribute("data-open-worker-profile");
+    });
     convos = convos.filter(function (convo) { return !isChatHidden(convo); });
     if (chatListTab === "favourite") convos = convos.filter(function (convo) { return currentRole === "employer" ? convo.favouriteEmployer : convo.favouriteWorker; });
     var tabs = '<div class="toolbar"><button class="chip ' + (chatListTab === "all" ? "selected" : "") + '" data-chat-tab="all">All</button><button class="chip ' + (chatListTab === "favourite" ? "selected" : "") + '" data-chat-tab="favourite">Favourite</button></div>';
@@ -1522,13 +1536,11 @@
     byId("chat").classList.toggle("chat-no-composer", convo.status === "blocked");
     var job = state.jobs.find(function (j) { return j.id === convo.jobId; }) || state.jobs[0];
     var status = convo.status === "hired" ? "Hired" : convo.status === "blocked" ? "Closed" : "Matched";
-    byId("chatTitle").textContent = conversationTitle(convo);
-    byId("chatSub").textContent = job.title + " - " + status;
-    var titleBlock = document.querySelector("#chat .chat-title-block");
-    if (titleBlock) {
+    setChatHeader(conversationTitle(convo), job.title + " - " + status);
+    document.querySelectorAll("#chat .chat-title-block, #appHeader .chat-title-block").forEach(function (titleBlock) {
       if (currentRole === "worker") titleBlock.setAttribute("data-open-employer-profile", job.id);
       else titleBlock.removeAttribute("data-open-employer-profile");
-    }
+    });
     convo.lastActivityAt = Date.now();
     if (currentRole === "employer") convo.unreadEmployer = 0; else convo.unreadWorker = 0;
     markReceivedMessagesSeen(convo);
@@ -2108,8 +2120,11 @@
     }
     if (event.target.closest("[data-confirm-hired]")) {
       var hiredConvo = currentConversation();
-      markHiredConversation(hiredConvo);
-      updateConversationRemote(hiredConvo);
+      var hiredResult = markHiredConversation(hiredConvo);
+      if (hiredResult && hiredResult.application) await updateApplicationStatusRemote(hiredResult.application);
+      if (hiredResult && hiredResult.conversation) await updateConversationRemote(hiredResult.conversation);
+      if (hiredResult && hiredResult.message) await saveMessageRemote(hiredResult.conversation, hiredResult.message);
+      if (hiredResult && hiredResult.conversation) selectedConversationId = hiredResult.conversation.id;
       closeModal();
       toast("Worker marked as hired.");
       render();
