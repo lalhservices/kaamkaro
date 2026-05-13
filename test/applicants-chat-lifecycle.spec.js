@@ -4,7 +4,6 @@ const {
   openFresh,
   expectNoBrowserErrors,
   expectActiveScreen,
-  seedEmployer,
   seedWorker,
   go
 } = require("./helpers");
@@ -142,7 +141,6 @@ test.describe("applicants, profile views, and chat lifecycle", () => {
   test("accepted tab removes accept/reject and shows profile, chat, disconnect", async ({ page }) => {
     const errors = attachErrorGuards(page);
     await openFresh(page);
-    await seedEmployer(page);
     await seedAcceptedMatch(page, "employer");
     await go(page, "applicants");
     await page.locator('#allApplicants [data-applicants-tab="accepted"]').click();
