@@ -628,6 +628,60 @@ html[lang="hi"] .scene-panel {
 .applicant-actions .reject-btn, .applicant-actions .accept-btn { height: 50px; border-radius: 18px; font-size: 14px; font-weight: 950; }
 .applicant-actions .reject-btn { min-width: 54px; border: 1px solid var(--line); background: #fff; color: var(--ink); }
 .applicant-actions .accept-btn { min-width: 96px; border: 0; background: var(--green); color: #fff; }
+.list-row.accepted-applicant-card {
+  display: grid;
+  gap: 12px;
+  align-items: stretch;
+}
+.accepted-applicant-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+.accepted-applicant-top b {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.accepted-applicant-meta {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.38;
+  min-width: 0;
+}
+.accepted-applicant-meta span {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+.accepted-applicant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+.accepted-applicant-actions .reject-btn,
+.accepted-applicant-actions .accept-btn {
+  height: 48px;
+  min-width: 0;
+  flex: 1 1 92px;
+  border-radius: 17px;
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+.accepted-applicant-actions .reject-btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+}
+.accepted-applicant-actions .accept-btn {
+  border: 0;
+  background: var(--green);
+  color: #fff;
+}
 
 .progress { display: flex; gap: 7px; margin: 2px 0 22px; }
 .progress span { height: 5px; flex: 1; border-radius: 999px; background: #dce6f2; }
@@ -1230,6 +1284,13 @@ button.badge { cursor: pointer; font: inherit; }
   #chat .screen-body {
     padding-left: 16px;
     padding-right: 16px;
+  }
+  .accepted-applicant-actions .reject-btn,
+  .accepted-applicant-actions .accept-btn {
+    flex-basis: calc(50% - 5px);
+  }
+  .accepted-applicant-actions .reject-btn:last-child {
+    flex-basis: 100%;
   }
 }
 
