@@ -29,6 +29,7 @@ create table if not exists public.users (
   updated_at timestamptz not null default now()
 );
 
+drop trigger if exists users_set_updated_at on public.users;
 create trigger users_set_updated_at
 before update on public.users
 for each row execute function public.set_updated_at();
@@ -51,6 +52,32 @@ as $$
   select exists (
     select 1 from public.admin_users
     where user_id = auth.uid()
+  );
+$$;
+
+create or replace function public.owns_worker_profile(profile_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.worker_profiles
+    where id = profile_id and user_id = auth.uid()
+  );
+$$;
+
+create or replace function public.owns_employer_profile(profile_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.employer_profiles
+    where id = profile_id and user_id = auth.uid()
   );
 $$;
 
@@ -79,6 +106,7 @@ create table if not exists public.worker_profiles (
   updated_at timestamptz not null default now()
 );
 
+drop trigger if exists worker_profiles_set_updated_at on public.worker_profiles;
 create trigger worker_profiles_set_updated_at
 before update on public.worker_profiles
 for each row execute function public.set_updated_at();
@@ -102,6 +130,7 @@ create table if not exists public.employer_profiles (
   updated_at timestamptz not null default now()
 );
 
+drop trigger if exists employer_profiles_set_updated_at on public.employer_profiles;
 create trigger employer_profiles_set_updated_at
 before update on public.employer_profiles
 for each row execute function public.set_updated_at();
@@ -135,6 +164,7 @@ create table if not exists public.jobs (
   updated_at timestamptz not null default now()
 );
 
+drop trigger if exists jobs_set_updated_at on public.jobs;
 create trigger jobs_set_updated_at
 before update on public.jobs
 for each row execute function public.set_updated_at();
@@ -160,6 +190,7 @@ create table if not exists public.applications (
   unique (worker_id, job_id)
 );
 
+drop trigger if exists applications_set_updated_at on public.applications;
 create trigger applications_set_updated_at
 before update on public.applications
 for each row execute function public.set_updated_at();
@@ -185,6 +216,7 @@ create table if not exists public.chats (
   updated_at timestamptz not null default now()
 );
 
+drop trigger if exists chats_set_updated_at on public.chats;
 create trigger chats_set_updated_at
 before update on public.chats
 for each row execute function public.set_updated_at();
@@ -202,6 +234,44 @@ create table if not exists public.messages (
   blocked_by_filter boolean not null default false,
   created_at timestamptz not null default now()
 );
+
+create or replace function public.update_message_delivery_status(message_id uuid, new_status text)
+returns public.messages
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  updated_message public.messages;
+begin
+  if new_status not in ('sent', 'delivered', 'seen') then
+    raise exception 'Invalid delivery status';
+  end if;
+
+  if not exists (
+    select 1
+    from public.messages m
+    join public.chats c on c.id = m.chat_id
+    where m.id = message_id
+      and (
+        public.owns_worker_profile(c.worker_id)
+        or public.owns_employer_profile(c.employer_id)
+        or public.is_admin()
+      )
+  ) then
+    raise exception 'Not allowed';
+  end if;
+
+  update public.messages
+  set
+    delivery_status = new_status,
+    seen_at = case when new_status = 'seen' then now() else seen_at end
+  where id = message_id
+  returning * into updated_message;
+
+  return updated_message;
+end;
+$$;
 
 -- ---------- Trust, Reports, Moderation ----------
 
@@ -390,6 +460,11 @@ create policy "worker_profiles_select_allowed" on public.worker_profiles
 for select using (
   user_id = auth.uid()
   or public.is_admin()
+  or exists (
+    select 1 from public.applications a
+    where a.worker_id = worker_profiles.id
+      and public.owns_employer_profile(a.employer_id)
+  )
 );
 
 drop policy if exists "worker_profiles_manage_own" on public.worker_profiles;
@@ -401,6 +476,16 @@ create policy "employer_profiles_select_allowed" on public.employer_profiles
 for select using (
   user_id = auth.uid()
   or public.is_admin()
+  or exists (
+    select 1 from public.jobs j
+    where j.employer_id = employer_profiles.id
+      and j.status = 'active'
+  )
+  or exists (
+    select 1 from public.applications a
+    where a.employer_id = employer_profiles.id
+      and public.owns_worker_profile(a.worker_id)
+  )
 );
 
 drop policy if exists "employer_profiles_manage_own" on public.employer_profiles;
@@ -417,48 +502,43 @@ for select using (
 
 drop policy if exists "jobs_manage_own_employer" on public.jobs;
 create policy "jobs_manage_own_employer" on public.jobs
-for all using (
-  exists (select 1 from public.employer_profiles e where e.id = jobs.employer_id and e.user_id = auth.uid())
-) with check (
-  exists (select 1 from public.employer_profiles e where e.id = jobs.employer_id and e.user_id = auth.uid())
-);
+for all using (public.owns_employer_profile(jobs.employer_id))
+with check (public.owns_employer_profile(jobs.employer_id));
 
 drop policy if exists "applications_select_participants" on public.applications;
 create policy "applications_select_participants" on public.applications
 for select using (
   public.is_admin()
-  or exists (select 1 from public.worker_profiles w where w.id = applications.worker_id and w.user_id = auth.uid())
-  or exists (select 1 from public.employer_profiles e where e.id = applications.employer_id and e.user_id = auth.uid())
+  or public.owns_worker_profile(applications.worker_id)
+  or public.owns_employer_profile(applications.employer_id)
 );
 
 drop policy if exists "applications_worker_insert_own" on public.applications;
 create policy "applications_worker_insert_own" on public.applications
-for insert with check (
-  exists (select 1 from public.worker_profiles w where w.id = worker_id and w.user_id = auth.uid())
-);
+for insert with check (public.owns_worker_profile(worker_id));
 
 drop policy if exists "applications_participant_update" on public.applications;
 create policy "applications_participant_update" on public.applications
 for update using (
   public.is_admin()
-  or exists (select 1 from public.worker_profiles w where w.id = applications.worker_id and w.user_id = auth.uid())
-  or exists (select 1 from public.employer_profiles e where e.id = applications.employer_id and e.user_id = auth.uid())
+  or public.owns_worker_profile(applications.worker_id)
+  or public.owns_employer_profile(applications.employer_id)
 ) with check (
   public.is_admin()
-  or exists (select 1 from public.worker_profiles w where w.id = worker_id and w.user_id = auth.uid())
-  or exists (select 1 from public.employer_profiles e where e.id = employer_id and e.user_id = auth.uid())
+  or public.owns_worker_profile(worker_id)
+  or public.owns_employer_profile(employer_id)
 );
 
 drop policy if exists "chats_participants" on public.chats;
 create policy "chats_participants" on public.chats
 for all using (
   public.is_admin()
-  or exists (select 1 from public.worker_profiles w where w.id = chats.worker_id and w.user_id = auth.uid())
-  or exists (select 1 from public.employer_profiles e where e.id = chats.employer_id and e.user_id = auth.uid())
+  or public.owns_worker_profile(chats.worker_id)
+  or public.owns_employer_profile(chats.employer_id)
 ) with check (
   public.is_admin()
-  or exists (select 1 from public.worker_profiles w where w.id = worker_id and w.user_id = auth.uid())
-  or exists (select 1 from public.employer_profiles e where e.id = employer_id and e.user_id = auth.uid())
+  or public.owns_worker_profile(worker_id)
+  or public.owns_employer_profile(employer_id)
 );
 
 drop policy if exists "messages_chat_participants" on public.messages;
@@ -467,17 +547,15 @@ for all using (
   public.is_admin()
   or exists (
     select 1 from public.chats c
-    left join public.worker_profiles w on w.id = c.worker_id
-    left join public.employer_profiles e on e.id = c.employer_id
-    where c.id = messages.chat_id and (w.user_id = auth.uid() or e.user_id = auth.uid())
+    where c.id = messages.chat_id
+      and (public.owns_worker_profile(c.worker_id) or public.owns_employer_profile(c.employer_id))
   )
 ) with check (
   sender_id = auth.uid()
   and exists (
     select 1 from public.chats c
-    left join public.worker_profiles w on w.id = c.worker_id
-    left join public.employer_profiles e on e.id = c.employer_id
-    where c.id = chat_id and (w.user_id = auth.uid() or e.user_id = auth.uid())
+    where c.id = chat_id
+      and (public.owns_worker_profile(c.worker_id) or public.owns_employer_profile(c.employer_id))
   )
 );
 
@@ -492,6 +570,10 @@ for select using (reporter_id = auth.uid() or reported_user_id = auth.uid() or p
 drop policy if exists "admin_only_moderation_logs" on public.moderation_logs;
 create policy "admin_only_moderation_logs" on public.moderation_logs
 for all using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "moderation_logs_insert_own" on public.moderation_logs;
+create policy "moderation_logs_insert_own" on public.moderation_logs
+for insert with check (user_id = auth.uid());
 
 drop policy if exists "trust_scores_select_own_or_admin" on public.trust_scores;
 create policy "trust_scores_select_own_or_admin" on public.trust_scores
@@ -520,11 +602,8 @@ for select using (user_id = auth.uid() or public.is_admin());
 
 drop policy if exists "saved_jobs_own" on public.saved_jobs;
 create policy "saved_jobs_own" on public.saved_jobs
-for all using (
-  exists (select 1 from public.worker_profiles w where w.id = saved_jobs.worker_id and w.user_id = auth.uid())
-) with check (
-  exists (select 1 from public.worker_profiles w where w.id = worker_id and w.user_id = auth.uid())
-);
+for all using (public.owns_worker_profile(saved_jobs.worker_id))
+with check (public.owns_worker_profile(worker_id));
 
 drop policy if exists "audit_logs_admin" on public.audit_logs;
 create policy "audit_logs_admin" on public.audit_logs

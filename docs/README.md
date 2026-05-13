@@ -21,6 +21,9 @@ Do not use these files to redesign the current prototype UI. The live prototype 
 - `supabase_rls_fix.sql`  
   One-time patch for an already-created project if Supabase reports RLS recursion on profile tables.
 
+- `supabase_rls_hardening.sql`  
+  One-time patch for an already-created project to safely support public employer profile views, employer applicant profile views, participant-only chats/messages, and recursion-safe RLS helper functions.
+
 ## Implementation Order
 
 1. Create Supabase project and run `supabase_schema.sql` in development.
@@ -30,6 +33,8 @@ Do not use these files to redesign the current prototype UI. The live prototype 
 5. Move jobs, applications, chats, reports, ratings, notifications, and payments to real tables.
 6. Add backend API routes for sensitive actions.
 7. Add Razorpay verification last.
+
+If the first schema has already been executed, run `supabase_rls_hardening.sql` once in the Supabase SQL Editor before testing real applications/chat. This patch keeps private writes locked down while allowing the public/profile reads required by the app flow.
 
 ## Frontend Supabase Config
 
