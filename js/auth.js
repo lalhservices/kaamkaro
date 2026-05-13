@@ -70,14 +70,20 @@
     var existing = await client
       .from("users")
       .select(columns)
-      .eq("phone_number", phone)
+      .eq("id", authUser.id)
       .maybeSingle();
 
     if (existing.error && existing.error.code !== "PGRST116") throw existing.error;
     if (existing.data && existing.data.is_suspended) throw new Error("This account is temporarily restricted.");
     if (existing.data) {
-      await client.from("users").update({ updated_at: now }).eq("id", existing.data.id);
-      return existing.data;
+      var updated = await client
+        .from("users")
+        .update({ phone_number: phone, updated_at: now })
+        .eq("id", existing.data.id)
+        .select(columns)
+        .single();
+      if (updated.error) throw updated.error;
+      return updated.data;
     }
 
     var row = {
@@ -92,7 +98,12 @@
       updated_at: now
     };
     var inserted = await client.from("users").insert(row).select(columns).single();
-    if (inserted.error) throw inserted.error;
+    if (inserted.error) {
+      if (inserted.error.code === "23505") {
+        throw new Error("This phone number is already linked to an account. Please login with the same phone number again.");
+      }
+      throw inserted.error;
+    }
     return inserted.data;
   }
 

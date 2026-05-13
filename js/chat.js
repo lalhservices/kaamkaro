@@ -53,11 +53,13 @@
     return {
       id: row.id,
       conversationId: row.chat_id,
+      remoteSenderId: row.sender_id,
       senderId: localSender(appState, row.sender_id, activeUserId),
       text: row.message,
       createdAt: row.created_at ? new Date(row.created_at).getTime() : Date.now(),
       status: row.delivery_status || "sent",
       deliveryStatus: row.delivery_status || "sent",
+      seenAt: row.seen_at ? new Date(row.seen_at).getTime() : null,
       flaggedRisk: !!row.blocked_by_filter,
       isSystem: row.message_type === "system"
     };
@@ -146,6 +148,34 @@
     var result = await supabase.from("messages").insert(payload).select("*").single();
     if (result.error) throw result.error;
     message.id = result.data.id;
+    message.remoteSenderId = result.data.sender_id;
+    return result.data;
+  }
+
+  async function updateMessageStatus(appState, message) {
+    var supabase = client();
+    var activeSession = await session();
+    if (!supabase || !activeSession || !activeSession.user || !message || !isUuid(message.id)) return null;
+    var payload = {
+      delivery_status: message.deliveryStatus || message.status || "sent"
+    };
+    var rpcResult = await supabase.rpc("update_message_delivery_status", {
+      message_id: message.id,
+      new_status: payload.delivery_status
+    });
+    if (!rpcResult.error) return rpcResult.data;
+    var missingRpc = rpcResult.error.code === "PGRST202" || /could not find|function .*update_message_delivery_status|update_message_delivery_status.*not found/i.test(String(rpcResult.error.message || ""));
+    if (!missingRpc) throw rpcResult.error;
+    if (payload.delivery_status === "seen") {
+      payload.seen_at = message.seenAt ? new Date(message.seenAt).toISOString() : new Date().toISOString();
+    }
+    var result = await supabase
+      .from("messages")
+      .update(payload)
+      .eq("id", message.id)
+      .select("*")
+      .single();
+    if (result.error) throw result.error;
     return result.data;
   }
 
@@ -163,7 +193,7 @@
         last_message_at: new Date(convo.updatedAt || Date.now()).toISOString(),
         deleted_by_worker: !!(convo.deletedForWorker && convo.deletedForWorker.length),
         deleted_by_employer: !!(convo.deletedForEmployer && convo.deletedForEmployer.length),
-        disconnected_by: convo.disconnectedBy || null,
+        disconnected_by: isUuid(convo.disconnectedBy) ? convo.disconnectedBy : (convo.status === "disconnected" ? activeSession.user.id : null),
         disconnected_reason: convo.disconnectedReason || null
       })
       .eq("id", convo.id)
@@ -189,11 +219,55 @@
     return true;
   }
 
+  async function saveReport(appState, report, convo) {
+    var supabase = client();
+    var activeSession = await session();
+    if (!supabase || !activeSession || !activeSession.user || !report) return null;
+    var jobId = report.jobId || (convo && convo.jobId) || "";
+    var result = await supabase.from("reports").insert({
+      reporter_id: activeSession.user.id,
+      job_id: isUuid(jobId) ? jobId : null,
+      chat_id: convo && isUuid(convo.id) ? convo.id : null,
+      reason: report.reason || "Other",
+      details: report.details || "",
+      status: "open"
+    }).select("*").single();
+    if (result.error) throw result.error;
+    report.id = result.data.id;
+    return result.data;
+  }
+
+  async function saveRating(appState, rating, convo) {
+    var supabase = client();
+    var activeSession = await session();
+    if (!supabase || !activeSession || !activeSession.user || !rating || !convo || !isUuid(convo.applicationId)) return null;
+    var workerProfile = appState.workerProfiles && appState.workerProfiles[convo.workerId];
+    var employerProfile = appState.businessProfiles && appState.businessProfiles[convo.employerId];
+    var fromRole = rating.fromRole || (appState.user && appState.user.activeRole) || "worker";
+    var toUserId = fromRole === "employer"
+      ? workerProfile && workerProfile.userId
+      : employerProfile && employerProfile.ownerId;
+    if (!isUuid(toUserId)) return null;
+    var result = await supabase.from("ratings").upsert({
+      application_id: convo.applicationId,
+      from_user_id: activeSession.user.id,
+      to_user_id: toUserId,
+      stars: rating.rating || rating.score || 0,
+      quick_feedback: rating.quick || "",
+      comment: rating.comment || ""
+    }, { onConflict: "application_id,from_user_id" }).select("*").single();
+    if (result.error) throw result.error;
+    return result.data;
+  }
+
   window.KaamKaroChat = {
     hydrateChats: hydrateChats,
     saveConversation: saveConversation,
     saveMessage: saveMessage,
+    updateMessageStatus: updateMessageStatus,
     updateConversation: updateConversation,
-    saveModerationLog: saveModerationLog
+    saveModerationLog: saveModerationLog,
+    saveReport: saveReport,
+    saveRating: saveRating
   };
 })();

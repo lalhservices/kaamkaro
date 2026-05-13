@@ -44,7 +44,27 @@
     return map[status] || "Interested";
   }
 
-  function rowToApplication(row) {
+  function applyRelatedRows(appState, row) {
+    if (!appState || !row) return;
+    appState.workerProfiles = appState.workerProfiles || {};
+    var worker = row.worker_profiles || row.worker_profile || null;
+    if (worker) {
+      appState.workerProfiles[row.worker_id] = Object.assign(appState.workerProfiles[row.worker_id] || {}, {
+        workerId: row.worker_id,
+        userId: worker.user_id,
+        name: worker.full_name || "",
+        city: worker.city || "",
+        location: worker.formatted_location || worker.city || "",
+        skills: Array.isArray(worker.skills) ? worker.skills : [],
+        photo_url: worker.photo_url || "",
+        photo_verified: !!worker.photo_verified,
+        photoVerificationStatus: worker.photo_verified ? "verified" : "not_uploaded"
+      });
+    }
+  }
+
+  function rowToApplication(row, appState) {
+    applyRelatedRows(appState, row);
     return {
       id: row.id,
       jobId: row.job_id,
@@ -66,10 +86,10 @@
     if (!supabase || !activeSession || !activeSession.user) return null;
     var result = await supabase
       .from("applications")
-      .select("*")
+      .select("*, worker_profiles:worker_id(id,user_id,full_name,city,formatted_location,skills,photo_url,photo_verified)")
       .order("created_at", { ascending: false });
     if (result.error) throw result.error;
-    appState.applications = (result.data || []).map(rowToApplication);
+    appState.applications = (result.data || []).map(function (row) { return rowToApplication(row, appState); });
     return result.data || [];
   }
 
@@ -92,7 +112,7 @@
       ? await supabase.from("applications").update(payload).eq("id", app.id).select("*").single()
       : await supabase.from("applications").upsert(payload, { onConflict: "worker_id,job_id" }).select("*").single();
     if (result.error) throw result.error;
-    Object.assign(app, rowToApplication(result.data));
+    Object.assign(app, rowToApplication(result.data, appState));
     return result.data;
   }
 
@@ -115,7 +135,7 @@
     }
     var result = await supabase.from("applications").update(payload).eq("id", app.id).select("*").single();
     if (result.error) throw result.error;
-    Object.assign(app, rowToApplication(result.data));
+    Object.assign(app, rowToApplication(result.data, appState));
     return result.data;
   }
 

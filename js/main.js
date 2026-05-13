@@ -274,12 +274,39 @@
       return null;
     }
   }
+  async function updateMessageRemote(message) {
+    if (!window.KaamKaroChat || !window.KaamKaroChat.updateMessageStatus) return null;
+    try {
+      return await window.KaamKaroChat.updateMessageStatus(state, message);
+    } catch (error) {
+      console.warn("Message status Supabase update failed:", error);
+      return null;
+    }
+  }
   async function saveModerationLogRemote(log) {
     if (!window.KaamKaroChat || !window.KaamKaroChat.saveModerationLog) return null;
     try {
       return await window.KaamKaroChat.saveModerationLog(state, log);
     } catch (error) {
       console.warn("Moderation Supabase save failed:", error);
+      return null;
+    }
+  }
+  async function saveReportRemote(report, convo) {
+    if (!window.KaamKaroChat || !window.KaamKaroChat.saveReport) return null;
+    try {
+      return await window.KaamKaroChat.saveReport(state, report, convo);
+    } catch (error) {
+      console.warn("Report Supabase save failed:", error);
+      return null;
+    }
+  }
+  async function saveRatingRemote(rating, convo) {
+    if (!window.KaamKaroChat || !window.KaamKaroChat.saveRating) return null;
+    try {
+      return await window.KaamKaroChat.saveRating(state, rating, convo);
+    } catch (error) {
+      console.warn("Rating Supabase save failed:", error);
       return null;
     }
   }
@@ -1035,13 +1062,36 @@
   }
   function appForSelected() { return state.applications.find(function (a) { return a.jobId === selectedJobId && a.workerId === selectedWorkerId; }); }
   function statusClass(status) { return "status-" + String(status || "Interested").toLowerCase(); }
+  function workerSummaryForApp(app) {
+    var profile = app && state.workerProfiles ? state.workerProfiles[app.workerId] : null;
+    if (!profile && app && app.workerId === state.worker.id) profile = state.worker;
+    profile = profile || {};
+    return {
+      id: app ? app.workerId : (profile.id || state.worker.id),
+      name: profile.name || profile.full_name || state.worker.name || "Worker",
+      age: profile.age || state.worker.age || "",
+      city: profile.city || state.worker.city || "Location not set",
+      experience: profile.experience || state.worker.experience || "Experience not added",
+      skills: Array.isArray(profile.skills) ? profile.skills : (Array.isArray(state.worker.skills) ? state.worker.skills : []),
+      jobTypes: Array.isArray(profile.jobTypes) ? profile.jobTypes : (Array.isArray(profile.preferred_jobs) ? profile.preferred_jobs : (Array.isArray(state.worker.jobTypes) ? state.worker.jobTypes : [])),
+      preferredJob: profile.preferredJob || state.worker.preferredJob || "Open to suitable jobs",
+      availability: profile.availability || state.worker.availability || "Availability not added",
+      locationLine: profile.location || profile.formatted_location || profile.city || state.worker.formatted_location || state.worker.city || "",
+      photoVerified: !!(profile.photo_verified || profile.photoVerified || (app && app.workerId === state.worker.id && state.worker.photoVerified))
+    };
+  }
+  function workerProfileBadgeHtml(worker) {
+    return worker && worker.photoVerified
+      ? '<span class="badge green">Photo Verified</span>'
+      : '<span class="badge">Verify Photo</span>';
+  }
   function renderApplicantCard(app) {
     var job = state.jobs.find(function (j) { return j.id === app.jobId; }) || { id: app.jobId, title: "Job" };
-    var w = state.worker;
+    var w = workerSummaryForApp(app);
     var convo = conversationForApp(app);
     var pending = ["Interested","Viewed"].indexOf(app.status) >= 0;
     var actions = pending ? '<div class="applicant-actions"><button class="reject-btn" data-reject-app="' + app.id + '">X</button><button class="accept-btn" data-accept-app="' + app.id + '">Accept</button></div>' : '<div class="applicant-actions"><button class="reject-btn" data-open-worker="' + w.id + '" data-job-id="' + job.id + '">View profile</button>' + (convo ? '<button class="accept-btn" data-open-conversation="' + convo.id + '">Chat</button>' : '') + '<button class="reject-btn" data-remove-accepted-app="' + app.id + '">Disconnect</button></div>';
-    return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + w.age + ' - ' + w.city + ' - ' + w.experience + '<br>' + w.skills.slice(0,3).join(", ") + '</span><div class="mt">' + workerPhotoBadgeHtml() + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span>' + actions + '</div>';
+    return '<div class="list-row"><button class="grow" style="border:0;background:transparent;text-align:left;padding:0;color:inherit" data-open-worker="' + w.id + '" data-job-id="' + job.id + '"><b>' + w.name + '</b><br><span class="small">' + [w.age, w.city, w.experience].filter(Boolean).join(" - ") + '<br>' + (w.skills.slice(0,3).join(", ") || "Skills not added") + '</span><div class="mt">' + workerProfileBadgeHtml(w) + '</div></button><span class="status-pill ' + statusClass(app.status) + '">' + app.status + '</span>' + actions + '</div>';
   }
   function renderEmployer() {
     if (!hasEmployerProfile()) return;
@@ -1069,21 +1119,21 @@
     byId("employerJobsList").innerHTML = state.jobs.map(function (j) { return '<div class="list-row"><button class="grow" data-job-detail="' + j.id + '" style="border:0;background:transparent;text-align:left;color:inherit;padding:0"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' - ' + j.city + '</span></button><span class="status-text">' + ((j.status || "approved") === "Expired" ? "Expired" : "Open") + '</span><button class="icon" data-repost-job="' + j.id + '"><svg><use href="#i-plus"></use></svg></button><button class="icon" data-delete-job="' + j.id + '"><svg><use href="#i-trash"></use></svg></button></div>'; }).join("");
   }
   function renderFullWorkerProfile() {
-    var w = state.worker;
     var app = appForSelected() || { status: "Interested" };
-    var badges = workerBadges().map(function (b) { return '<span class="badge ' + b.className + '">' + b.label + '</span>'; }).join("");
+    var w = workerSummaryForApp(app);
+    var badges = '<span class="badge blue">Profile Complete</span><span class="badge amber">Active</span>';
     var accepted = ["Accepted","Matched"].indexOf(app.status) >= 0;
     var convo = conversationForApp(app);
-    var strength = profileStrength();
+    var strength = w.photoVerified ? 100 : 70;
     byId("profileStatus").textContent = app.status;
     byId("profileStatus").className = "tag";
     byId("fullWorkerProfile").innerHTML =
-      '<div class="panel profile-hero"><span class="avatar">' + initials(w.name || "Worker") + '</span><span class="grow"><h2>' + (w.name || "Worker") + '</h2><p>' + (w.city || "Location not set") + '</p><div class="toolbar">' + badges + workerPhotoBadgeHtml() + '</div></span></div>' +
+      '<div class="panel profile-hero"><span class="avatar">' + initials(w.name || "Worker") + '</span><span class="grow"><h2>' + (w.name || "Worker") + '</h2><p>' + (w.city || "Location not set") + '</p><div class="toolbar">' + badges + workerProfileBadgeHtml(w) + '</div></span></div>' +
       '<div class="panel"><div class="kv"><span>Profile strength</span><b>' + strength + '%</b></div><div class="progress"><span class="on" style="flex-basis:' + strength + '%"></span><span></span></div><p class="small">Safety note: Phone numbers and private account settings are never shown to employers.</p></div>' +
-      '<button class="profile-card"><span><span>Location</span><b>' + workerLocationLine() + '</b></span></button>' +
-      '<button class="profile-card"><span><span>Experience</span><b>' + workerExperienceLine() + '</b></span></button>' +
+      '<button class="profile-card"><span><span>Location</span><b>' + (w.locationLine ? "Based in " + w.city + ", available for nearby opportunities" : "Location not added") + '</b></span></button>' +
+      '<button class="profile-card"><span><span>Experience</span><b>' + w.experience + '</b></span></button>' +
       '<button class="profile-card"><span><span>Preferred job types</span><b>' + ((w.jobTypes || []).join(", ") || w.preferredJob || "Open to suitable jobs") + '</b></span></button>' +
-      '<button class="profile-card"><span><span>Availability</span><b>' + workerAvailabilityLine() + '</b></span></button>' +
+      '<button class="profile-card"><span><span>Availability</span><b>' + w.availability + '</b></span></button>' +
       '<div class="panel"><b>Skills</b><div class="toolbar">' + ((w.skills || []).length ? w.skills.map(function (s) { return '<span class="badge blue">' + s + '</span>'; }).join("") : '<span class="small">No skills added yet</span>') + '</div></div>' +
       '<div class="metric-grid profile-metrics"><div class="metric-card"><span>Rating</span><b>New</b></div><div class="metric-card"><span>Completed jobs</span><b>0</b></div></div>';
     if (byId("workerProfileActions")) {
@@ -1366,6 +1416,7 @@
   function markReceivedMessagesSeen(convo) {
     if (!convo) return;
     var changed = false;
+    var changedMessages = [];
     state.messages.forEach(function (message) {
       if (message.conversationId !== convo.id) return;
       if (messageSenderId(message) === currentUserId()) return;
@@ -1374,9 +1425,13 @@
         message.status = "seen";
         message.seenAt = Date.now();
         changed = true;
+        changedMessages.push(message);
       }
     });
-    if (changed) save();
+    if (changed) {
+      save();
+      changedMessages.forEach(function (message) { updateMessageRemote(message); });
+    }
   }
   function isSameDay(a, b) {
     var da = new Date(a);
@@ -1528,7 +1583,13 @@
     renderChat();
     saveMessageRemote(convo, msg);
     updateConversationRemote(convo);
-    setTimeout(function () { msg.status = "delivered"; msg.deliveryStatus = "delivered"; save(); renderChat(); }, 500);
+    setTimeout(function () {
+      msg.status = "delivered";
+      msg.deliveryStatus = "delivered";
+      save();
+      updateMessageRemote(msg);
+      renderChat();
+    }, 500);
   }
   function profileComplete() {
     return !!(state.worker.name && state.worker.city && state.worker.preferredJob && state.worker.skills.length);
@@ -2012,7 +2073,9 @@
       var reportConvo = currentConversation();
       var reportDetails = (byId("reportDetails") && byId("reportDetails").value) || "";
       state.auditLogs.unshift({ userId: currentUserId(), action: "chat_reported", reason: selectedReportReason + ": " + reportDetails, jobSnapshot: null, timestamp: new Date().toISOString() });
-      state.reports.unshift({ id: "report-" + Date.now(), reporterId: currentUserId(), chatId: reportConvo ? reportConvo.id : "", reason: selectedReportReason, details: reportDetails, status: "open", createdAt: Date.now() });
+      var reportRecord = { id: "report-" + Date.now(), reporterId: currentUserId(), chatId: reportConvo ? reportConvo.id : "", jobId: reportConvo ? reportConvo.jobId : "", reason: selectedReportReason, details: reportDetails, status: "open", createdAt: Date.now() };
+      state.reports.unshift(reportRecord);
+      await saveReportRemote(reportRecord, reportConvo);
       if (reportConvo) {
         await disconnectMatchRemote(disconnectMatch(reportConvo, "reported_" + selectedReportReason));
       }
@@ -2064,7 +2127,9 @@
     if (event.target.closest("[data-submit-rating]")) {
       var ratedConvo = currentConversation();
       if (!pendingRating.score) return toast("Choose a star rating.");
-      state.ratings.push({ id: "rating-" + Date.now(), conversationId: ratedConvo.id, jobId: ratedConvo.jobId, userId: currentUserId(), fromRole: currentRole, rating: pendingRating.score, quick: pendingRating.quick, comment: byId("ratingComment") ? byId("ratingComment").value.trim() : "", status: "submitted", createdAt: Date.now() });
+      var ratingRecord = { id: "rating-" + Date.now(), conversationId: ratedConvo.id, jobId: ratedConvo.jobId, userId: currentUserId(), fromRole: currentRole, rating: pendingRating.score, quick: pendingRating.quick, comment: byId("ratingComment") ? byId("ratingComment").value.trim() : "", status: "submitted", createdAt: Date.now() };
+      state.ratings.push(ratingRecord);
+      await saveRatingRemote(ratingRecord, ratedConvo);
       save(); closeModal(); toast("Feedback submitted"); renderChat(); return;
     }
     var quick = event.target.closest("[data-quick]");
