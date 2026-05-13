@@ -261,7 +261,7 @@
     <section id="workerProfileView" class="screen">
       <div class="header"><button class="icon" data-go="employerJobDetail"><svg><use href="#i-back"></use></svg></button><span class="tag" id="profileStatus">Interested</span></div>
       <div id="fullWorkerProfile"></div>
-      <div class="btn-row mt"><button class="btn danger" data-reject-current>Reject</button><button class="btn primary" data-accept-current>Accept & Chat</button></div>
+      <div class="btn-row mt" id="workerProfileActions"><button class="btn danger" data-reject-current>Reject</button><button class="btn primary" data-accept-current>Accept & Chat</button></div>
     </section>
 
     <section id="postJob" class="screen">
@@ -369,6 +369,11 @@
       </div>
     </section>
 
+    <section id="employerPublicProfile" class="screen">
+      <div class="header"><button class="icon" data-public-profile-back><svg><use href="#i-back"></use></svg></button><h3>Employer Profile</h3><button class="icon" data-report="profile"><svg><use href="#i-flag"></use></svg></button></div>
+      <div id="publicEmployerProfile"></div>
+    </section>
+
     <section id="notifications" class="screen">
       <div class="header"><button class="icon" data-menu-back="true"><svg><use href="#i-back"></use></svg></button><h3>Notifications</h3><button class="icon">OK</button></div>
       <div class="list" id="notificationList"></div>
@@ -472,6 +477,11 @@
   <script src="js/supabase.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/profile.js"></script>
+  <script src="js/employer.js"></script>
+  <script src="js/jobs.js"></script>
+  <script src="js/applications.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/payments.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
