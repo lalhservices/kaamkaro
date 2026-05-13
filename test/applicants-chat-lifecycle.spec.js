@@ -147,11 +147,63 @@ test.describe("applicants, profile views, and chat lifecycle", () => {
 
     await expect(page.locator("#allApplicants [data-accept-app]")).toHaveCount(0);
     await expect(page.locator("#allApplicants [data-reject-app]")).toHaveCount(0);
-    await expect(page.locator("#allApplicants")).toContainText("View profile");
+    await expect(page.locator("#allApplicants")).toContainText("View Profile");
     await expect(page.locator("#allApplicants")).toContainText("Chat");
     await expect(page.locator("#allApplicants")).toContainText("Disconnect");
     await expectNoBrowserErrors(errors);
   });
+
+  for (const width of [320, 360, 390, 430]) {
+    test(`accepted applicant card is mobile-safe at ${width}px`, async ({ page }) => {
+      const errors = attachErrorGuards(page);
+      await openFresh(page, width, 844);
+      await seedAcceptedMatch(page, "employer");
+      await go(page, "applicants");
+      await page.locator('#allApplicants [data-applicants-tab="accepted"]').click();
+      await expect(page.locator("#allApplicants .accepted-applicant-card")).toHaveCount(1);
+
+      const layout = await page.evaluate(() => {
+        const card = document.querySelector("#allApplicants .accepted-applicant-card");
+        const body = document.documentElement;
+        const cardRect = card.getBoundingClientRect();
+        const buttons = Array.from(card.querySelectorAll(".accepted-applicant-actions button")).map((button) => {
+          const rect = button.getBoundingClientRect();
+          return {
+            text: button.textContent.trim(),
+            width: rect.width,
+            height: rect.height,
+            left: rect.left,
+            right: rect.right,
+            top: rect.top,
+            bottom: rect.bottom
+          };
+        });
+        return {
+          viewport: window.innerWidth,
+          docScroll: body.scrollWidth,
+          cardLeft: cardRect.left,
+          cardRight: cardRect.right,
+          cardHeight: cardRect.height,
+          buttons
+        };
+      });
+
+      expect(layout.docScroll).toBeLessThanOrEqual(layout.viewport + 1);
+      expect(layout.cardLeft).toBeGreaterThanOrEqual(-1);
+      expect(layout.cardRight).toBeLessThanOrEqual(layout.viewport + 1);
+      expect(layout.cardHeight).toBeLessThanOrEqual(width <= 340 ? 280 : 235);
+      expect(layout.buttons.map((button) => button.text)).toEqual(["View Profile", "Chat", "Disconnect"]);
+      for (const button of layout.buttons) {
+        expect(button.left).toBeGreaterThanOrEqual(layout.cardLeft - 1);
+        expect(button.right).toBeLessThanOrEqual(layout.cardRight + 1);
+        var minButtonWidth = button.text === "Disconnect" && width <= 340 ? 250 : 110;
+        expect(button.width).toBeGreaterThanOrEqual(minButtonWidth);
+        expect(button.height).toBeGreaterThanOrEqual(44);
+        expect(button.height).toBeLessThanOrEqual(56);
+      }
+      await expectNoBrowserErrors(errors);
+    });
+  }
 
   test("employer opens premium worker profile with correct accepted actions", async ({ page }) => {
     const errors = attachErrorGuards(page);
@@ -203,6 +255,30 @@ test.describe("applicants, profile views, and chat lifecycle", () => {
     await go(page, "chat");
     await page.locator('[data-open-conversation="qa-chat-1"]').click();
     await expect(page.locator(".msg.left").last()).not.toContainText("seen");
+    await expectNoBrowserErrors(errors);
+  });
+
+  test("mark as hired removes from accepted list but keeps hired chat", async ({ page }) => {
+    const errors = attachErrorGuards(page);
+    await openFresh(page);
+    await seedAcceptedMatch(page, "employer");
+    await go(page, "chat");
+    await page.locator('[data-open-conversation="qa-chat-1"]').click();
+    await page.locator("[data-mark-hired]").click();
+    await expect(page.locator("#modalTitle")).toContainText("Confirm hire");
+    await page.locator("[data-confirm-hired]").click();
+
+    await expect(page.locator("#chat.active #chatSub")).toContainText("Hired");
+    await expect(page.locator("#chat.active #chatArea")).toContainText("Leave a rating and feedback");
+    await expect(page.locator("#chat.active #chatArea")).not.toContainText("Hire Again");
+    const state = await page.evaluate(() => JSON.parse(localStorage.getItem("kkState")));
+    expect(state.applications.find((app) => app.id === "qa-app-1").status).toBe("Hired");
+    expect(state.conversations.find((chat) => chat.id === "qa-chat-1").status).toBe("hired");
+    expect(state.messages.some((message) => message.conversationId === "qa-chat-1" && message.text.includes("Hired"))).toBe(true);
+
+    await go(page, "applicants");
+    await page.locator('#allApplicants [data-applicants-tab="accepted"]').click();
+    await expect(page.locator("#allApplicants")).toContainText("No applicants in this tab yet.");
     await expectNoBrowserErrors(errors);
   });
 
