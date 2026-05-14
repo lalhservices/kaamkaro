@@ -267,6 +267,7 @@
     <section id="postJob" class="screen">
       <div class="header"><button class="icon" data-go="employerDash"><svg><use href="#i-back"></use></svg></button><span class="tag">Post Job</span></div>
       <h1 class="title">Post a job</h1>
+      <p class="small">Free job stays live for 15 days. You can post 1 free job every 30 days.</p>
       <label class="input"><input id="postTitle" placeholder="Chef, Nurse, Accountant, Driver"></label>
       <div class="amount-row mt">
         <label class="input"><span class="prefix">Rs</span><input id="postPayAmount" inputmode="numeric" placeholder="12000"></label>
@@ -303,8 +304,8 @@
       </div>
       <h3>Visibility choice</h3>
       <div class="visibility-plans">
-        <button class="plan" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small></button>
-        <button class="plan boost" data-visibility="boost"><span class="plan-top"><b>Boost Post</b><span class="plan-price">&#8377;199</span></span><span class="rec-badge">Recommended &#128293;</span><span class="boost-list"><span>&#10003; 3x more visibility</span><span>&#10003; Appears first in job feed</span><span>&#10003; Faster responses</span></span><span class="visibility-note">Most employers choose this</span></button>
+        <button class="plan" data-visibility="free"><span class="plan-top"><b>Free Post</b><span class="plan-price">Rs 0</span></span><small>Normal visibility</small><small>Live for 15 days. One free post allowed every 30 days.</small></button>
+        <button class="plan boost" data-visibility="boost"><span class="plan-top"><b>Boost Post</b><span class="plan-price">&#8377;199</span></span><span class="rec-badge">Recommended &#128293;</span><span class="boost-list"><span>&#10003; 3x more visibility</span><span>&#10003; Appears first in job feed</span><span>&#10003; Faster responses</span></span><span class="visibility-note">&#8377;199 per job. Live for 28 days.</span><span class="visibility-note">Most employers choose this</span></button>
       </div>
       <span id="visibilityError" class="error-note">Please select a visibility option.</span>
       <div class="panel small safety-confirm"><input id="jobRules" type="checkbox"><span>I confirm this job is genuine, lawful, non-misleading, and follows Kaam Karo's posting rules.<span class="safety-links"><button data-legal="guidelines">Job Posting Rules</button><a href="legal/acceptable-use-policy.html" target="_blank" rel="noopener">Acceptable Use Policy</a></span><span id="jobRulesError" class="error-note">Please confirm the job is genuine before publishing.</span></span></div>
