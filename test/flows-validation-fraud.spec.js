@@ -24,6 +24,29 @@ test.describe("main flows, form validation, and fraud blocking", () => {
     await expectNoBrowserErrors(errors);
   });
 
+  test("new phone login starts a fresh account without old chats or applications", async ({ page }) => {
+    const errors = attachErrorGuards(page);
+    await openFresh(page);
+    await loginBypass(page, "9876543210");
+    await completeWorkerSetup(page);
+    await page.locator("[data-apply-job]").first().click();
+    await expectActiveScreen(page, "applied");
+
+    await go(page, "otp");
+    await page.locator("#phoneInput").fill("9123456780");
+    await page.locator("[data-send-otp]").click();
+    await page.waitForFunction(() => {
+      const state = JSON.parse(localStorage.getItem("kkState") || "{}");
+      return state.user && state.user.phone === "9123456780";
+    });
+    const state = await page.evaluate(() => JSON.parse(localStorage.getItem("kkState")));
+    expect(state.user.phone).toBe("9123456780");
+    expect(state.applications).toEqual([]);
+    expect(state.conversations).toEqual([]);
+    expect(state.messages).toEqual([]);
+    await expectNoBrowserErrors(errors);
+  });
+
   test("invalid forms show clean errors and stay on screen", async ({ page }) => {
     const errors = attachErrorGuards(page);
     await openFresh(page);
@@ -57,10 +80,32 @@ test.describe("main flows, form validation, and fraud blocking", () => {
     await page.locator("#postDesc").fill("Daily tasks include customer service and stock handling. Registration fee and security deposit must be paid before joining this job.");
     await page.locator("[data-review-job]").click();
     await expectActiveScreen(page, "jobVisibility");
+    await page.locator('[data-visibility="boost"]').click();
+    await page.locator("#jobRules").check();
+    await page.locator("[data-post-job]").click();
+    await page.locator("[data-confirm-post-job]").click();
+    await expect(page.locator("#toast")).toContainText("cannot be published");
+    await expect(page.locator("#published")).not.toHaveClass(/active/);
+    await expectNoBrowserErrors(errors);
+  });
+
+  test("free job limit blocks second active free post and explains rule", async ({ page }) => {
+    const errors = attachErrorGuards(page);
+    await openFresh(page);
+    await seedEmployer(page);
+    await go(page, "postJob");
+
+    await page.locator("#postTitle").fill("Delivery Helper");
+    await page.locator("#postPayAmount").fill("12000");
+    await page.locator("#postLocation").fill("Delhi, India");
+    await page.locator("#postDesc").fill("Daily tasks include helping customers, handling stock, keeping the shop clean, and supporting the team during busy hours.");
+    await page.locator("[data-review-job]").click();
+    await expectActiveScreen(page, "jobVisibility");
     await page.locator('[data-visibility="free"]').click();
     await page.locator("#jobRules").check();
     await page.locator("[data-post-job]").click();
-    await expect(page.locator("#toast")).toContainText("cannot be published");
+    await page.locator("[data-confirm-post-job]").click();
+    await expect(page.locator("#toast")).toContainText("already have 1 free job live");
     await expect(page.locator("#published")).not.toHaveClass(/active/);
     await expectNoBrowserErrors(errors);
   });
