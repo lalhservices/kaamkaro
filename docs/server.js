@@ -169,7 +169,7 @@ app.post("/payments/verify", requireUser, async (req, res) => {
 
     const { error: jobUpdateError } = await supabase
       .from("jobs")
-      .update({ boosted: true, post_type: "boosted" })
+      .update({ boosted: true, post_type: "boosted", expires_at: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString() })
       .eq("id", job.id);
     if (jobUpdateError) throw jobUpdateError;
 

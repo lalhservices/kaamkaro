@@ -7,6 +7,12 @@
 -- - employers to read worker profiles only for applicants on their own jobs
 -- - workers to read public employer profiles for active jobs / their applications
 -- - chats/messages to be visible only to match participants
+-- It also refreshes production job posting guards:
+-- - one free active job
+-- - one free post per 30 days
+-- - free jobs expire in 15 days
+-- - boosted jobs expire in 28 days
+-- - duplicate job title + description is blocked per employer
 
 create or replace function public.owns_worker_profile(profile_id uuid)
 returns boolean
@@ -33,6 +39,77 @@ as $$
     where id = profile_id and user_id = auth.uid()
   );
 $$;
+
+create or replace function public.enforce_job_posting_rules()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  active_free_count integer;
+  recent_free_count integer;
+  duplicate_count integer;
+begin
+  if new.post_type = 'boosted' then
+    new.boosted := true;
+    new.expires_at := coalesce(new.expires_at, now() + interval '28 days');
+  else
+    new.boosted := false;
+    new.expires_at := coalesce(new.expires_at, now() + interval '15 days');
+
+    if tg_op = 'INSERT' then
+      select count(*) into active_free_count
+      from public.jobs
+      where employer_id = new.employer_id
+        and post_type = 'free'
+        and status in ('active', 'pending_review')
+        and deleted_at is null
+        and coalesce(expires_at, now() + interval '1 day') > now();
+
+      if active_free_count >= 1 then
+        raise exception 'free_job_active_limit';
+      end if;
+
+      select count(*) into recent_free_count
+      from public.jobs
+      where employer_id = new.employer_id
+        and post_type = 'free'
+        and created_at > now() - interval '30 days';
+
+      if recent_free_count >= 1 then
+        raise exception 'free_job_30_day_limit';
+      end if;
+    end if;
+  end if;
+
+  select count(*) into duplicate_count
+  from public.jobs
+  where employer_id = new.employer_id
+    and (tg_op = 'INSERT' or id <> new.id)
+    and lower(trim(title)) = lower(trim(new.title))
+    and lower(trim(description)) = lower(trim(new.description))
+    and status not in ('deleted', 'removed', 'rejected');
+
+  if duplicate_count >= 1 then
+    raise exception 'duplicate_job_post';
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists jobs_enforce_posting_rules on public.jobs;
+create trigger jobs_enforce_posting_rules
+before insert or update on public.jobs
+for each row execute function public.enforce_job_posting_rules();
+
+alter table public.audit_logs add column if not exists phone_number text;
+alter table public.audit_logs add column if not exists device_fingerprint text;
+alter table public.audit_logs add column if not exists risk_reason text;
+create index if not exists idx_audit_logs_action on public.audit_logs(action);
+create index if not exists idx_audit_logs_phone_number on public.audit_logs(phone_number);
+create index if not exists idx_jobs_employer_post_type_created on public.jobs(employer_id, post_type, created_at);
 
 drop policy if exists "worker_profiles_select_allowed" on public.worker_profiles;
 create policy "worker_profiles_select_allowed" on public.worker_profiles

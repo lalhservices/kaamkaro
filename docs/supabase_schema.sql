@@ -169,6 +169,70 @@ create trigger jobs_set_updated_at
 before update on public.jobs
 for each row execute function public.set_updated_at();
 
+create or replace function public.enforce_job_posting_rules()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  active_free_count integer;
+  recent_free_count integer;
+  duplicate_count integer;
+begin
+  if new.post_type = 'boosted' then
+    new.boosted := true;
+    new.expires_at := coalesce(new.expires_at, now() + interval '28 days');
+  else
+    new.boosted := false;
+    new.expires_at := coalesce(new.expires_at, now() + interval '15 days');
+
+    if tg_op = 'INSERT' then
+      select count(*) into active_free_count
+      from public.jobs
+      where employer_id = new.employer_id
+        and post_type = 'free'
+        and status in ('active', 'pending_review')
+        and deleted_at is null
+        and coalesce(expires_at, now() + interval '1 day') > now();
+
+      if active_free_count >= 1 then
+        raise exception 'free_job_active_limit';
+      end if;
+
+      select count(*) into recent_free_count
+      from public.jobs
+      where employer_id = new.employer_id
+        and post_type = 'free'
+        and created_at > now() - interval '30 days';
+
+      if recent_free_count >= 1 then
+        raise exception 'free_job_30_day_limit';
+      end if;
+    end if;
+  end if;
+
+  select count(*) into duplicate_count
+  from public.jobs
+  where employer_id = new.employer_id
+    and (tg_op = 'INSERT' or id <> new.id)
+    and lower(trim(title)) = lower(trim(new.title))
+    and lower(trim(description)) = lower(trim(new.description))
+    and status not in ('deleted', 'removed', 'rejected');
+
+  if duplicate_count >= 1 then
+    raise exception 'duplicate_job_post';
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists jobs_enforce_posting_rules on public.jobs;
+create trigger jobs_enforce_posting_rules
+before insert or update on public.jobs
+for each row execute function public.enforce_job_posting_rules();
+
 -- ---------- Applications ----------
 
 create table if not exists public.applications (
@@ -382,7 +446,10 @@ create table if not exists public.saved_jobs (
 create table if not exists public.audit_logs (
   id uuid primary key default gen_random_uuid(),
   actor_user_id uuid references public.users(id) on delete set null,
+  phone_number text,
+  device_fingerprint text,
   action text not null,
+  risk_reason text,
   entity_type text not null,
   entity_id uuid,
   old_data jsonb,
@@ -399,6 +466,7 @@ create index if not exists idx_jobs_employer_id on public.jobs(employer_id);
 create index if not exists idx_jobs_city on public.jobs(city);
 create index if not exists idx_jobs_status on public.jobs(status);
 create index if not exists idx_jobs_expires_at on public.jobs(expires_at);
+create index if not exists idx_jobs_employer_post_type_created on public.jobs(employer_id, post_type, created_at);
 create index if not exists idx_applications_worker_id on public.applications(worker_id);
 create index if not exists idx_applications_employer_id on public.applications(employer_id);
 create index if not exists idx_applications_status on public.applications(status);
@@ -408,6 +476,8 @@ create index if not exists idx_messages_chat_id on public.messages(chat_id);
 create index if not exists idx_reports_status on public.reports(status);
 create index if not exists idx_notifications_user_id on public.notifications(user_id);
 create index if not exists idx_payments_user_id on public.payments(user_id);
+create index if not exists idx_audit_logs_action on public.audit_logs(action);
+create index if not exists idx_audit_logs_phone_number on public.audit_logs(phone_number);
 
 -- ---------- Storage Buckets ----------
 
