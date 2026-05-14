@@ -115,7 +115,7 @@
       post_type: job.visibility === "boost" ? "boosted" : "free",
       risk_score: job.riskScore || 0,
       reports_count: job.reportCount || 0,
-      expires_at: job.expiresAt ? new Date(job.expiresAt).toISOString() : null
+      expires_at: job.expiresAt ? new Date(job.expiresAt).toISOString() : new Date(Date.now() + (job.visibility === "boost" ? 28 : 15) * 86400000).toISOString()
     };
     var query = supabase.from("jobs");
     var result = /^[0-9a-f-]{36}$/i.test(String(job.id || ""))

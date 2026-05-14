@@ -49,6 +49,44 @@
   function cloneJobs() {
     return defaultJobs.map(function (job) { return Object.assign({}, job); });
   }
+  function freshAccountState(phone, userId, authUser) {
+    return {
+      workerComplete: false,
+      employerComplete: false,
+      worker: { id: "", name: "", gender: "", age: "", city: "", experience: "", skills: [], jobTypes: [], availability: "", preferredJob: "Any Job", preferredType: "Full-time", bio: "", phoneVerified: true, startAvailability: "", availableDays: [], shiftPreference: "", flexibleAvailability: false },
+      employer: { id: "", ownerId: userId || "", name: "", business: "", phone: phone || "", type: "", city: "" },
+      jobs: cloneJobs(),
+      applications: [],
+      conversations: [],
+      messages: [],
+      notifications: [],
+      auditLogs: [],
+      moderationLogs: [],
+      reports: [],
+      ratings: [],
+      blockedPairs: [],
+      businessProfiles: {},
+      workerProfiles: {},
+      defaultBusinessId: "",
+      defaultWorkerId: "",
+      postingHistory: [],
+      user: {
+        id: userId || ("demo-user-" + (phone || Date.now())),
+        displayName: "",
+        phone: phone || "",
+        city: "",
+        location: "",
+        phoneVerified: true,
+        photoVerificationStatus: "not_uploaded",
+        photoVerified: false,
+        authenticated: true,
+        hasWorkerProfile: !!(authUser && authUser.has_worker_profile),
+        hasEmployerProfile: !!(authUser && authUser.has_employer_profile),
+        activeRole: (authUser && authUser.active_role) || "worker",
+        language: (authUser && authUser.language) || currentLang
+      }
+    };
+  }
   var state = JSON.parse(localStorage.getItem("kkState") || "null") || {
     workerComplete: false,
     employerComplete: false,
@@ -73,6 +111,7 @@
   state.reports = state.reports || [];
   state.ratings = state.ratings || [];
   state.blockedPairs = state.blockedPairs || [];
+  state.postingHistory = state.postingHistory || [];
   state.conversations = state.conversations || [];
   state.messages = state.messages || [];
   state.notifications = state.notifications || [];
@@ -118,12 +157,7 @@
   state.worker.availableDays = Array.isArray(state.worker.availableDays) ? state.worker.availableDays : [];
   state.worker.shiftPreference = state.worker.shiftPreference || "";
   state.worker.flexibleAvailability = !!state.worker.flexibleAvailability;
-  if (!state.notifications.length) {
-    state.notifications = [
-      { id: "note-morning", text: "5 new jobs near you today", target: "jobs", read: false, createdAt: Date.now() - 60000 },
-      { id: "note-evening", text: "2 employers viewed your profile", target: "applications", read: false, createdAt: Date.now() - 120000 }
-    ];
-  }
+  state.notifications = Array.isArray(state.notifications) ? state.notifications : [];
   state.employer.moderationStatus = state.employer.moderationStatus || "active";
   state.jobs.forEach(function (job) {
     job.status = job.status || "approved";
@@ -131,7 +165,7 @@
     job.flagReasons = job.flagReasons || [];
     job.riskScore = job.riskScore || 0;
     job.createdAt = job.createdAt || (Date.now() - 86400000);
-    job.expiresAt = job.expiresAt || (job.visibility === "boost" ? job.createdAt + 29 * 86400000 : job.createdAt + 15 * 86400000);
+    job.expiresAt = job.expiresAt || (job.visibility === "boost" ? job.createdAt + 28 * 86400000 : job.createdAt + 15 * 86400000);
     if ((job.status || "approved") === "approved" && Date.now() > job.expiresAt) job.status = "Expired";
   });
   state.jobs = state.jobs.filter(function (job) { return !job.expiresAt || Date.now() < job.expiresAt + 60 * 86400000; });
@@ -169,7 +203,72 @@
 
   function save() {
     localStorage.setItem("kkState", JSON.stringify(state));
+    saveAccountSnapshot();
     localStorage.setItem("kkActiveCity", activeCity || "");
+  }
+  function accountSnapshots() {
+    try { return JSON.parse(localStorage.getItem("kkAccountStates") || "{}") || {}; }
+    catch (error) { return {}; }
+  }
+  function accountKeyFor(snapshot) {
+    var user = snapshot && snapshot.user ? snapshot.user : {};
+    return user.phone || user.id || "";
+  }
+  function saveAccountSnapshot() {
+    var key = accountKeyFor(state);
+    if (!key) return;
+    var snapshots = accountSnapshots();
+    snapshots[key] = state;
+    if (state.user && state.user.id) snapshots[state.user.id] = state;
+    localStorage.setItem("kkAccountStates", JSON.stringify(snapshots));
+  }
+  function activateAccountState(authUser, phone) {
+    var userId = (authUser && authUser.id) || ("demo-user-" + phone);
+    var snapshots = accountSnapshots();
+    var sameAccount = state.user && (state.user.phone === phone || state.user.id === userId);
+    if (!sameAccount) saveAccountSnapshot();
+    state = sameAccount ? state : (snapshots[phone] || snapshots[userId] || freshAccountState(phone, userId, authUser));
+    state.user = state.user || {};
+    state.user.id = userId;
+    state.user.phone = phone;
+    state.user.hasWorkerProfile = !!(authUser && authUser.has_worker_profile) || !!state.user.hasWorkerProfile || hasWorkerProfile();
+    state.user.hasEmployerProfile = !!(authUser && authUser.has_employer_profile) || !!state.user.hasEmployerProfile || hasEmployerProfile();
+    state.user.activeRole = (authUser && authUser.active_role) || state.user.activeRole || currentRole;
+    state.user.language = (authUser && authUser.language) || state.user.language || currentLang;
+    state.user.authenticated = true;
+    state.user.phoneVerified = true;
+    state.user.photoVerificationStatus = state.user.photoVerificationStatus || "not_uploaded";
+    state.user.photoVerified = state.user.photoVerificationStatus === "verified";
+    state.employer = state.employer || {};
+    state.employer.phone = phone;
+    state.worker = state.worker || {};
+    state.worker.phoneVerified = true;
+    state.postingHistory = state.postingHistory || [];
+    state.applications = Array.isArray(state.applications) ? state.applications : [];
+    state.conversations = Array.isArray(state.conversations) ? state.conversations : [];
+    state.messages = Array.isArray(state.messages) ? state.messages : [];
+    state.notifications = Array.isArray(state.notifications) ? state.notifications : [];
+    if (!sameAccount) {
+      activeCity = state.user.city || "";
+      selectedConversationId = null;
+      applicationsTab = "applied";
+      applicantsTab = "new";
+      chatListTab = "all";
+      jobIndex = 0;
+    }
+  }
+  function updateLocalAuthProfileFlags() {
+    var phone = state.user && state.user.phone;
+    if (!phone) return;
+    try {
+      var users = JSON.parse(localStorage.getItem("kkAuthUsers") || "{}") || {};
+      if (!users[phone]) return;
+      users[phone].has_worker_profile = hasWorkerProfile();
+      users[phone].has_employer_profile = hasEmployerProfile();
+      users[phone].active_role = currentRole;
+      users[phone].updated_at = new Date().toISOString();
+      localStorage.setItem("kkAuthUsers", JSON.stringify(users));
+    } catch (error) {}
   }
   async function hydrateSupabaseSession() {
     if (!window.KaamKaroProfile || !window.KaamKaroProfile.hydrateSession) return;
@@ -602,6 +701,11 @@
     }, 150);
   }
   function recordSwipe(applied) {
+    var today = new Date().toISOString().slice(0, 10);
+    if (localStorage.getItem("kkAppliedDate") !== today) {
+      appliedToday = 0;
+      localStorage.setItem("kkAppliedDate", today);
+    }
     swipeCount += 1;
     if (applied) appliedToday += 1;
     localStorage.setItem("kkSwipeCount", String(swipeCount));
@@ -999,6 +1103,12 @@
   }
   async function applyToJob(id) {
     if (!hasWorkerProfile()) return goToWorkerRoute("jobs");
+    var today = new Date().toISOString().slice(0, 10);
+    if (localStorage.getItem("kkAppliedDate") !== today) {
+      appliedToday = 0;
+      localStorage.setItem("kkAppliedDate", today);
+    }
+    if (appliedToday >= 100) return toast("Daily application limit reached. Please try again tomorrow.");
     selectedJobId = id || filteredJobs("")[jobIndex].id;
     var selectedJob = state.jobs.find(function (job) { return job.id === selectedJobId; }) || {};
     var exists = state.applications.find(function (a) { return a.jobId === selectedJobId && a.workerId === state.worker.id; });
@@ -1104,28 +1214,30 @@
   }
   function renderEmployer() {
     if (!hasEmployerProfile()) return;
-    var apps = state.applications;
+    var jobs = employerJobs();
+    var jobIds = jobs.map(function (job) { return job.id; });
+    var apps = state.applications.filter(function (app) { return jobIds.indexOf(app.jobId) >= 0 || app.employerId === state.defaultBusinessId; });
     var interested = apps.filter(function (a) { return ["Interested","Viewed"].indexOf(a.status) >= 0; }).length;
     var accepted = apps.filter(function (a) { return ["Accepted","Matched"].indexOf(a.status) >= 0; }).length;
     byId("dashTitle").textContent = interested ? interested + " applicants waiting" : "No applicants yet";
     byId("metricInterested").textContent = interested;
     byId("metricAccepted").textContent = accepted;
-    byId("metricJobs").textContent = state.jobs.length;
-    byId("dashJobs").innerHTML = (interested ? "" : '<div class="panel small">No applicants yet - boost your job to get more visibility.</div>') + state.jobs.slice(0,2).map(function (job) {
+    byId("metricJobs").textContent = jobs.length;
+    byId("dashJobs").innerHTML = jobs.length ? ((interested ? "" : '<div class="panel small">No applicants yet - post or boost a job to get more visibility.</div>') + jobs.slice(0,2).map(function (job) {
       var count = apps.filter(function (a) { return a.jobId === job.id; }).length;
       return '<button class="list-row" data-job-detail="' + job.id + '"><span class="tiny"><svg><use href="#i-briefcase"></use></svg></span><span class="grow"><b>' + job.title + '</b><br><span class="small">' + job.pay + ' - ' + job.city + '<br>12 workers viewed your job - 3 applied today</span></span><span class="status-text">' + count + ' applicants</span></button>';
-    }).join("");
-    var job = state.jobs.find(function (j) { return j.id === selectedJobId; }) || state.jobs[0];
-    byId("jobDetailTitle").textContent = job.title;
-    byId("jobDetailPay").textContent = job.pay;
-    byId("jobDetailMeta").textContent = job.city + " - " + job.type + " - " + job.employer;
-    var jobApps = apps.filter(function (a) { return a.jobId === job.id && (applicantsTab === "accepted" ? ["Accepted","Matched"].indexOf(a.status) >= 0 : ["Interested","Viewed"].indexOf(a.status) >= 0); });
+    }).join("")) : '<div class="panel small"><b>Post your first job</b><br>No applicants yet. Create your first job to start receiving workers.</div>';
+    var job = jobs.find(function (j) { return j.id === selectedJobId; }) || jobs[0] || {};
+    byId("jobDetailTitle").textContent = job.title || "No job selected";
+    byId("jobDetailPay").textContent = job.pay || "";
+    byId("jobDetailMeta").textContent = job.id ? (job.city + " - " + job.type + " - " + job.employer) : "Post a job to receive applicants.";
+    var jobApps = job.id ? apps.filter(function (a) { return a.jobId === job.id && (applicantsTab === "accepted" ? ["Accepted","Matched"].indexOf(a.status) >= 0 : ["Interested","Viewed"].indexOf(a.status) >= 0); }) : [];
     var applicantTabs = '<div class="toolbar"><button class="chip ' + (applicantsTab === "new" ? "selected" : "") + '" data-applicants-tab="new">New</button><button class="chip ' + (applicantsTab === "accepted" ? "selected" : "") + '" data-applicants-tab="accepted">Accepted</button></div>';
     byId("applicantList").innerHTML = applicantTabs + (jobApps.length ? jobApps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants in this tab yet.</div>');
     var tabApps = apps.filter(function (a) { return applicantsTab === "accepted" ? ["Accepted","Matched"].indexOf(a.status) >= 0 : ["Interested","Viewed"].indexOf(a.status) >= 0; });
     byId("allApplicants").innerHTML = applicantTabs + (tabApps.length ? tabApps.map(renderApplicantCard).join("") : '<div class="panel small">No applicants in this tab yet.</div>');
     byId("talentCount").textContent = apps.length + " applicants";
-    byId("employerJobsList").innerHTML = state.jobs.map(function (j) { return '<div class="list-row"><button class="grow" data-job-detail="' + j.id + '" style="border:0;background:transparent;text-align:left;color:inherit;padding:0"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' - ' + j.city + '</span></button><span class="status-text">' + ((j.status || "approved") === "Expired" ? "Expired" : "Open") + '</span><button class="icon" data-repost-job="' + j.id + '"><svg><use href="#i-plus"></use></svg></button><button class="icon" data-delete-job="' + j.id + '"><svg><use href="#i-trash"></use></svg></button></div>'; }).join("");
+    byId("employerJobsList").innerHTML = jobs.length ? jobs.map(function (j) { return '<div class="list-row"><button class="grow" data-job-detail="' + j.id + '" style="border:0;background:transparent;text-align:left;color:inherit;padding:0"><b>' + j.title + '</b><br><span class="small">' + j.pay + ' - ' + j.city + '</span></button><span class="status-text">' + ((j.status || "approved") === "Expired" ? "Expired" : "Open") + '</span><button class="icon" data-repost-job="' + j.id + '"><svg><use href="#i-plus"></use></svg></button><button class="icon" data-delete-job="' + j.id + '"><svg><use href="#i-trash"></use></svg></button></div>'; }).join("") : '<div class="panel small">Post your first job to see it here.</div>';
   }
   function renderFullWorkerProfile() {
     var app = appForSelected() || { status: "Interested" };
@@ -1412,6 +1524,17 @@
     }
     return "";
   }
+  function chatSpamReason(convo, text) {
+    var now = Date.now();
+    var sender = currentUserId();
+    var normalized = normalizedPostText(text);
+    var recent = state.messages.filter(function (message) {
+      return message.conversationId === convo.id && messageSenderId(message) === sender && now - (message.createdAt || 0) < 60000;
+    });
+    if (recent.length >= 12) return "too many messages per minute";
+    if (recent.slice(-3).some(function (message) { return normalizedPostText(message.text) === normalized; })) return "repeated same message";
+    return "";
+  }
   function currentUserId() {
     return currentRole === "employer" ? "rick" : state.worker.id;
   }
@@ -1568,6 +1691,16 @@
     if (!convo) return toast("Chat unlocks after employer accepts.");
     if (["blocked","disconnected","expired","closed"].indexOf(convo.status) >= 0) return toast("This match is disconnected.");
     if ((state.blockedPairs || []).some(function (pair) { return pair.conversationId === convo.id; })) return toast("This match is disconnected.");
+    text = String(text || "").trim();
+    if (!text) return;
+    var spamReason = chatSpamReason(convo, text);
+    if (spamReason) {
+      var spamLog = { senderId: currentUserId(), receiverId: currentRole === "employer" ? convo.workerId : convo.employerId, chatId: convo.id, messageText: text, reason: spamReason, createdAt: new Date().toISOString() };
+      state.moderationLogs.unshift(spamLog);
+      save();
+      saveModerationLogRemote(spamLog);
+      return toast("Please slow down and avoid repeated messages.");
+    }
     var blockedReason = blockedSafetyReason(text);
     if (blockedReason) {
       var moderationLog = { senderId: currentUserId(), receiverId: currentRole === "employer" ? convo.workerId : convo.employerId, chatId: convo.id, messageText: text, reason: blockedReason, createdAt: new Date().toISOString() };
@@ -1698,7 +1831,53 @@
     return amount && period ? "Rs " + amount + " " + period : "";
   }
   function employerPostCount() {
-    return state.jobs.filter(function (job) { return job.businessId === state.defaultBusinessId; }).length;
+    return employerJobs(true).length;
+  }
+  function isEmployerJob(job) {
+    return !!(job && state.defaultBusinessId && (job.businessId === state.defaultBusinessId || job.employerId === state.defaultBusinessId));
+  }
+  function employerJobs(includeDeleted) {
+    return state.jobs.filter(function (job) {
+      return isEmployerJob(job) && (includeDeleted || ["deleted","removed"].indexOf(String(job.status || "").toLowerCase()) < 0);
+    });
+  }
+  function normalizedPostText(value) {
+    return String(value || "").toLowerCase().replace(/\s+/g, " ").trim();
+  }
+  function activeFreeJobs() {
+    var now = Date.now();
+    return employerJobs().filter(function (job) {
+      return job.visibility !== "boost" && ["approved","pending_review"].indexOf(job.status || "approved") >= 0 && (!job.expiresAt || job.expiresAt > now);
+    });
+  }
+  function freePostHistory() {
+    var history = (state.postingHistory || []).filter(function (item) {
+      return item.businessId === state.defaultBusinessId && item.visibility === "free";
+    });
+    return history.concat(employerJobs(true).filter(function (job) { return job.visibility !== "boost"; }).map(function (job) {
+      return { businessId: state.defaultBusinessId, visibility: "free", title: job.title, desc: job.desc, createdAt: job.createdAt || 0 };
+    }));
+  }
+  function freePostEligibility() {
+    if (activeFreeJobs().length) return { ok: false, reason: "You already have 1 free job live. Boost this job or wait until the free post expires." };
+    var cutoff = Date.now() - 30 * 86400000;
+    var recent = freePostHistory().filter(function (item) { return (item.createdAt || 0) > cutoff; }).sort(function (a, b) { return b.createdAt - a.createdAt; })[0];
+    if (recent) {
+      var waitDays = Math.max(1, Math.ceil((recent.createdAt + 30 * 86400000 - Date.now()) / 86400000));
+      return { ok: false, reason: "Free jobs are limited to 1 post every 30 days. Try again in " + waitDays + " day" + (waitDays === 1 ? "" : "s") + " or choose Boost." };
+    }
+    return { ok: true };
+  }
+  function duplicatePostExists(draft) {
+    var title = normalizedPostText(draft.title);
+    var desc = normalizedPostText(draft.desc);
+    var jobDuplicate = employerJobs(true).some(function (job) {
+      return normalizedPostText(job.title) === title && normalizedPostText(job.desc) === desc;
+    });
+    var historyDuplicate = (state.postingHistory || []).some(function (item) {
+      return item.businessId === state.defaultBusinessId && normalizedPostText(item.title) === title && normalizedPostText(item.desc) === desc;
+    });
+    return jobDuplicate || historyDuplicate;
   }
   function analyzeJobDraft(draft) {
     var text = [
@@ -1722,6 +1901,11 @@
     });
     var amount = Number((byId("postPayAmount").value || "").replace(/[^\d]/g, ""));
     if (amount && amount > 80000 && draft.desc.length < 80) reasons.push("Very high pay with vague work");
+    if (duplicatePostExists(draft)) {
+      rejected = true;
+      reasons.push("Duplicate job post");
+    }
+    if (employerJobs(true).filter(function (job) { return (job.deletedAt || job.status === "deleted") && (job.updatedAt || job.createdAt || 0) > Date.now() - 86400000; }).length >= 3) reasons.push("Repeated delete and repost activity");
     if (employerPostCount() < 3) reasons.push("First 3 employer jobs require manual review");
     return { rejected: rejected, reasons: reasons, riskScore: reasons.length * 20 + (rejected ? 60 : 0) };
   }
@@ -1836,6 +2020,7 @@
     setupReturnRoute = "";
     localStorage.removeItem("kkPendingWorkerRoute");
     localStorage.removeItem("kkSetupReturnRoute");
+    updateLocalAuthProfileFlags();
     save();
     await saveWorkerProfileRemote();
     track("worker_onboarding_complete");
@@ -1870,6 +2055,10 @@
       if (byId("visibilityError")) byId("visibilityError").style.display = "block";
       return toast("Please select a visibility option.");
     }
+    if (postVisibility === "free") {
+      var freeLimit = freePostEligibility();
+      if (!freeLimit.ok) return toast(freeLimit.reason);
+    }
     if (!byId("jobRules").checked) {
       byId("jobRulesError").style.display = "block";
       return toast("Please confirm the job is genuine before publishing.");
@@ -1886,13 +2075,20 @@
     var business = currentBusinessProfile();
     var postLocation = draft.location || parseLocationParts(draft.city);
     var created = Date.now();
-    var job = { id: "job-" + created, businessId: state.defaultBusinessId, employerId: state.worker.id, companyName: business.businessName, title: draft.title, pay: draft.pay, city: postLocation.city, district: postLocation.district, state: postLocation.state, formatted_location: postLocation.formatted_location, distance: "Nearby", type: draft.type, employer: business.businessName, badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount(), createdAt: created, expiresAt: created + (postVisibility === "boost" ? 29 : 15) * 86400000 };
+    var job = { id: "job-" + created, businessId: state.defaultBusinessId, employerId: state.defaultBusinessId, companyName: business.businessName, title: draft.title, pay: draft.pay, city: postLocation.city, district: postLocation.district, state: postLocation.state, formatted_location: postLocation.formatted_location, distance: "Nearby", type: draft.type, employer: business.businessName, badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount(), createdAt: created, expiresAt: created + (postVisibility === "boost" ? 28 : 15) * 86400000 };
     state.jobs.unshift(job);
+    state.postingHistory.push({ businessId: state.defaultBusinessId, visibility: postVisibility, title: draft.title, desc: draft.desc, createdAt: created, status: status, riskScore: moderation.riskScore });
     save();
     await saveJobRemote(job);
     audit(status === "approved" ? "approved" : "pending_review", status === "approved" ? "Auto-approved" : moderation.reasons.join(", "), job, "system");
     track(postVisibility === "boost" ? "employer_job_boosted_posted" : "employer_job_free_posted");
     show("published");
+  }
+  function openPublishConfirmation() {
+    var copy = postVisibility === "boost"
+      ? "<b>Boosted Post:</b><br>Rs 199 per job. Live for 28 days."
+      : "<b>Free Post:</b><br>Live for 15 days. One free post allowed every 30 days.";
+    openModal("Confirm job post", '<p class="small">' + copy + '</p><div class="btn-row mt"><button class="btn outline" data-close-modal>Cancel</button><button class="btn primary" data-confirm-post-job>Publish Job</button></div>');
   }
   function performAccountDelete() {
     var keepJobs = state.jobs.filter(function (job) { return !job.employerId && !job.businessId; });
@@ -2011,7 +2207,13 @@
     }
     var confirmDeleteJob = event.target.closest("[data-confirm-delete-job]");
     if (confirmDeleteJob) {
-      state.jobs = state.jobs.filter(function (job) { return job.id !== confirmDeleteJob.dataset.confirmDeleteJob; });
+      var deletedJob = state.jobs.find(function (job) { return job.id === confirmDeleteJob.dataset.confirmDeleteJob; });
+      if (deletedJob) {
+        deletedJob.status = "deleted";
+        deletedJob.deletedAt = Date.now();
+        deletedJob.updatedAt = Date.now();
+        state.postingHistory.push({ businessId: deletedJob.businessId, visibility: deletedJob.visibility || "free", title: deletedJob.title, desc: deletedJob.desc, createdAt: deletedJob.createdAt || Date.now(), deletedAt: deletedJob.deletedAt, status: "deleted" });
+      }
       state.applications = state.applications.filter(function (app) { return app.jobId !== confirmDeleteJob.dataset.confirmDeleteJob; });
       save(); closeModal(); render(); return;
     }
@@ -2156,7 +2358,7 @@
       if (kind === "phone") openModal("Change Phone Number", '<p class="small">We will verify your new number with OTP.</p><button class="btn primary mt" data-change-phone-flow>Start OTP</button>');
       if (kind === "notifications") openModal("Notifications", '<div class="list"><label class="settings-card"><span><span>Job matches</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Chat messages</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Application updates</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Marketing</span><b>Off</b></span><input type="checkbox"></label></div><button class="btn primary mt" data-save-modal="Notifications saved">Save</button>');
       if (kind === "privacy") openModal("Privacy", '<div class="list"><label class="settings-card"><span><span>Show location</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Show selfie</span><b>On</b></span><input type="checkbox" checked></label><label class="settings-card"><span><span>Pause profile</span><b>Off</b></span><input type="checkbox"></label></div><button class="btn primary mt" data-save-modal="Privacy saved">Save</button>');
-      if (kind === "faq") openModal("Help & FAQ", '<div class="list"><div class="panel small"><b>How do I apply?</b><br>Swipe right on a job.</div><div class="panel small"><b>When can I chat?</b><br>Chat unlocks after employer accepts.</div><div class="panel small"><b>Is photo required?</b><br>No, it is optional.</div></div>');
+      if (kind === "faq") openModal("Help & FAQ", '<div class="list"><div class="panel small"><b>How do I apply?</b><br>Swipe right on a job.</div><div class="panel small"><b>When can I chat?</b><br>Chat unlocks after employer accepts.</div><div class="panel small"><b>How job posting works</b><br>Free jobs stay live for 15 days. Employers can post 1 free job every 30 days. Boosted jobs cost Rs 199 per job and stay live for 28 days.</div><div class="panel small"><b>Is photo required?</b><br>No, it is optional.</div></div>');
       if (kind === "refer") openModal("Refer & Earn", '<p class="small">Share Kaam Karo with friends looking for work.</p><label class="input mt"><input value="https://kaamkaro.app/ref/demo" readonly></label><button class="btn primary mt" data-save-modal="Referral link copied">Copy link</button>');
       return;
     }
@@ -2370,24 +2572,16 @@
       if (phone.length !== 10) return toast("Enter a valid 10 digit phone number.");
       try {
         var otpRequest = window.KaamKaroAuth ? await window.KaamKaroAuth.sendOtp(phone) : { phone: phone, mode: "demo" };
-        state.employer.phone = otpRequest.phone;
-        state.user.phone = otpRequest.phone;
         if (otpRequest.bypassOtp) {
           var bypassUser = otpRequest.user || {};
-          state.user.id = bypassUser.id || state.user.id;
-          state.user.hasWorkerProfile = !!bypassUser.has_worker_profile;
-          state.user.hasEmployerProfile = !!bypassUser.has_employer_profile;
-          state.user.activeRole = bypassUser.active_role || state.user.activeRole || currentRole;
-          state.user.authenticated = true;
-          state.worker.phoneVerified = true;
-          state.user.phoneVerified = true;
-          state.worker.active = true;
+          activateAccountState(bypassUser, otpRequest.phone);
           save();
           track("otp_bypassed_for_testing");
           toast("Testing login active. OTP skipped for now.");
           routeAfterOtp();
           return;
         }
+        state.pendingLoginPhone = otpRequest.phone;
         save();
         track("otp_requested");
         show("otpCode");
@@ -2406,19 +2600,10 @@
         return toast("Enter the OTP code.");
       }
       try {
-        var authResult = window.KaamKaroAuth ? await window.KaamKaroAuth.verifyOtp(state.user.phone || state.employer.phone || byId("phoneInput").value, otp) : { phone: state.user.phone || state.employer.phone, user: null };
+        var authResult = window.KaamKaroAuth ? await window.KaamKaroAuth.verifyOtp(state.pendingLoginPhone || state.user.phone || state.employer.phone || byId("phoneInput").value, otp) : { phone: state.pendingLoginPhone || state.user.phone || state.employer.phone, user: null };
         var authUser = authResult.user || {};
-        state.user.id = authUser.id || state.user.id;
-        state.user.phone = authResult.phone || state.user.phone || state.employer.phone;
-        state.user.hasWorkerProfile = !!authUser.has_worker_profile;
-        state.user.hasEmployerProfile = !!authUser.has_employer_profile;
-        state.user.activeRole = authUser.active_role || state.user.activeRole || currentRole;
-        state.user.language = authUser.language || state.user.language || currentLang;
-        state.user.authenticated = true;
-        state.employer.phone = state.user.phone;
-        state.worker.phoneVerified = true;
-        state.user.phoneVerified = true;
-        state.worker.active = true;
+        activateAccountState(authUser, authResult.phone || state.user.phone || state.employer.phone);
+        delete state.pendingLoginPhone;
         save();
         await hydrateSupabaseSession();
         track("otp_verified");
@@ -2580,6 +2765,7 @@
       setupReturnRoute = "";
       localStorage.removeItem("kkPendingEmployerRoute");
       localStorage.removeItem("kkSetupReturnRoute");
+      updateLocalAuthProfileFlags();
       save();
       await saveEmployerProfileRemote();
       track("employer_setup_complete"); show(nextEmployerRoute); return;
@@ -2624,7 +2810,8 @@
       if (validateJobDraft()) { resetVisibilityChoice(); show("jobVisibility"); }
       return;
     }
-    if (event.target.closest("[data-post-job]")) { await addPostedJob(); return; }
+    if (event.target.closest("[data-post-job]")) { openPublishConfirmation(); return; }
+    if (event.target.closest("[data-confirm-post-job]")) { closeModal(); await addPostedJob(); return; }
     var toastTarget = event.target.closest("[data-toast]");
     if (toastTarget) toast(toastTarget.dataset.toast);
   });
