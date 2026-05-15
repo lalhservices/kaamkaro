@@ -1,22 +1,15 @@
 (function () {
   "use strict";
 
-  function isLocalPrototype() {
-    return window.location.protocol === "file:" ||
-      (["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
-  }
-
   function readConfig() {
     var fromWindow = window.KAAM_KARO_SUPABASE || window.KAAM_KARO_SUPABASE_CONFIG || {};
     var urlMeta = document.querySelector('meta[name="supabase-url"]');
     var keyMeta = document.querySelector('meta[name="supabase-anon-key"]');
-    var local = isLocalPrototype();
     return {
-      url: fromWindow.url || (urlMeta ? urlMeta.content : "") || (local ? localStorage.getItem("kkSupabaseUrl") : "") || "",
-      anonKey: fromWindow.anonKey || (keyMeta ? keyMeta.content : "") || (local ? localStorage.getItem("kkSupabaseAnonKey") : "") || "",
-      phoneCountryCode: fromWindow.phoneCountryCode || (local ? localStorage.getItem("kkPhoneCountryCode") : "") || "+91",
-      // LocalStorage must never be able to enable OTP bypass on a deployed site.
-      devBypassOtp: local && (fromWindow.devBypassOtp === true || localStorage.getItem("kkDevBypassOtp") === "true")
+      url: fromWindow.url || (urlMeta ? urlMeta.content : "") || localStorage.getItem("kkSupabaseUrl") || "",
+      anonKey: fromWindow.anonKey || (keyMeta ? keyMeta.content : "") || localStorage.getItem("kkSupabaseAnonKey") || "",
+      phoneCountryCode: fromWindow.phoneCountryCode || localStorage.getItem("kkPhoneCountryCode") || "+91",
+      devBypassOtp: fromWindow.devBypassOtp === true || localStorage.getItem("kkDevBypassOtp") === "true"
     };
   }
 
@@ -40,7 +33,6 @@
     config: readConfig,
     client: getClient,
     isConfigured: function () { return !!getClient(); },
-    isLocalPrototype: isLocalPrototype,
     setLocalConfig: setLocalConfig
   };
 })();

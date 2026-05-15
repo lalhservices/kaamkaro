@@ -88,13 +88,7 @@
 
   function isLocalPrototype() {
     return window.location.protocol === "file:" ||
-      (["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
-  }
-
-  function requireSupabaseClient(client) {
-    if (client) return;
-    if (isLocalPrototype()) return;
-    throw new Error("Production login requires Supabase. Check supabase.config.js and Supabase Phone Auth setup.");
+      (window.location.protocol === "http:" && ["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
   }
 
   function forceRealOtp() {
@@ -105,9 +99,7 @@
   function canBypassOtpForTesting() {
     var cfg = window.KaamKaroSupabase && window.KaamKaroSupabase.config ? window.KaamKaroSupabase.config() : {};
     if (forceRealOtp()) return false;
-    // OTP bypass is allowed only on local/file builds. Never allow a query param,
-    // localStorage flag, or deployed config to enable bypass on production hosts.
-    return isLocalPrototype() && cfg.devBypassOtp === true;
+    return cfg.devBypassOtp === true || isLocalPrototype();
   }
 
   function demoUsers() {
@@ -189,8 +181,7 @@
     localStorage.setItem(PENDING_PHONE_KEY, phone);
 
     var client = getClient();
-    requireSupabaseClient(client);
-    if (!client && isLocalPrototype()) return { mode: "demo", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
+    if (!client) return { mode: "demo", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
     if (canBypassOtpForTesting()) {
       return { mode: "test-bypass", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
     }
@@ -219,7 +210,6 @@
     if (getClient() && sessionStorage.getItem(DEV_OTP_KEY) !== "1" && otp.length !== 6) throw new Error("Enter the 6 digit OTP code from SMS.");
 
     var client = getClient();
-    requireSupabaseClient(client);
     if (sessionStorage.getItem(DEV_OTP_KEY) === "1" && isLocalPrototype()) {
       if (otp !== "123456") {
         recordOtpFailure(phone);
@@ -278,8 +268,6 @@
     normalizePhone: normalizePhone,
     getClient: getClient,
     isSupabaseConfigured: function () { return !!getClient(); },
-    forceRealOtp: forceRealOtp,
-    canBypassOtpForTesting: canBypassOtpForTesting,
-    isLocalPrototype: isLocalPrototype
+    forceRealOtp: forceRealOtp
   };
 })();
