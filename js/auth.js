@@ -88,13 +88,7 @@
 
   function isLocalPrototype() {
     return window.location.protocol === "file:" ||
-      (["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
-  }
-
-  function requireSupabaseClient(client) {
-    if (client) return;
-    if (isLocalPrototype()) return;
-    throw new Error("Production login requires Supabase. Check supabase.config.js and Supabase Phone Auth setup.");
+      (window.location.protocol === "http:" && ["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
   }
 
   function forceRealOtp() {
@@ -102,12 +96,21 @@
     return localStorage.getItem("kkForceRealOtp") === "true" || params.get("realOtp") === "1";
   }
 
-  function canBypassOtpForTesting() {
+  function allowPhoneOnlyTestLogin() {
     var cfg = window.KaamKaroSupabase && window.KaamKaroSupabase.config ? window.KaamKaroSupabase.config() : {};
     if (forceRealOtp()) return false;
-    // OTP bypass is allowed only on local/file builds. Never allow a query param,
-    // localStorage flag, or deployed config to enable bypass on production hosts.
+
+    // Temporary MVP testing mode:
+    // Allows phone-number-only login without SMS OTP.
+    // This must be false before public launch.
+    if (cfg.allowPhoneOnlyTestLogin === true) return true;
+
+    // Local/dev convenience only.
     return isLocalPrototype() && cfg.devBypassOtp === true;
+  }
+
+  function canBypassOtpForTesting() {
+    return allowPhoneOnlyTestLogin();
   }
 
   function demoUsers() {
@@ -189,10 +192,15 @@
     localStorage.setItem(PENDING_PHONE_KEY, phone);
 
     var client = getClient();
-    requireSupabaseClient(client);
-    if (!client && isLocalPrototype()) return { mode: "demo", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
+
+    // Test-only phone login. This keeps accounts separated by phone number in local app state.
+    // Example: 9876543210 always opens the same test account for that number.
     if (canBypassOtpForTesting()) {
-      return { mode: "test-bypass", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
+      return { mode: "phone-only-test", phone: phone, bypassOtp: true, user: ensureDemoUser(phone) };
+    }
+
+    if (!client) {
+      throw new Error("Supabase Phone Auth is not configured. Enable test login only for development, or configure real OTP.");
     }
 
     var result = await client.auth.signInWithOtp({
@@ -215,11 +223,11 @@
     var phone = normalizePhone(rawPhone || localStorage.getItem(PENDING_PHONE_KEY));
     var otp = String(token || "").replace(/\D/g, "");
     if (phone.length !== 10) throw new Error("Enter a valid 10 digit phone number.");
+    if (!getClient() && !canBypassOtpForTesting()) throw new Error("Supabase Phone Auth is not configured.");
     if (!getClient() && otp.length !== 4 && otp.length !== 6) throw new Error("Enter the OTP code.");
     if (getClient() && sessionStorage.getItem(DEV_OTP_KEY) !== "1" && otp.length !== 6) throw new Error("Enter the 6 digit OTP code from SMS.");
 
     var client = getClient();
-    requireSupabaseClient(client);
     if (sessionStorage.getItem(DEV_OTP_KEY) === "1" && isLocalPrototype()) {
       if (otp !== "123456") {
         recordOtpFailure(phone);
@@ -227,8 +235,11 @@
       }
       return { mode: "local-dev", phone: phone, user: ensureDemoUser(phone), session: null };
     }
+    if (!client && canBypassOtpForTesting()) {
+      return { mode: "phone-only-test", phone: phone, user: ensureDemoUser(phone), session: null };
+    }
     if (!client) {
-      return { mode: "demo", phone: phone, user: ensureDemoUser(phone), session: null };
+      throw new Error("Supabase Phone Auth is not configured.");
     }
 
     var verified = await client.auth.verifyOtp({
@@ -279,7 +290,6 @@
     getClient: getClient,
     isSupabaseConfigured: function () { return !!getClient(); },
     forceRealOtp: forceRealOtp,
-    canBypassOtpForTesting: canBypassOtpForTesting,
-    isLocalPrototype: isLocalPrototype
+    allowPhoneOnlyTestLogin: allowPhoneOnlyTestLogin
   };
 })();
