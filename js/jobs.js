@@ -71,6 +71,8 @@
       remote: !!row.is_remote,
       desc: row.description || "",
       status: statusFromRemote(row.status),
+      boosted: !!row.boosted,
+      paymentVerified: !!row.boosted,
       riskScore: row.risk_score || 0,
       reportCount: row.reports_count || 0,
       createdAt: row.created_at ? new Date(row.created_at).getTime() : Date.now(),
@@ -111,11 +113,11 @@
       lng: job.lng || null,
       is_remote: !!job.remote,
       status: statusToRemote(job.status),
-      boosted: job.visibility === "boost",
+      boosted: job.visibility === "boost" && job.paymentVerified === true,
       post_type: job.visibility === "boost" ? "boosted" : "free",
       risk_score: job.riskScore || 0,
       reports_count: job.reportCount || 0,
-      expires_at: job.expiresAt ? new Date(job.expiresAt).toISOString() : new Date(Date.now() + (job.visibility === "boost" ? 28 : 15) * 86400000).toISOString()
+      expires_at: job.paymentVerified === false ? null : (job.expiresAt ? new Date(job.expiresAt).toISOString() : new Date(Date.now() + (job.visibility === "boost" ? 28 : 15) * 86400000).toISOString())
     };
     var query = supabase.from("jobs");
     var result = /^[0-9a-f-]{36}$/i.test(String(job.id || ""))

@@ -75,6 +75,12 @@
     appState.worker.lng = row.lng || null;
     appState.worker.jobTypes = Array.isArray(row.preferred_jobs) ? row.preferred_jobs : [];
     appState.worker.skills = Array.isArray(row.skills) ? row.skills : [];
+    var availability = row.availability && typeof row.availability === "object" ? row.availability : {};
+    appState.worker.availability = availability.summary || appState.worker.availability || "";
+    appState.worker.startAvailability = availability.start || appState.worker.startAvailability || "";
+    appState.worker.availableDays = Array.isArray(availability.days) ? availability.days : (appState.worker.availableDays || []);
+    appState.worker.shiftPreference = availability.shift || appState.worker.shiftPreference || "";
+    appState.worker.flexibleAvailability = !!availability.flexible;
     appState.worker.photo_url = row.photo_url || "";
     appState.worker.photoVerified = !!row.photo_verified;
     appState.user = appState.user || {};

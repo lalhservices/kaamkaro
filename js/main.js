@@ -37,6 +37,14 @@
   var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
   var setupReturnRoute = localStorage.getItem("kkSetupReturnRoute") || "";
 
+  function isLocalPrototype() {
+    return window.location.protocol === "file:" ||
+      (window.location.protocol === "http:" && ["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
+  }
+  function allowPrototypeFixtures() {
+    return isLocalPrototype() && localStorage.getItem("kkDisableDemoData") !== "true";
+  }
+
   var routeOrder = ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress","jobs","applied","chat","search","applications","employerPublicProfile","employerSetup","employerDash","employerJobDetail","workerProfileView","postJob","jobVisibility","published","applicants","employerJobs","profile","employerProfile","notifications","menu","accountSettings","profileEdit","adminModeration","legal","report"];
   var workCategories = ["Delivery","Retail","Office Work","Helper","Driver","Cleaner","Waiter","Data Entry"];
   var skillOptions = ["Cleaning","Driving","Customer Service","Data Entry","Excel","Inventory Handling","Food Service","Basic Accounting","Communication","Sales","Packing","Warehouse Work"];
@@ -47,6 +55,7 @@
     { id: "remote-data", title: "Data Entry", pay: "Rs 12,000/month", city: "Remote", distance: "Remote", type: "Remote", employer: "AdminWorks", badge: "Verified", remote: true, desc: "Basic typing and spreadsheet work." }
   ];
   function cloneJobs() {
+    if (!allowPrototypeFixtures()) return [];
     return defaultJobs.map(function (job) { return Object.assign({}, job); });
   }
   function freshAccountState(phone, userId, authUser) {
@@ -319,6 +328,10 @@
       console.warn("Job Supabase save failed:", error);
       return null;
     }
+  }
+  async function payForBoostRemote(job) {
+    if (!window.KaamKaroPayments || !window.KaamKaroPayments.payForBoost) throw new Error("Payment service is not ready.");
+    return window.KaamKaroPayments.payForBoost(job);
   }
   async function saveApplicationRemote(app, job) {
     if (!window.KaamKaroApplications || !window.KaamKaroApplications.saveApplication) return null;
@@ -1044,8 +1057,11 @@
     var q = "";
     var selectedCity = activeCity || state.worker.city || state.user.city || "";
     var city = selectedCity.toLowerCase();
+    function isWorkerVisibleJob(job) {
+      return (job.status || "approved") === "approved" && (!job.expiresAt || job.expiresAt > Date.now());
+    }
     var list = state.jobs.filter(function (job) {
-      if ((job.status || "approved") !== "approved") return false;
+      if (!isWorkerVisibleJob(job)) return false;
       if (activeFilter === "remote" || locationMode === "remote") return job.remote;
       if (activeFilter === "near") return !job.remote;
       if (activeFilter === "all" && city) return job.remote || String(job.city || "").toLowerCase() === city;
@@ -1058,8 +1074,8 @@
     });
     if (!list.length) {
       if (byId("feedNotice")) byId("feedNotice").textContent = city ? "No jobs very close - showing nearby options in " + selectedCity + "." : "Showing nearby options.";
-      list = state.jobs.filter(function (job) { return (job.status || "approved") === "approved" && (!job.remote || locationMode === "remote"); });
-      if (!list.length) list = cloneJobs();
+      list = state.jobs.filter(function (job) { return isWorkerVisibleJob(job) && (!job.remote || locationMode === "remote"); });
+      if (!list.length && allowPrototypeFixtures()) list = cloneJobs();
     } else {
       if (byId("feedNotice")) {
         if (activeFilter === "remote") byId("feedNotice").textContent = "You are seeing jobs you can do from home.";
@@ -2071,16 +2087,38 @@
       toast("This job cannot be published. Please review posting rules.");
       return;
     }
-    var status = moderation.reasons.length ? "pending_review" : "approved";
+    var needsPayment = postVisibility === "boost";
+    var status = needsPayment ? "pending_review" : (moderation.reasons.length ? "pending_review" : "approved");
     var business = currentBusinessProfile();
     var postLocation = draft.location || parseLocationParts(draft.city);
     var created = Date.now();
-    var job = { id: "job-" + created, businessId: state.defaultBusinessId, employerId: state.defaultBusinessId, companyName: business.businessName, title: draft.title, pay: draft.pay, city: postLocation.city, district: postLocation.district, state: postLocation.state, formatted_location: postLocation.formatted_location, distance: "Nearby", type: draft.type, employer: business.businessName, badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount(), createdAt: created, expiresAt: created + (postVisibility === "boost" ? 28 : 15) * 86400000 };
+    var job = { id: "job-" + created, businessId: state.defaultBusinessId, employerId: state.defaultBusinessId, companyName: business.businessName, title: draft.title, pay: draft.pay, city: postLocation.city, district: postLocation.district, state: postLocation.state, formatted_location: postLocation.formatted_location, distance: "Nearby", type: draft.type, employer: business.businessName, badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount(), createdAt: created, expiresAt: needsPayment ? null : created + 15 * 86400000, paymentVerified: !needsPayment };
     state.jobs.unshift(job);
-    state.postingHistory.push({ businessId: state.defaultBusinessId, visibility: postVisibility, title: draft.title, desc: draft.desc, createdAt: created, status: status, riskScore: moderation.riskScore });
     save();
-    await saveJobRemote(job);
-    audit(status === "approved" ? "approved" : "pending_review", status === "approved" ? "Auto-approved" : moderation.reasons.join(", "), job, "system");
+    var remoteJob = await saveJobRemote(job);
+    if (needsPayment) {
+      try {
+        if (!remoteJob && !isLocalPrototype()) throw new Error("Job must sync before payment. Please try again.");
+        toast("Opening secure payment...");
+        await payForBoostRemote(job);
+        job.paymentVerified = true;
+        job.boosted = true;
+        job.expiresAt = Date.now() + 28 * 86400000;
+        job.status = moderation.reasons.length ? "pending_review" : "approved";
+        await saveJobRemote(job);
+      } catch (error) {
+        state.jobs = state.jobs.filter(function (item) { return item.id !== job.id; });
+        job.status = "deleted";
+        job.deletedAt = Date.now();
+        await saveJobRemote(job);
+        save();
+        toast(error && error.message ? error.message : "Payment was not completed.");
+        return;
+      }
+    }
+    state.postingHistory.push({ businessId: state.defaultBusinessId, visibility: postVisibility, title: draft.title, desc: draft.desc, createdAt: created, status: job.status, riskScore: moderation.riskScore });
+    save();
+    audit(job.status === "approved" ? "approved" : "pending_review", job.status === "approved" ? "Auto-approved" : moderation.reasons.join(", "), job, "system");
     track(postVisibility === "boost" ? "employer_job_boosted_posted" : "employer_job_free_posted");
     show("published");
   }

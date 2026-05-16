@@ -5,12 +5,15 @@
     var fromWindow = window.KAAM_KARO_SUPABASE || window.KAAM_KARO_SUPABASE_CONFIG || {};
     var urlMeta = document.querySelector('meta[name="supabase-url"]');
     var keyMeta = document.querySelector('meta[name="supabase-anon-key"]');
+    var backendMeta = document.querySelector('meta[name="kaam-karo-backend-url"]');
+    var isLocal = window.location.protocol === "file:" ||
+      (window.location.protocol === "http:" && ["localhost", "127.0.0.1", ""].indexOf(window.location.hostname) >= 0);
     return {
       url: fromWindow.url || (urlMeta ? urlMeta.content : "") || localStorage.getItem("kkSupabaseUrl") || "",
       anonKey: fromWindow.anonKey || (keyMeta ? keyMeta.content : "") || localStorage.getItem("kkSupabaseAnonKey") || "",
+      backendUrl: fromWindow.backendUrl || window.KAAM_KARO_BACKEND_URL || (backendMeta ? backendMeta.content : "") || localStorage.getItem("kkBackendUrl") || "",
       phoneCountryCode: fromWindow.phoneCountryCode || localStorage.getItem("kkPhoneCountryCode") || "+91",
-      devBypassOtp: fromWindow.devBypassOtp === true || localStorage.getItem("kkDevBypassOtp") === "true",
-      allowPhoneOnlyTestLogin: fromWindow.allowPhoneOnlyTestLogin === true
+      devBypassOtp: isLocal && (fromWindow.devBypassOtp === true || localStorage.getItem("kkDevBypassOtp") === "true")
     };
   }
 
