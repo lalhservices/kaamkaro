@@ -10,7 +10,7 @@ Do not use these files to redesign the current prototype UI. The live prototype 
   MVP production schema, indexes, unique constraints, storage buckets, and starter RLS policies.
 
 - `server.js`  
-  Railway-ready backend shell with health check and backend-only Razorpay create/verify payment endpoints.
+  Railway-ready backend shell with health check, backend-only Razorpay create/verify payment endpoints, moderation checks, report ingestion, signup risk logging, and admin review queue endpoints.
 
 - `.env.example`  
   Server-only environment variable template. Never copy service role or Razorpay secret into frontend files.
@@ -36,6 +36,39 @@ Do not use these files to redesign the current prototype UI. The live prototype 
 
 If the first schema has already been executed, run `supabase_rls_hardening.sql` once in the Supabase SQL Editor before testing real applications/chat. This patch keeps private writes locked down while allowing the public/profile reads required by the app flow.
 
+## Live RLS Smoke Test
+
+After running `supabase_rls_hardening.sql`, test the real project with three authenticated Supabase users:
+
+- worker test user
+- employer test user
+- outsider/non-participant test user
+
+Set these environment variables before running QA:
+
+```bash
+SUPABASE_URL=https://nayfeeqpssjmfkvmsorf.supabase.co
+SUPABASE_ANON_KEY=your_publishable_or_anon_key
+SUPABASE_E2E_WORKER_JWT=worker_access_token
+SUPABASE_E2E_EMPLOYER_JWT=employer_access_token
+SUPABASE_E2E_OUTSIDER_JWT=outsider_access_token
+```
+
+Then run:
+
+```bash
+npm run qa -- tests/permissions-db.spec.js
+```
+
+The live test verifies:
+
+- employer can see their applicant row
+- employer can read the applicant worker profile
+- worker can read the active job's employer profile
+- match chat and messages are visible to participants
+- message delivery status can move to `seen`
+- outsider cannot read private chats, messages, or worker profiles
+
 ## Frontend Supabase Config
 
 The prototype now reads Supabase config from any of these places:
@@ -60,6 +93,8 @@ For real Supabase phone login:
 If Supabase returns `unsupported phone number`, it is usually an Auth/SMS provider setup issue or a test/placeholder number, not a database schema issue.
 
 For prototype testing only, `kaam-karo-app/js/supabase.config.js` enables `devBypassOtp` on local `file://`, `localhost`, and `127.0.0.1` runs so UI and flow testing can continue while the SMS provider is not configured. This does not create a real Supabase Auth session and must not be enabled on production domains.
+
+Production builds are locked to real Supabase OTP. Demo/local bypass is ignored outside local prototype hosts, and missing Supabase config now blocks login instead of silently creating a demo user.
 
 To force real Supabase OTP while testing locally after SMS is configured, use either:
 
@@ -98,6 +133,27 @@ Health check:
 ```text
 GET /health
 ```
+
+Safety endpoints:
+
+```text
+POST /security/signup-event
+POST /moderation/check-job
+POST /moderation/check-message
+POST /reports
+GET  /admin/review-queue
+```
+
+All safety endpoints require a real authenticated Supabase JWT. The frontend still uses only the anon/publishable key; service role access stays on Railway.
+
+Payment endpoints:
+
+```text
+POST /payments/create-order
+POST /payments/verify
+```
+
+Boosted jobs must be verified by the backend before `jobs.boosted` becomes `true`. Frontend success callbacks alone are not trusted.
 
 ## Important
 

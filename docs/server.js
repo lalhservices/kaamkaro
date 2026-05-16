@@ -449,7 +449,7 @@ app.post("/payments/verify", requireUser, async (req, res) => {
 
     const { data: job, error: jobError } = await supabase
       .from("jobs")
-      .select("id")
+      .select("id, status, risk_score")
       .eq("id", jobId)
       .eq("employer_id", employer.id)
       .maybeSingle();
@@ -465,7 +465,12 @@ app.post("/payments/verify", requireUser, async (req, res) => {
 
     const { error: jobUpdateError } = await supabase
       .from("jobs")
-      .update({ boosted: true, post_type: "boosted", expires_at: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString() })
+      .update({
+        boosted: true,
+        post_type: "boosted",
+        status: Number(job.risk_score || 0) > 0 ? job.status : "active",
+        expires_at: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString()
+      })
       .eq("id", job.id);
     if (jobUpdateError) throw jobUpdateError;
 
