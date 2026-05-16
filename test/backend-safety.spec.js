@@ -23,6 +23,9 @@ test.describe("backend trust and safety guardrails", () => {
     expect(schema).toContain("create or replace function public.apply_report_risk");
     expect(schema).toContain("create or replace function public.apply_moderation_risk");
     expect(schema).toContain("create or replace function public.log_job_risk_flags");
+    expect(schema).toContain("create or replace function public.enforce_application_job_rules");
+    expect(schema).toContain("create or replace function public.enforce_application_status_rules");
+    expect(schema).toContain("create or replace function public.enforce_chat_unlock_rules");
     expect(schema).toContain("registration fee");
     expect(schema).toContain("security deposit");
     expect(schema).toContain("adult service");
@@ -55,8 +58,25 @@ test.describe("backend trust and safety guardrails", () => {
     expect(server).toContain('app.post("/moderation/check-message"');
     expect(server).toContain('app.post("/reports"');
     expect(server).toContain('app.get("/admin/review-queue"');
+    expect(server).toContain('app.post("/payments/create-order"');
+    expect(server).toContain('app.post("/payments/verify"');
+    expect(server).toContain("razorpay_signature");
+    expect(server).toContain("boosted: true");
     expect(server).toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(frontendFiles).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(frontendFiles).not.toContain("SERVICE_ROLE_KEY");
+  });
+
+  test("production OTP and payment paths do not allow frontend demo success", () => {
+    const auth = read("kaam-karo-app/js/auth.js");
+    const payments = read("kaam-karo-app/js/payments.js");
+    const jobs = read("kaam-karo-app/js/jobs.js");
+
+    expect(auth).toContain("return isLocalPrototype() && cfg.devBypassOtp === true");
+    expect(auth).toContain("Supabase auth is not configured");
+    expect(payments).toContain("Payment backend is not configured");
+    expect(payments).toContain("/payments/create-order");
+    expect(payments).toContain("/payments/verify");
+    expect(jobs).toContain("boosted: job.visibility === \"boost\" && job.paymentVerified === true");
   });
 });
