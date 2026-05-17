@@ -121,6 +121,7 @@ Required Railway variables:
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_SECRET`
 - `FRONTEND_ORIGIN`
+- `GOOGLE_PLACES_API_KEY` optional, backend-only, for India location autocomplete
 
 Start command:
 
@@ -137,12 +138,15 @@ GET /health
 Safety endpoints:
 
 ```text
+GET  /locations/autocomplete?q=Delhi
 POST /security/signup-event
 POST /moderation/check-job
 POST /moderation/check-message
 POST /reports
 GET  /admin/review-queue
 ```
+
+Location autocomplete is public and returns structured India-only locations for onboarding, business setup, profile edits, account location, and job posts. If `GOOGLE_PLACES_API_KEY` is set, Railway proxies Google Places so the browser never sees the key. Without it, the endpoint uses the built-in India fallback list for testing.
 
 All safety endpoints require a real authenticated Supabase JWT. The frontend still uses only the anon/publishable key; service role access stays on Railway.
 

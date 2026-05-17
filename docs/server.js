@@ -93,6 +93,95 @@ const safetyRules = [
   { term: "threat", reason: "threats", severity: "high", action: "block" }
 ];
 
+const fallbackLocations = [
+  { city: "Bainsa", district: "Shaheed Bhagat Singh Nagar", state: "Punjab", country: "India", formatted_location: "Bainsa, Shaheed Bhagat Singh Nagar, Punjab, India", place_id: "in-bainsa-sbsn-pb", lat: 31.105, lng: 76.38 },
+  { city: "Gandhinagar", district: "Gandhinagar", state: "Gujarat", country: "India", formatted_location: "Gandhinagar, Gujarat, India", place_id: "in-gandhinagar-gj", lat: 23.2156, lng: 72.6369 },
+  { city: "Gandhinagar", district: "Kolhapur", state: "Maharashtra", country: "India", formatted_location: "Gandhinagar, Kolhapur, Maharashtra, India", place_id: "in-gandhinagar-kolhapur-mh", lat: 16.705, lng: 74.243 },
+  { city: "Gandhinagar District", district: "Gandhinagar", state: "Gujarat", country: "India", formatted_location: "Gandhinagar District, Gujarat, India", place_id: "in-gandhinagar-district-gj", lat: 23.223, lng: 72.65 },
+  { city: "Balachaur", district: "Nawanshahr", state: "Punjab", country: "India", formatted_location: "Balachaur, Nawanshahr, Punjab, India", place_id: "in-balachaur-pb", lat: 31.06, lng: 76.3 },
+  { city: "Chandigarh", district: "Chandigarh", state: "Chandigarh", country: "India", formatted_location: "Chandigarh, India", place_id: "in-chandigarh", lat: 30.7333, lng: 76.7794 },
+  { city: "Delhi", district: "Delhi", state: "Delhi", country: "India", formatted_location: "Delhi, India", place_id: "in-delhi", lat: 28.6139, lng: 77.209 },
+  { city: "Pune", district: "Pune", state: "Maharashtra", country: "India", formatted_location: "Pune, Maharashtra, India", place_id: "in-pune-mh", lat: 18.5204, lng: 73.8567 },
+  { city: "Kochi", district: "Ernakulam", state: "Kerala", country: "India", formatted_location: "Kochi, Ernakulam, Kerala, India", place_id: "in-kochi-kl", lat: 9.9312, lng: 76.2673 },
+  { city: "Hyderabad", district: "Hyderabad", state: "Telangana", country: "India", formatted_location: "Hyderabad, Telangana, India", place_id: "in-hyderabad-ts", lat: 17.385, lng: 78.4867 },
+  { city: "Mumbai", district: "Mumbai", state: "Maharashtra", country: "India", formatted_location: "Mumbai, Maharashtra, India", place_id: "in-mumbai-mh", lat: 19.076, lng: 72.8777 },
+  { city: "Bengaluru", district: "Bengaluru Urban", state: "Karnataka", country: "India", formatted_location: "Bengaluru, Karnataka, India", place_id: "in-bengaluru-ka", lat: 12.9716, lng: 77.5946 },
+  { city: "Jaipur", district: "Jaipur", state: "Rajasthan", country: "India", formatted_location: "Jaipur, Rajasthan, India", place_id: "in-jaipur-rj", lat: 26.9124, lng: 75.7873 },
+  { city: "Surat", district: "Surat", state: "Gujarat", country: "India", formatted_location: "Surat, Gujarat, India", place_id: "in-surat-gj", lat: 21.1702, lng: 72.8311 },
+  { city: "Amritsar", district: "Amritsar", state: "Punjab", country: "India", formatted_location: "Amritsar, Punjab, India", place_id: "in-amritsar-pb", lat: 31.634, lng: 74.8723 },
+  { city: "Karimnagar", district: "Karimnagar", state: "Telangana", country: "India", formatted_location: "Karimnagar, Telangana, India", place_id: "in-karimnagar-ts", lat: 18.4386, lng: 79.1288 },
+  { city: "Tiruchirappalli", district: "Tiruchirappalli", state: "Tamil Nadu", country: "India", formatted_location: "Tiruchirappalli, Tamil Nadu, India", place_id: "in-tiruchirappalli-tn", lat: 10.7905, lng: 78.7047 }
+];
+
+function localLocationSearch(query) {
+  const q = String(query || "").toLowerCase().trim();
+  const rows = q ? fallbackLocations.filter((loc) => {
+    return [loc.city, loc.district, loc.state, loc.formatted_location].join(" ").toLowerCase().includes(q);
+  }) : fallbackLocations;
+  return rows.slice(0, 8);
+}
+
+function addressComponent(components, type) {
+  const match = components.find((item) => Array.isArray(item.types) && item.types.includes(type));
+  return match ? match.long_name : "";
+}
+
+function normalizePlaceDetails(result, prediction) {
+  const components = Array.isArray(result.address_components) ? result.address_components : [];
+  const state = addressComponent(components, "administrative_area_level_1");
+  const district = addressComponent(components, "administrative_area_level_3") ||
+    addressComponent(components, "administrative_area_level_2") ||
+    state;
+  const city = addressComponent(components, "locality") ||
+    addressComponent(components, "postal_town") ||
+    addressComponent(components, "sublocality_level_1") ||
+    addressComponent(components, "administrative_area_level_4") ||
+    addressComponent(components, "administrative_area_level_3") ||
+    (prediction && prediction.structured_formatting && prediction.structured_formatting.main_text) ||
+    result.name ||
+    district ||
+    state;
+  const country = addressComponent(components, "country") || "India";
+  const geometry = result.geometry && result.geometry.location ? result.geometry.location : {};
+  return {
+    city,
+    district: district || city,
+    state: state || district || city,
+    country,
+    formatted_location: result.formatted_address || (prediction && prediction.description) || [city, district, state, country].filter(Boolean).join(", "),
+    place_id: result.place_id || (prediction && prediction.place_id) || "",
+    lat: geometry.lat == null ? null : Number(geometry.lat),
+    lng: geometry.lng == null ? null : Number(geometry.lng)
+  };
+}
+
+async function googleLocationSearch(query) {
+  const key = process.env.GOOGLE_PLACES_API_KEY;
+  if (!key || !query || typeof fetch !== "function") return [];
+  const params = new URLSearchParams({
+    input: query,
+    components: "country:in",
+    types: "geocode",
+    key
+  });
+  const autocomplete = await fetch(`https://maps.googleapis.com/maps/api/place/autocomplete/json?${params.toString()}`);
+  if (!autocomplete.ok) return [];
+  const json = await autocomplete.json();
+  const predictions = Array.isArray(json.predictions) ? json.predictions.slice(0, 5) : [];
+  const details = await Promise.all(predictions.map(async (prediction) => {
+    const detailParams = new URLSearchParams({
+      place_id: prediction.place_id,
+      fields: "address_component,geometry,formatted_address,name,place_id",
+      key
+    });
+    const response = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?${detailParams.toString()}`);
+    if (!response.ok) return null;
+    const detailJson = await response.json();
+    return detailJson.result ? normalizePlaceDetails(detailJson.result, prediction) : null;
+  }));
+  return details.filter(Boolean);
+}
+
 function scanContent(text, context = "general") {
   const content = String(text || "").toLowerCase();
   const matches = safetyRules.filter((rule) => content.includes(rule.term));
@@ -166,6 +255,18 @@ async function getEmployerProfile(userId) {
 
 app.get("/health", (_req, res) => {
   res.json({ ok: true, service: "kaam-karo-backend" });
+});
+
+app.get("/locations/autocomplete", async (req, res) => {
+  try {
+    const query = String(req.query.q || "").trim();
+    if (query.length < 2) return res.json({ locations: localLocationSearch(query) });
+    const remote = await googleLocationSearch(query);
+    res.json({ locations: remote.length ? remote.slice(0, 8) : localLocationSearch(query) });
+  } catch (error) {
+    console.error("Location autocomplete fallback:", error);
+    res.json({ locations: localLocationSearch(req.query.q) });
+  }
 });
 
 app.post("/security/signup-event", requireUser, async (req, res) => {
