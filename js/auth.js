@@ -98,6 +98,7 @@
 
   function canBypassOtpForTesting() {
     var cfg = window.KaamKaroSupabase && window.KaamKaroSupabase.config ? window.KaamKaroSupabase.config() : {};
+    if (cfg.testLoginEnabled === true) return true;
     if (forceRealOtp()) return false;
     return isLocalPrototype() && cfg.devBypassOtp === true;
   }

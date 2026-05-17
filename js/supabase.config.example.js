@@ -5,5 +5,6 @@ window.KAAM_KARO_SUPABASE = {
   anonKey: "YOUR_SUPABASE_ANON_KEY",
   backendUrl: "https://YOUR_RAILWAY_BACKEND_URL",
   phoneCountryCode: "+91",
+  testLoginEnabled: false,
   devBypassOtp: false
 };

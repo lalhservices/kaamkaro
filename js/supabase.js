@@ -13,7 +13,8 @@
       anonKey: fromWindow.anonKey || (keyMeta ? keyMeta.content : "") || localStorage.getItem("kkSupabaseAnonKey") || "",
       backendUrl: fromWindow.backendUrl || window.KAAM_KARO_BACKEND_URL || (backendMeta ? backendMeta.content : "") || localStorage.getItem("kkBackendUrl") || "",
       phoneCountryCode: fromWindow.phoneCountryCode || localStorage.getItem("kkPhoneCountryCode") || "+91",
-      devBypassOtp: isLocal && (fromWindow.devBypassOtp === true || localStorage.getItem("kkDevBypassOtp") === "true")
+      devBypassOtp: isLocal && (fromWindow.devBypassOtp === true || localStorage.getItem("kkDevBypassOtp") === "true"),
+      testLoginEnabled: fromWindow.testLoginEnabled === true || localStorage.getItem("kkTestLoginEnabled") === "true"
     };
   }
 
