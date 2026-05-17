@@ -436,6 +436,7 @@
     save();
   }
   var indiaLocations = [
+    { city: "Bainsa", district: "Shaheed Bhagat Singh Nagar", state: "Punjab", country: "India", formatted_location: "Bainsa, Shaheed Bhagat Singh Nagar, Punjab, India", place_id: "in-bainsa-sbsn-pb", lat: 31.105, lng: 76.38 },
     { city: "Gandhinagar", district: "Gandhinagar", state: "Gujarat", country: "India", formatted_location: "Gandhinagar, Gujarat, India", place_id: "in-gandhinagar-gj", lat: 23.2156, lng: 72.6369 },
     { city: "Gandhinagar", district: "Kolhapur", state: "Maharashtra", country: "India", formatted_location: "Gandhinagar, Kolhapur, Maharashtra, India", place_id: "in-gandhinagar-kolhapur-mh", lat: 16.705, lng: 74.243 },
     { city: "Gandhinagar District", district: "Gandhinagar", state: "Gujarat", country: "India", formatted_location: "Gandhinagar District, Gujarat, India", place_id: "in-gandhinagar-district-gj", lat: 23.223, lng: 72.65 },
@@ -453,7 +454,32 @@
     { city: "Karimnagar", district: "Karimnagar", state: "Telangana", country: "India", formatted_location: "Karimnagar, Telangana, India", place_id: "in-karimnagar-ts", lat: 18.4386, lng: 79.1288 },
     { city: "Tiruchirappalli", district: "Tiruchirappalli", state: "Tamil Nadu", country: "India", formatted_location: "Tiruchirappalli, Tamil Nadu, India", place_id: "in-tiruchirappalli-tn", lat: 10.7905, lng: 78.7047 }
   ];
+  if (window.KaamKaroLocation && window.KaamKaroLocation.fallbackLocations) indiaLocations = window.KaamKaroLocation.fallbackLocations;
+  function locationApi() {
+    return window.KaamKaroLocation || null;
+  }
+  function formatLocationLabel(loc) {
+    var api = locationApi();
+    return api && api.formatLabel ? api.formatLabel(loc) : [loc.city, loc.district, loc.state].filter(Boolean).join(", ");
+  }
+  function normalizeLocation(loc) {
+    var api = locationApi();
+    if (api && api.normalize) return api.normalize(loc);
+    if (!loc) return null;
+    return {
+      city: loc.city || "",
+      district: loc.district || loc.city || "",
+      state: loc.state || loc.district || loc.city || "",
+      country: loc.country || "India",
+      formatted_location: loc.formatted_location || [loc.city, loc.district, loc.state, "India"].filter(Boolean).join(", "),
+      place_id: loc.place_id || "",
+      lat: loc.lat == null ? null : Number(loc.lat),
+      lng: loc.lng == null ? null : Number(loc.lng)
+    };
+  }
   function locationMatches(query) {
+    var api = locationApi();
+    if (api && api.localSearch) return api.localSearch(query);
     var q = String(query || "").toLowerCase().trim();
     if (!q) return indiaLocations.slice(0, 8);
     return indiaLocations.filter(function (loc) {
@@ -463,21 +489,33 @@
   function fillLocationDatalist(query) {
     var list = byId("locationSuggestions");
     if (!list) return;
-    list.innerHTML = locationMatches(query).map(function (loc) { return '<option value="' + loc.formatted_location + '"></option>'; }).join("");
+    list.innerHTML = locationMatches(query).map(function (loc) { return '<option value="' + escapeHtml(formatLocationLabel(loc)) + '"></option>'; }).join("");
   }
   function selectedLocationFromInput(value) {
+    var api = locationApi();
+    if (api && api.findByInput) return api.findByInput(value);
     var exact = String(value || "").trim().toLowerCase();
-    return indiaLocations.find(function (loc) { return loc.formatted_location.toLowerCase() === exact; }) || null;
+    return indiaLocations.find(function (loc) { return formatLocationLabel(loc).toLowerCase() === exact || loc.formatted_location.toLowerCase() === exact; }) || null;
+  }
+  function selectedLocationFromPlaceId(placeId) {
+    var api = locationApi();
+    if (api && api.findByPlaceId) return api.findByPlaceId(placeId);
+    return indiaLocations.find(function (loc) { return loc.place_id === placeId; }) || null;
   }
   function saveLocationTo(target, loc) {
+    loc = normalizeLocation(loc);
     if (!loc) return;
     selectedLocations[target] = loc;
+    if (window.KaamKaroLocation && window.KaamKaroLocation.setSelected) window.KaamKaroLocation.setSelected(target, loc);
     if (target === "workerBasic") {
       state.worker.city = loc.city; state.worker.district = loc.district; state.worker.state = loc.state; state.worker.country = loc.country; state.worker.formatted_location = loc.formatted_location; state.worker.place_id = loc.place_id; state.worker.lat = loc.lat; state.worker.lng = loc.lng;
       state.user.city = loc.city; state.user.district = loc.district; state.user.state = loc.state; state.user.country = loc.country; state.user.location = loc.formatted_location;
     }
     if (target === "postJob") {
       selectedLocations.postJob = loc;
+    }
+    if (target === "businessSetup") {
+      Object.assign(state.employer, { city: loc.city, district: loc.district, state: loc.state, country: loc.country, location: loc.formatted_location, formatted_location: loc.formatted_location, place_id: loc.place_id, lat: loc.lat, lng: loc.lng });
     }
     if (target === "profileEdit") {
       editDraft.value = loc.formatted_location;
@@ -498,18 +536,7 @@
     var text = String(value || "").trim();
     var selected = selectedLocationFromInput(text);
     if (selected) return selected;
-    var city = displayCity(text);
-    var map = {
-      chandigarh: { city: "Chandigarh", district: "Chandigarh", state: "Chandigarh", formatted_location: "Chandigarh" },
-      balachaur: { city: "Balachaur", district: "Nawanshahr", state: "Punjab", formatted_location: "Balachaur, Punjab" },
-      delhi: { city: "Delhi", district: "Delhi", state: "Delhi", formatted_location: "Delhi" },
-      pune: { city: "Pune", district: "Pune", state: "Maharashtra", formatted_location: "Pune, Maharashtra" },
-      kochi: { city: "Kochi", district: "Ernakulam", state: "Kerala", formatted_location: "Kochi, Kerala" },
-      hyderabad: { city: "Hyderabad", district: "Hyderabad", state: "Telangana", formatted_location: "Hyderabad, Telangana" },
-      amritsar: { city: "Amritsar", district: "Amritsar", state: "Punjab", formatted_location: "Amritsar, Punjab" },
-      surat: { city: "Surat", district: "Surat", state: "Gujarat", formatted_location: "Surat, Gujarat" }
-    };
-    return map[city.toLowerCase()] || { city: city, district: "", state: "", country: "India", formatted_location: city, place_id: "", lat: null, lng: null };
+    return null;
   }
   function disconnectMatch(convo, reason) {
     if (!convo) return null;
@@ -828,6 +855,11 @@
     document.querySelectorAll("[data-i18n]").forEach(function (node) { node.textContent = t(node.dataset.i18n); });
     document.querySelectorAll("[data-i18n-placeholder]").forEach(function (node) { node.setAttribute("placeholder", t(node.dataset.i18nPlaceholder)); });
   }
+  function initLocationAutocomplete() {
+    if (window.KaamKaroLocation && window.KaamKaroLocation.attachAll) {
+      window.KaamKaroLocation.attachAll(document);
+    }
+  }
   function fillBasicDefaults() {
     fillLocationDatalist("");
     if (byId("locationSearch")) byId("locationSearch").value = state.worker.city || "";
@@ -835,6 +867,7 @@
     if (byId("contactName")) byId("contactName").value = state.employer.name || "";
     if (byId("businessType")) byId("businessType").value = state.employer.type || "";
     if (byId("businessPhone")) byId("businessPhone").value = state.employer.phone || (byId("phoneInput") ? byId("phoneInput").value : "") || "";
+    if (byId("businessLocation")) byId("businessLocation").value = state.employer.formatted_location ? formatLocationLabel(state.employer) : "";
     if (byId("otpPhoneText")) byId("otpPhoneText").textContent = "+91 " + (((byId("phoneInput") && byId("phoneInput").value) || state.user.phone || state.employer.phone || "0000000000").trim());
   }
   function renderCategories() {
@@ -1433,7 +1466,7 @@
       var suggestions = locationMatches(editDraft.value || "");
       body.innerHTML =
         '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="City, district, state" value="' + (editDraft.value || "") + '" data-location-input="profileEdit"></div></div>' +
-        '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (loc) { return '<button class="option-row ' + (editDraft.value === loc.formatted_location ? "selected" : "") + '" data-edit-location="' + loc.place_id + '"><span class="option-dot">' + (editDraft.value === loc.formatted_location ? "OK" : "") + '</span>' + loc.formatted_location + '</button>'; }).join("") + '</div>';
+        '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (loc) { var selected = editDraft.value === loc.formatted_location || editDraft.value === formatLocationLabel(loc); return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-location="' + loc.place_id + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span><span><b>' + escapeHtml(formatLocationLabel(loc)) + '</b><br><span class="small">' + escapeHtml(loc.formatted_location) + '</span></span></button>'; }).join("") + '</div>';
       return;
     }
     body.innerHTML = '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Type here" value="' + (editDraft.value || "") + '"></div></div>';
@@ -1444,7 +1477,7 @@
     var business = currentBusinessProfile();
     var cfg = profileEditConfig(editingProfileField);
     var selectedEditLocation = cfg.type === "location" ? (editDraft.location || selectedLocationFromInput(value)) : null;
-    if (cfg.type === "location" && !selectedEditLocation) return toast("Please select a valid city or area from the list.");
+    if (cfg.type === "location" && !selectedEditLocation) return toast("Please select a location from the list.");
     if (cfg.type !== "skills" && cfg.type !== "availability" && cfg.type !== "work" && !value) return toast("Please add a value.");
     if (editingProfileField === "accountName") {
       state.user.displayName = value;
@@ -1954,6 +1987,7 @@
       renderPostDescCounter,
       expireInactiveMatches,
       renderHeroDynamicCard,
+      initLocationAutocomplete,
       renderPublished,
       function () {
         var profileBadges = workerBadges();
@@ -2054,7 +2088,7 @@
     if (!amount) return toast("Salary required.");
     if (!period) return toast("Salary type required.");
     if (!city) return toast("Location required.");
-    if (!location) return toast("Please select a valid city or area from the list.");
+    if (!location) return toast("Please select a location from the list.");
     if (desc.length > 700) return toast("Job description must be 700 characters or less.");
     if (descriptionWordCount(desc) < 15) {
       if (byId("postDescError")) byId("postDescError").style.display = "block";
@@ -2090,7 +2124,7 @@
     var needsPayment = postVisibility === "boost";
     var status = needsPayment ? "pending_review" : (moderation.reasons.length ? "pending_review" : "approved");
     var business = currentBusinessProfile();
-    var postLocation = draft.location || parseLocationParts(draft.city);
+    var postLocation = draft.location;
     var created = Date.now();
     var job = { id: "job-" + created, businessId: state.defaultBusinessId, employerId: state.defaultBusinessId, companyName: business.businessName, title: draft.title, pay: draft.pay, city: postLocation.city, district: postLocation.district, state: postLocation.state, formatted_location: postLocation.formatted_location, distance: "Nearby", type: draft.type, employer: business.businessName, badge: postVisibility === "boost" ? "Urgent" : "New", visibility: postVisibility, remote: draft.type === "Remote", desc: draft.desc, status: status, riskScore: moderation.riskScore, flagReasons: moderation.reasons, reportCount: 0, previousPosts: employerPostCount(), createdAt: created, expiresAt: needsPayment ? null : created + 15 * 86400000, paymentVerified: !needsPayment };
     state.jobs.unshift(job);
@@ -2153,6 +2187,10 @@
     show("landing");
     toast("Account deleted");
   }
+  document.addEventListener("kaamkaro:location-selected", function (event) {
+    if (!event.detail || !event.detail.context || !event.detail.location) return;
+    saveLocationTo(event.detail.context, event.detail.location);
+  });
   document.addEventListener("click", async function (event) {
     var lang = event.target.closest("[data-lang]");
     if (lang) return setLang(lang.dataset.lang);
@@ -2230,7 +2268,7 @@
         byId("postTitle").value = repost.title || "";
         byId("postPayAmount").value = String(repost.pay || "").replace(/[^\d]/g, "");
         byId("postLocation").value = repost.formatted_location || repost.city || "";
-        selectedLocations.postJob = selectedLocationFromInput(byId("postLocation").value) || parseLocationParts(byId("postLocation").value);
+        selectedLocations.postJob = selectedLocationFromInput(byId("postLocation").value) || selectedLocationFromPlaceId(repost.place_id) || normalizeLocation(repost);
         byId("postType").value = repost.type || "Full Time";
         byId("postDesc").value = repost.desc || "";
         renderPostDescCounter();
@@ -2452,7 +2490,7 @@
     if (editOption) { editDraft.value = editOption.dataset.editOption; markEditDirty(); renderProfileEdit(); return; }
     var editLocation = event.target.closest("[data-edit-location]");
     if (editLocation) {
-      var pickedEditLocation = indiaLocations.find(function (loc) { return loc.place_id === editLocation.dataset.editLocation; });
+      var pickedEditLocation = selectedLocationFromPlaceId(editLocation.dataset.editLocation);
       if (pickedEditLocation) saveLocationTo("profileEdit", pickedEditLocation);
       renderProfileEdit();
       return;
@@ -2661,7 +2699,7 @@
       state.worker.gender = byId("workerGender").value;
       state.worker.age = byId("workerAge").value.trim();
       var workerLocation = selectedLocations.workerBasic || selectedLocationFromInput(byId("workerCity").value.trim());
-      if (!workerLocation) return toast("Please select a valid city or area from the list.");
+      if (!workerLocation) return toast("Please select a location from the list.");
       applyStructuredLocation("user", workerLocation);
       applyStructuredLocation("worker", workerLocation);
       save();
@@ -2789,15 +2827,14 @@
       state.employer.name = byId("contactName").value.trim();
       state.employer.phone = byId("businessPhone").value.trim() || state.employer.phone;
       state.employer.type = byId("businessType").value || byId("businessTypeOther").value || state.employer.type;
-      var businessLocation = parseLocationParts(state.worker.city || state.user.city || "");
-      state.employer.city = businessLocation.city || "";
-      state.employer.district = businessLocation.district;
-      state.employer.state = businessLocation.state;
-      state.employer.formatted_location = businessLocation.formatted_location;
+      var businessLocationInput = byId("businessLocation");
+      var businessLocation = selectedLocations.businessSetup || selectedLocationFromInput(businessLocationInput ? businessLocationInput.value.trim() : "");
+      if (!businessLocation) return toast("Please select a location from the list.");
+      applyStructuredLocation("employer", businessLocation);
       state.user.displayName = state.employer.name || state.user.displayName;
       state.user.city = state.employer.city || state.user.city;
       state.user.location = state.user.city;
-      state.businessProfiles[businessId] = { businessId: businessId, ownerId: state.user.id || state.worker.id, businessName: state.employer.business, contactPersonName: state.employer.name, city: state.employer.city, district: state.employer.district, state: state.employer.state, formatted_location: state.employer.formatted_location, phone: state.employer.phone, type: state.employer.type, createdAt: Date.now() };
+      state.businessProfiles[businessId] = { businessId: businessId, ownerId: state.user.id || state.worker.id, businessName: state.employer.business, contactPersonName: state.employer.name, city: state.employer.city, district: state.employer.district, state: state.employer.state, country: state.employer.country || "India", location: state.employer.formatted_location, formatted_location: state.employer.formatted_location, place_id: state.employer.place_id || "", lat: state.employer.lat || null, lng: state.employer.lng || null, phone: state.employer.phone, type: state.employer.type, createdAt: Date.now() };
       var nextEmployerRoute = pendingEmployerRoute || "employerDash";
       pendingEmployerRoute = "";
       setupReturnRoute = "";
