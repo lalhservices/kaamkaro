@@ -63,7 +63,7 @@ test.describe("main flows, form validation, and fraud blocking", () => {
     await page.locator("#postLocation").fill("NotARealPlace");
     await page.locator("#postDesc").fill("Too short");
     await page.locator("[data-review-job]").click();
-    await expect(page.locator("#toast")).toContainText("Please select a valid city or area");
+    await expect(page.locator("#toast")).toContainText("Please select a location from the list.");
     await expectActiveScreen(page, "postJob");
     await expectNoBrowserErrors(errors);
   });

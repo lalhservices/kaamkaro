@@ -60,6 +60,8 @@ test.describe("backend trust and safety guardrails", () => {
     expect(server).toContain('app.get("/admin/review-queue"');
     expect(server).toContain('app.post("/payments/create-order"');
     expect(server).toContain('app.post("/payments/verify"');
+    expect(server).toContain('app.get("/locations/autocomplete"');
+    expect(server).toContain("GOOGLE_PLACES_API_KEY");
     expect(server).toContain("razorpay_signature");
     expect(server).toContain("boosted: true");
     expect(server).toContain("SUPABASE_SERVICE_ROLE_KEY");
