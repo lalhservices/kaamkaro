@@ -36,6 +36,8 @@
   var pendingEmployerRoute = localStorage.getItem("kkPendingEmployerRoute") || "";
   var pendingWorkerRoute = localStorage.getItem("kkPendingWorkerRoute") || "";
   var setupReturnRoute = localStorage.getItem("kkSetupReturnRoute") || "";
+  var isEditMode = false;
+  var editReturnScreen = "";
 
   function isLocalPrototype() {
     return window.location.protocol === "file:" ||
@@ -621,6 +623,36 @@
     if (lastMode === "worker") { currentRole = "worker"; localStorage.setItem("kkRole", "worker"); return show("jobs"); }
     show("role");
   }
+  function defaultEditReturnScreen() {
+    return currentRole === "employer" ? "employerProfile" : "profile";
+  }
+  function unsafeEditReturnScreen(id) {
+    return ["landing","otp","otpCode","role","workerBasic","workerWork","workerSkills","workerLocation","workerTrust","verifyId","verifyProgress","employerSetup"].indexOf(id) >= 0;
+  }
+  function safeEditReturnScreen(id) {
+    if (!id || unsafeEditReturnScreen(id)) return defaultEditReturnScreen();
+    return id;
+  }
+  function beginEditMode(returnTo) {
+    editReturnScreen = safeEditReturnScreen(returnTo || currentScreen || defaultEditReturnScreen());
+    isEditMode = true;
+    menuReturn = editReturnScreen;
+  }
+  function profileEditReturnTarget() {
+    return safeEditReturnScreen(editReturnScreen || menuReturn || defaultEditReturnScreen());
+  }
+  function clearEditMode() {
+    isEditMode = false;
+    editReturnScreen = "";
+    editingProfileField = "";
+    editDraft = {};
+    editDirty = false;
+  }
+  function returnFromEditMode() {
+    var target = profileEditReturnTarget();
+    clearEditMode();
+    show(target);
+  }
   function hasEmployerProfile() {
     return !!(state.employerComplete && state.defaultBusinessId && state.businessProfiles && state.businessProfiles[state.defaultBusinessId]);
   }
@@ -905,7 +937,7 @@
     if (state.user.photoVerificationStatus === "verified" || state.worker.photoVerified) {
       slot.innerHTML = '<span class="badge">Photo Verified</span>';
     } else {
-      slot.innerHTML = '<button class="badge muted" data-go="verifyId">Verify Photo</button><p class="small mt">Complete your profile to increase visibility.</p>';
+      slot.innerHTML = '<button class="badge muted" data-edit-photo>Verify Photo</button><p class="small mt">Complete your profile to increase visibility.</p>';
     }
   }
   function applyPhotoVerified(src) {
@@ -1395,13 +1427,17 @@
       accountName: { title: "Edit Name", label: "Name", value: state.user.displayName || state.worker.name || "", hint: "Used across profile, chat and employer contact.", type: "text" },
       accountLocation: { title: "Location", label: "Search city or area", value: state.user.city || state.worker.city || "", hint: "Choose the area used across Kaam Karo.", type: "location" },
       workerLocation: { title: "Location", label: "Search city or area", value: state.worker.city || state.user.city || "", hint: "Choose your work city", type: "location", suggestions: ["Delhi","Amritsar","Pune","Kochi","Surat","Tiruchirappalli","Karimnagar","Mumbai","Bengaluru","Hyderabad","Chandigarh","Jaipur"] },
+      workerAge: { title: "Edit Age", label: "Age", value: state.worker.age || "", hint: "Used only to help employers understand your profile.", type: "number" },
+      workerGender: { title: "Edit Gender", label: "Gender", value: state.worker.gender || "", hint: "Optional profile detail.", type: "gender" },
       workerSkills: { title: "Edit Skills", label: "Type a skill", value: "", hint: "Keep selected skills visible and controlled.", type: "skills" },
       workerExperience: { title: "Experience", label: "Experience", value: state.worker.experience || "", hint: "Select one option.", type: "experience" },
       workerWork: { title: "Work Preferences", label: "Work preferences", value: "", hint: "Select the work types that fit you.", type: "work" },
       workerAvailability: { title: "Availability", label: "Availability", value: "", hint: "Select days and preferred shift.", type: "availability" },
+      workerPay: { title: "Preferred Pay", label: "Preferred pay", value: state.worker.payRange || "", hint: "Optional. Keep it realistic and clear.", type: "text" },
       businessName: { title: "Edit Business Name", label: "Business name", value: business ? business.businessName : state.employer.business, hint: "Shown to workers on jobs and chat.", type: "text" },
       contactPerson: { title: "Edit Contact Person", label: "Contact person", value: business ? business.contactPersonName : state.employer.name, hint: "Used as the hiring contact.", type: "text" },
       employerLocation: { title: "Location", label: "Search city or area", value: business ? business.city : state.user.city, hint: "Choose the default hiring location.", type: "location" },
+      businessLocation: { title: "Location", label: "Search city or area", value: business ? business.city : state.user.city, hint: "Choose the default hiring location.", type: "location" },
       businessType: { title: "Edit Business Type", label: "Business type", value: business ? business.type : state.employer.type, hint: "Example: Retail Shop, Office, Restaurant.", type: "text" }
     };
     return configs[field] || configs.accountName;
@@ -1410,10 +1446,10 @@
     editDirty = true;
     if (byId("profileEditSaveTop")) byId("profileEditSaveTop").disabled = false;
   }
-  function openProfileEdit(field) {
+  function openProfileEdit(field, options) {
     editingProfileField = field;
     var cfg = profileEditConfig(field);
-    menuReturn = currentScreen;
+    beginEditMode((options && options.returnTo) || currentScreen);
     editDirty = false;
     editDraft = { value: cfg.value || "" };
     if (cfg.type === "skills") editDraft.skills = (state.worker.skills || []).slice();
@@ -1426,6 +1462,10 @@
     byId("profileEditTitle").textContent = cfg.title;
     byId("profileEditHint").textContent = cfg.hint;
     show("profileEdit");
+  }
+  function openPhotoEdit(options) {
+    beginEditMode((options && options.returnTo) || currentScreen);
+    show("verifyId");
   }
   function renderProfileEdit() {
     if (!byId("profileEditBody")) return;
@@ -1444,6 +1484,11 @@
     if (cfg.type === "experience") {
       var exp = ["No experience","Less than 1 year","1-2 years","2-5 years","5+ years"];
       body.innerHTML = '<div class="edit-card">' + exp.map(function (item) { var selected = editDraft.value === item || (!editDraft.value && item === "No experience"); return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-option="' + item + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
+      return;
+    }
+    if (cfg.type === "gender") {
+      var genders = ["Male","Female","Other","Prefer not to say"];
+      body.innerHTML = '<div class="edit-card">' + genders.map(function (item) { var selected = editDraft.value === item; return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-option="' + item + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span>' + item + '</button>'; }).join("") + '</div>';
       return;
     }
     if (cfg.type === "work") {
@@ -1469,7 +1514,7 @@
         '<div class="edit-card"><div class="section-label">Suggestions</div>' + suggestions.map(function (loc) { var selected = editDraft.value === loc.formatted_location || editDraft.value === formatLocationLabel(loc); return '<button class="option-row ' + (selected ? "selected" : "") + '" data-edit-location="' + loc.place_id + '"><span class="option-dot">' + (selected ? "OK" : "") + '</span><span><b>' + escapeHtml(formatLocationLabel(loc)) + '</b><br><span class="small">' + escapeHtml(loc.formatted_location) + '</span></span></button>'; }).join("") + '</div>';
       return;
     }
-    body.innerHTML = '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" placeholder="Type here" value="' + (editDraft.value || "") + '"></div></div>';
+    body.innerHTML = '<div class="edit-card"><label>' + cfg.label + '</label><div class="input"><input id="profileEditInput" ' + (cfg.type === "number" ? 'inputmode="numeric" ' : '') + 'placeholder="Type here" value="' + (editDraft.value || "") + '"></div></div>';
   }
   async function saveProfileEdit() {
     var input = byId("profileEditInput");
@@ -1493,6 +1538,14 @@
       applyStructuredLocation("user", selectedEditLocation);
       applyStructuredLocation("worker", selectedEditLocation);
     }
+    if (editingProfileField === "workerAge") {
+      state.worker.age = value.replace(/\D/g, "").slice(0, 3);
+      if (state.defaultWorkerId && state.workerProfiles[state.defaultWorkerId]) state.workerProfiles[state.defaultWorkerId].age = state.worker.age;
+    }
+    if (editingProfileField === "workerGender") {
+      state.worker.gender = value;
+      if (state.defaultWorkerId && state.workerProfiles[state.defaultWorkerId]) state.workerProfiles[state.defaultWorkerId].gender = value;
+    }
     if (editingProfileField === "workerSkills") state.worker.skills = (editDraft.skills || []).slice();
     if (editingProfileField === "workerExperience") state.worker.experience = value;
     if (editingProfileField === "workerWork") {
@@ -1505,16 +1558,27 @@
       state.worker.startAvailability = editDraft.start || "Immediate";
       state.worker.availability = workerAvailabilityLine();
     }
+    if (editingProfileField === "workerPay") {
+      state.worker.payRange = value;
+      state.worker.openAnyPay = !value;
+      if (state.defaultWorkerId && state.workerProfiles[state.defaultWorkerId]) state.workerProfiles[state.defaultWorkerId].preferredPay = value || "Open to any pay";
+    }
     if (editingProfileField === "businessName") { state.employer.business = value; if (business) business.businessName = value; }
     if (editingProfileField === "contactPerson") { state.employer.name = value; state.user.displayName = value; if (business) business.contactPersonName = value; }
-    if (editingProfileField === "employerLocation") { applyStructuredLocation("user", selectedEditLocation); applyStructuredLocation("employer", selectedEditLocation); }
+    if (editingProfileField === "employerLocation" || editingProfileField === "businessLocation") { applyStructuredLocation("user", selectedEditLocation); applyStructuredLocation("employer", selectedEditLocation); }
     if (editingProfileField === "businessType") { state.employer.type = value; if (business) business.type = value; }
     save();
-    if (["accountName","accountLocation","workerLocation","workerSkills","workerExperience","workerWork","workerAvailability"].indexOf(editingProfileField) >= 0) {
+    var savedField = editingProfileField;
+    var returnTarget = isEditMode ? profileEditReturnTarget() : (menuReturn || (currentRole === "employer" ? "employerProfile" : "profile"));
+    if (["accountName","accountLocation","workerLocation","workerAge","workerGender","workerSkills","workerExperience","workerWork","workerAvailability","workerPay"].indexOf(savedField) >= 0) {
       await saveWorkerProfileRemote();
     }
+    if (["accountLocation","businessName","contactPerson","employerLocation","businessLocation","businessType"].indexOf(savedField) >= 0) {
+      await saveEmployerProfileRemote();
+    }
     toast("Updated successfully");
-    show(menuReturn || (currentRole === "employer" ? "employerProfile" : "profile"));
+    if (isEditMode) clearEditMode();
+    show(returnTarget);
   }
   function renderAdminQueue() {
     if (!hasEmployerProfile() && currentScreen !== "adminModeration") return;
@@ -2005,9 +2069,12 @@
         if (byId("workerSwitchCta")) byId("workerSwitchCta").textContent = hasEmployerProfile() ? "Switch to Hiring" : "SETUP HIRING";
         if (byId("employerSwitchCta")) byId("employerSwitchCta").textContent = hasWorkerProfile() ? "Switch to Job Search" : "SETUP JOB SEARCH";
         if (byId("workerProfileLocationText")) byId("workerProfileLocationText").textContent = workerLocationLine();
+        if (byId("workerProfileAgeText")) byId("workerProfileAgeText").textContent = state.worker.age ? state.worker.age + " years" : "Age not added yet";
+        if (byId("workerProfileGenderText")) byId("workerProfileGenderText").textContent = state.worker.gender || "Optional";
         if (byId("workerProfileExperienceText")) byId("workerProfileExperienceText").textContent = workerExperienceLine();
         if (byId("workerProfileWorkText")) byId("workerProfileWorkText").textContent = workerWorkLine();
         if (byId("workerProfileAvailabilityText")) byId("workerProfileAvailabilityText").textContent = workerAvailabilityLine();
+        if (byId("workerProfilePayText")) byId("workerProfilePayText").textContent = state.worker.openAnyPay ? "Open to any pay" : (state.worker.payRange || "Preferred pay not added yet");
         if (byId("workerProfileSkillsText")) byId("workerProfileSkillsText").textContent = (state.worker.skills || []).join(", ") || "No skills added yet";
       }
     ].forEach(function (step) {
@@ -2200,7 +2267,13 @@
     var legalLink = event.target.closest("[data-legal]");
     if (legalLink) { currentLegal = legalLink.dataset.legal; show("legal"); return; }
     var menuBack = event.target.closest("[data-menu-back]");
-    if (menuBack) { show(menuReturn || "jobs"); return; }
+    if (menuBack) {
+      if (isEditMode && (currentScreen === "profileEdit" || currentScreen === "verifyId")) {
+        returnFromEditMode();
+        return;
+      }
+      show(menuReturn || "jobs"); return;
+    }
     var chatBack = event.target.closest("[data-chat-back]");
     if (chatBack) {
       if (selectedConversationId) { selectedConversationId = null; renderChat(); return; }
@@ -2483,7 +2556,11 @@
     }
     var editProfile = event.target.closest("[data-edit-profile]");
     if (editProfile) {
-      openProfileEdit(editProfile.dataset.editProfile);
+      openProfileEdit(editProfile.dataset.editProfile, { mode: "edit", returnTo: currentScreen });
+      return;
+    }
+    if (event.target.closest("[data-edit-photo]")) {
+      openPhotoEdit({ mode: "edit", returnTo: currentScreen });
       return;
     }
     var editOption = event.target.closest("[data-edit-option]");
@@ -2617,6 +2694,10 @@
     var go = event.target.closest("[data-go]");
     if (go) {
       var targetRoute = go.dataset.go;
+      if (isEditMode && (currentScreen === "profileEdit" || currentScreen === "verifyId") && unsafeEditReturnScreen(targetRoute)) {
+        returnFromEditMode();
+        return;
+      }
       if (targetRoute === "workerBasic" && !state.workerComplete && !state.defaultWorkerId) {
         state.worker.name = "";
         state.worker.gender = "";
@@ -2933,6 +3014,7 @@
             stopPhotoCamera();
             toast("Photo uploaded successfully");
             render();
+            if (isEditMode && currentScreen === "verifyId") returnFromEditMode();
             return;
           }
         } catch (error) {
@@ -2947,6 +3029,7 @@
         stopPhotoCamera();
         toast("Photo uploaded successfully");
         render();
+        if (isEditMode && currentScreen === "verifyId") returnFromEditMode();
       };
       reader.readAsDataURL(file);
     }
